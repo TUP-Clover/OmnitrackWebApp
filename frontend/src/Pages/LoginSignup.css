@@ -1,0 +1,138 @@
+/* Sign UP CSS */
+
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.signup-body, .login-body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family:Arial, sans-serif;
+    background-color: #fbbf24;
+    height: 100vh;
+}
+
+.container {
+    text-align: center;
+    width: 100%;
+    padding: 0px;
+    margin: 0px;
+}
+
+/* Container styling */
+.SignUp-container{
+    width: 100%;
+    padding: 40px;
+    background-color: #17191f;
+    border-radius: 40px;
+    color: #fdfdfd;
+    position: relative;
+    height: 90vh;  
+}
+
+.Login-container{
+  width: 100%;
+  padding: 60px;
+  background-color: #17191f;
+  border-radius: 40px;
+  color: #fdfdfd;
+  position: relative;
+  height: 90vh;  
+}
+
+.signupheader, .loginheader {
+    display: flex;
+    align-items: center;
+    justify-content:space-between;
+    margin-bottom: 30px;
+    margin-top: 40px;
+  
+}
+
+
+.headersignup, .headerlogin{
+    font-size: 30px;
+    font-weight: bold;
+    color: #050505;
+}
+
+.close-button {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #000000;
+    cursor: pointer;
+}
+
+.login, .SignUP {
+    padding: 0; /* Remove all padding */
+    background: none;
+    border: none;
+    font-size: 14px;
+    color: #080808;
+    cursor: pointer;
+}
+
+/* Form styling */
+.signup-form, .Login-form{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.input-field {
+    width: 100%;
+    padding: 15px;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    background-color: #2c2e38;
+    color: #fdfdfd;
+    outline: none;
+}
+
+.input-group {
+    display: flex;
+    gap: 10px;
+}
+
+.verify-button {
+    padding: 0 10px;
+    background-color: #fbbf24;
+    border: none;
+    border-radius: 8px;
+    color: #1c1e26;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.SignUp, .Login-btn{
+    width: 100%;
+    padding: 12px;
+    font-size: 18px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    background-color: #fbbf24;
+    color: #1c1e26;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+  /* Forgot Password Link */
+  .forgot-password-link {
+    color: #ffc107;
+    text-decoration: none;
+    display: block;
+    margin-top: 15px;
+    font-size: 14px;
+  }
+
+
+
+
+  

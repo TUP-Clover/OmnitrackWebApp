@@ -5,7 +5,7 @@
     box-sizing: border-box;
 }
 
-body {
+.default-body {
     font-family: Arial, sans-serif;
     background-color: #1A1B28;
     color: white;
@@ -23,12 +23,12 @@ body {
 }
 
 /* Header */
-header h1 {
+.welcomepageheader h1 {
     font-size: 1.8rem;
     margin-bottom: 0.5rem;
 }
 
-header p {
+.welcomepageheader p {
     font-size: 1rem;
     margin-bottom: 0.8rem;
 }
@@ -49,7 +49,7 @@ header p {
     position: relative;;
     width: 90%;
     height: auto;
-    border-radius: 10px;
+    border-radius:10px;
 }
 
 .image-container .location {
@@ -98,8 +98,27 @@ header p {
 }
 
 
+
 /* Mobile responsiveness */
-@media (max-width: 400px) {
+@media (max-width: 500px) {
+    .image-container .motorbg,
+    .image-container .bike {
+        width: 75%;
+    }
+
+    .image-container .location {
+        width: 18%;
+        left: 10px;
+    }
+
+    .start-button {
+        padding: 12px;
+        font-size: 1.1rem;
+    }
+    .image-container {
+        margin: 30px 0;
+    }
+
     .container {
         padding: 15px;
     }
