@@ -1,0 +1,109 @@
+/* App.css */
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #1a1b2d;
+    color: #fff;
+    margin: 0;
+  }
+  
+  .app {
+    max-width: 400px;
+    margin: auto;
+  }
+  
+  .header {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid #444;
+  }
+  
+  .profile-pic {
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    margin-right: 10px;
+  }
+  
+  .app-title {
+    color: #ffb400;
+    font-size: 2rem;
+    font-weight: bold;
+  }
+  
+  .device-list {
+    padding: 1.5rem;
+  }
+  
+  .device-card {
+    background-color: #2e2f44;
+    padding: 1rem;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  
+  .battery {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-right: 1rem;
+  }
+  
+  .battery-percentage {
+    color: #ffb400;
+  }
+  
+  .device-info {
+    flex-grow: 1;
+  }
+  
+  .device-name, .device-id, .battery-status {
+    margin: 0.2rem 0;
+  }
+  
+  .battery-status.good {
+    color: #4caf50;
+  }
+  
+  .battery-status.low {
+    color: #ff5722;
+  }
+  
+  .status-indicator {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+  }
+  
+  .online {
+    background-color: #4caf50;
+  }
+  
+  .offline {
+    background-color: #b0bec5;
+  }
+  
+  .footer {
+    display: flex;
+    justify-content: space-around;
+    background-color: #ffb400;
+    padding: 0.5rem 0;
+  }
+  
+  .footer-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+  }
+  
+  .material-symbols-outlined {
+    font-size: 1.5em;
+    color: black; /* Default color */
+  }
+  
+  .material-symbols-outlined.active {
+    color: white; /* Active page color */
+  }

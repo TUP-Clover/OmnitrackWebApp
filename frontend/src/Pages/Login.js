@@ -9,6 +9,10 @@ const Login = () => {
     navigate("/signup"); // Redirect to Sign Up page
   };
 
+  const handleLoginClick = () => {
+    navigate("/Home");
+  }
+
   useEffect(() => {
     document.body.className = "signup-body";
     return () => {
@@ -28,7 +32,7 @@ const Login = () => {
         <form class="Login-form">       
             <input type="tel" placeholder="Mobile Number" class="input-field"></input>
             <input type="password" placeholder="Password" class="input-field"></input>   
-        <button class="Login-btn">Login</button>
+        <button class="Login-btn" onClick={handleLoginClick}>Login</button>
         <a href="/forgot-password" className="forgot-password-link">Forgot your password?</a>
         </form>
 

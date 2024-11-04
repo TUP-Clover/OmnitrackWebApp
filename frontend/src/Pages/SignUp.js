@@ -7,8 +7,9 @@ const SignUp=()=>{
     const navigate = useNavigate();
 
     const handleLoginClick = () => {
-        navigate("/login"); // Replace "/login" with the path you want to navigate to
+        navigate("/login"); 
     };
+   
     useEffect(() => {
         // Change body class on component mount
         document.body.className = "signup-body";
@@ -40,7 +41,7 @@ const SignUp=()=>{
               
             </div>
 
-            <button class="SignUp">Sign Up</button>
+            <button class="SignUp" onClick={handleLoginClick}>Sign Up</button>
             </form>
 
         </div>
