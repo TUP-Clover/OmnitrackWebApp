@@ -16,7 +16,7 @@
     height: 100vh;
 }
 
-.container {
+.login-main-container, .signup-main-container {
     text-align: center;
     width: 100%;
     padding: 0px;
@@ -131,8 +131,3 @@
     margin-top: 15px;
     font-size: 14px;
   }
-
-
-
-
-  

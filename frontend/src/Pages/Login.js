@@ -21,7 +21,7 @@ const Login = () => {
   }, []);
 
   return (
-    <div class ="container">
+    <div class ="login-main-container">
     <header class ="loginheader">
         <button class="close-button">&times;</button>  
         <h1 class="headerlogin">Login</h1>

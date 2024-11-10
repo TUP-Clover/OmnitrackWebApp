@@ -21,7 +21,7 @@ const SignUp=()=>{
     }, []);
 
     return(
-       <div class ="container">
+       <div class ="signup-main-container">
         <header class ="signupheader">
             <button class="close-button">&times;</button>  
             <h1 class="headersignup">Sign Up</h1>

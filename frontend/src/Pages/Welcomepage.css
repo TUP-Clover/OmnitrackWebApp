@@ -7,7 +7,7 @@
 
 .default-body {
     font-family: Arial, sans-serif;
-    background-color: #1A1B28;
+    background-color: #FFC300;
     color: white;
     height: 100vh;
     display: flex;
@@ -62,7 +62,7 @@
 
 
 /* Button */
-.SignUp-button, .Login-button {
+.SignUp-button, .Login-button,.Login-button-desktop, .SignUp-button-desktop {
     background-color: #FFB800;
     color: #000;
     border: none;
@@ -80,7 +80,7 @@
     background-color: #FFC300;
 }
 
-.start-button {
+.start-button-mobile, .start-button-desktop {
     background-color: #FFB800;
     color: #000;
     border: none;
@@ -97,10 +97,25 @@
     background-color: #FFC300;
 }
 
+.trackicon {
+    position: absolute;
+    width: 10%; /* Default width */
+    top: 8rem;
+}
+
+
+
 
 
 /* Mobile responsiveness */
 @media (max-width: 500px) {
+    .default-body {
+        background-color: #1A1B28;
+        
+    }
+    .container {
+        background-color: #1A1B28;
+    }
     .image-container .motorbg,
     .image-container .bike {
         width: 75%;
@@ -115,6 +130,11 @@
         padding: 12px;
         font-size: 1.1rem;
     }
+
+    .trackicon{
+        display: none;
+    }
+
     .image-container {
         margin: 45px 0;
     }
@@ -123,18 +143,186 @@
         padding: 15px;
     }
 
-    header h1 {
+    .welcomepageheader h1 {
         font-size: 1.5rem;
     }
 
-    header p {
+    .welcomepageheader p {
         font-size: 0.9rem;
     }
 
-    .start-button {
-        padding: 12px;
-        font-size: 1rem;
+    .start-button-desktop {
+        display: none;
     }
 
-    
+    .Login-button-desktop, .SignUp-button-desktop{
+        display: none;
+    }
 }
+
+/* Desktop responsiveness */
+@media (min-width: 501px) and (max-width: 900px) {
+    .container {
+        width: 100%;
+        max-width: 50rem;
+        background-color: #1A1B28;
+        margin: 10rem;
+    }
+
+   .desktop-container{
+        display: flex;
+        flex-direction:row-reverse;
+        width: 100%;
+        padding: 1rem;
+   }
+
+   .welcomepageheader{
+       margin: 80px 20px 0 20px;
+       width: 80%;
+   }
+
+    .welcomepageheader h1 {
+        font-size: 1.8rem;
+        margin-bottom: 0.5rem;
+    
+    }
+
+    .trackmoto-text{
+        color:#FFC300;
+        display: inline;
+    }
+
+    .welcomepageheader p {
+        font-size: 0.9rem;
+    }
+
+    .image-container {
+        margin: 50px 0 10px 0;
+        width: 70%;
+    }
+
+    .image-container .motorbg {
+        width: 60%;
+        margin: 0px 80px 0px 0px;
+        bottom: 10px;
+    }
+    
+    .trackicon{
+        display: none;
+    }
+
+    .image-container .bike {
+        width: 60%;
+    }
+
+    .image-container .location {
+        width: 25%;
+        height: 25%;
+        left: 2rem;
+    }
+
+    .start-button-mobile {
+        display: none;
+    }
+
+    .start-button-desktop{
+        width: 70%;
+        padding: 10px;
+        margin: 20px;
+        font-size: 1rem;
+        border-radius: 0px;
+    }
+
+    .Login-button, .SignUp-button{
+        display: none;
+    }
+}
+    @media (min-width: 901px) {
+    .container {
+        width: 100%;
+        max-width: 50rem;
+        background-color: #1A1B28;
+        margin: 10rem;
+    }
+
+   .desktop-container{
+        display: flex;
+        flex-direction:row-reverse;
+        width: 100%;
+        padding: 1rem;
+   }
+
+   .welcomepageheader{
+       margin: 80px 20px 0 20px;
+       width: 80%;
+   }
+
+    .welcomepageheader h1 {
+        font-size: 1.8rem;
+        margin-bottom: 0.5rem;
+    
+    }
+
+    .trackmoto-text{
+        color:#FFC300;
+        display: inline;
+    }
+
+    .welcomepageheader p {
+        font-size: 0.9rem;
+    }
+
+    .image-container {
+        margin: 50px 0 10px 0;
+        width: 70%;
+    }
+
+    .image-container .motorbg {
+        width: 60%;
+        margin: 0px 80px 0px 0px;
+        bottom: 10px;
+    }
+    
+    .trackicon{
+        position: absolute;
+        width: 11%;
+        top:10rem;
+    }
+
+    .image-container .bike {
+        width: 60%;
+    }
+
+    .image-container .location {
+        width: 25%;
+        height: 25%;
+        left: 2rem;
+    }
+
+    .start-button-mobile {
+        display: none;
+    }
+
+    .start-button-desktop{
+        width: 70%;
+        padding: 10px;
+        margin: 20px;
+        font-size: 1rem;
+        border-radius: 0px;
+    }
+
+    .Login-button, .SignUp-button{
+        display: none;
+    }
+
+    .Login-button-desktop, .SignUp-button-desktop{
+        width: 70%;
+        padding: 10px;
+        margin: 20px;
+        font-size: 1rem;
+        border-radius: 0px;
+    }
+
+}
+
+
