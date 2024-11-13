@@ -8,12 +8,12 @@
 }
 
 .signup-body, .login-body {
-    display: flex;
     align-items: center;
     justify-content: center;
     font-family:Arial, sans-serif;
     background-color: #fbbf24;
     height: 100vh;
+    width: 100%;
 }
 
 .login-main-container, .signup-main-container {
@@ -61,6 +61,7 @@
 }
 
 .close-button {
+    padding: 10px;
     background: none;
     border: none;
     font-size: 24px;
@@ -69,7 +70,7 @@
 }
 
 .login, .SignUP {
-    padding: 0; /* Remove all padding */
+    padding: 10px; /* Remove all padding */
     background: none;
     border: none;
     font-size: 14px;
@@ -101,13 +102,14 @@
 }
 
 .verify-button {
-    padding: 0 10px;
+    padding: 0 15px;
     background-color: #fbbf24;
     border: none;
     border-radius: 8px;
     color: #1c1e26;
     font-weight: bold;
     cursor: pointer;
+    width: 40%;
 }
 
 .SignUp, .Login-btn{

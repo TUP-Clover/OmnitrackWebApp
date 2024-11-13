@@ -1,0 +1,460 @@
+/* 200 reso */
+@media only screen and (min-width: 200px) {
+    .navigate_container{
+        margin-top: 1rem;
+        height: 100vh;
+        padding-bottom: 120px;
+        outline: 4px dotted salmon;
+        width: 12rem;
+    }
+    .back_container{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 32px;
+        width: 32px;
+        background-color: #333741;
+        border-radius: 1rem;
+        margin-bottom: 30px;
+        border: none;
+    }
+    .material-symbols-outlined{
+        color: white;
+    }
+    
+    .image_container{
+        background-image: url(../images/Map.png);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        outline: 4px solid red;
+        width: 10m;
+        height: 300px;
+    }
+    .image_container img{
+        width: 18em;
+        height: 300px;
+    }
+
+    .devices_container{
+        margin-top: 20px;
+        height: 165px;
+        width: 100%;
+        border-top-left-radius: 20px;
+        border-top-right-radius: 20px;
+    }
+    
+    .nav_bar{
+        position: sticky;
+        bottom: 0;
+        margin: 8px;
+        height: 45px;
+        background-color: #EEB700;
+        border-radius: 20px;
+
+    }
+    .device-cards {
+        display: flex;
+        overflow-x: auto;
+        padding: 10px;
+        scroll-snap-type: x mandatory; /* Ensures each card snaps into place */
+      }
+      
+      .device-card {
+        background-color: #252837;
+        border-radius: 8px;
+        padding: 16px;
+        margin-right: 10px;
+        min-width: 150px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        color: #fff;
+        scroll-snap-align: center; /* Centers each card when scrolling */
+      }
+      
+      .device-card .status {
+        color: #EEB700; /* Status color */
+        font-size: 0.9em;
+      }
+      
+      .device-card button {
+        background-color: #EEB700;
+        color: #252837;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-top: 10px;
+      }
+      .device-card span{
+        color:#EEB700;
+      }
+  }
+  /* 300 reso */
+@media only screen and (min-width: 300px) {
+    .navigate_container{
+        margin-top: 1rem;
+        height: 100vh;
+        padding-bottom: 120px;
+        outline: 4px dotted blueviolet;
+        width: 18rem;
+    }
+    .back_container{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 32px;
+        width: 32px;
+        background-color: #333741;
+        border-radius: 1rem;
+        margin-bottom: 30px;
+        border: none;
+    }
+    .material-symbols-outlined{
+        color: white;
+    }
+    
+    .image_container{
+        background-image: url(../images/Map.png);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        outline: 4px solid red;
+        width: 17em;
+        height: 300px;
+        margin-left: 7px;
+    }
+    .image_container img{
+        width: 18em;
+        height: 300px;
+    }
+
+    
+    .nav_bar{
+        position: sticky;
+        bottom: 0;
+        margin: 8px;
+        height: 45px;
+        background-color: #EEB700;
+        border-radius: 20px;
+
+    }
+  }
+/* 320px resolution adjustments */
+@media only screen and (min-width: 320px) and (max-width: 374px) {
+    .navigate_container {
+        max-height: 585px;
+        height: 100%;
+        outline: 4px dotted blueviolet;
+        width: auto;
+        padding: 0; /* Remove any extra padding */
+        margin: 0 auto; /* Center content if needed */
+        box-sizing: border-box; /* Ensure padding/margins don't affect width */
+    }
+
+    .back_container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 32px;
+        width: 32px;
+        background-color: #333741;
+        border-radius: 1rem;
+        margin-bottom: 30px;
+        border: none;
+    }
+
+    .material-symbols-outlined {
+        color: white;
+    }
+
+    .image_container {
+        background-image: url(../images/Map.png);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        outline: 4px solid red;
+        width: 100%; /* Fit to container width */
+        height: 300px;
+        box-sizing: border-box;
+        margin: 0 auto; /* Center it */
+    }
+
+    .image_container img {
+        width: 100%; /* Scale image to fit container */
+        height: auto; /* Keep aspect ratio */
+        max-height: 300px;
+    }
+
+    .devices_container {
+        margin-top: 20px;
+        height: 165px;
+        width: 100%;
+        max-width: 300px;
+        background-color: #333741;
+        border-top-left-radius: 20px;
+        border-top-right-radius: 20px;
+        overflow: hidden; /* Prevent overflow on small screens */
+    }
+
+    .nav_bar {
+        position: sticky;
+        bottom: 30px;
+        margin: 8px;
+        height: 45px;
+        background-color: #EEB700;
+        border-radius: 20px;
+        width: 15em;
+        margin-left: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+    }
+    .nav_bar span{
+        color: #1B1F2D;
+    }
+
+    /* Device card adjustments */
+    .device-cards {
+        display: flex;
+        overflow-x: auto;
+        padding: 10px;
+        scroll-snap-type: x mandatory;
+        box-sizing: border-box;
+    }
+
+    .device-card {
+        background-color: #1B1F2D;
+        border-radius: 8px;
+        padding: 10px;
+        margin-right: 10px;
+        min-width: 250px; /* Reduce min-width to fit more cards in smaller screen */
+        height: 120px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        scroll-snap-align: center;
+        box-sizing: border-box;
+        gap: 1em;
+        font-size: 13px;
+    }
+    .left_side{
+        display: block;
+        text-align: left;
+    }
+    .right_side span{
+        font-size: 70px;
+        right: -1;
+    }
+    .device-card .status {
+        color: #f1c40f;
+        font-size: 0.9em;
+    }
+    .device-card-func{
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+    }
+
+    .device-card button {
+        background-color: #f1c40f;
+        color: #252837;
+        min-width: 6em;
+        height: 1.5em;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 18px;
+        cursor: pointer;
+        margin-top: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+    }
+    .status-bar{
+        margin-top: 10px;
+        min-width: 2em;
+        height: 1em;
+        background-color: #34C759;
+        border-radius: 18px;
+    }
+}
+
+/* 375 reso */
+  @media only screen and (min-width: 375px) and (max-width: 425px){ 
+    .navigate_container{
+        margin-top: 1rem;
+        height: 100vh;
+        padding-bottom: 120px;
+        outline: 4px dotted blueviolet;
+        width: 22.5rem;
+    }
+    .back_container{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 32px;
+        width: 32px;
+        background-color: #333741;
+        border-radius: 1rem;
+        margin-bottom: 30px;
+        border: none;
+    }
+    .material-symbols-outlined{
+        color: white;
+    }
+    
+    .image_container{
+        background-image: url(../images/Map.png);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        outline: 4px solid red;
+        width: 21.5em;
+        height: 300px;
+        margin-left: 7.5px;
+    }
+    .image_container img{
+        width: 18em;
+        height: 300px;
+    }
+
+    .nav_bar{
+        position: sticky;
+        bottom: 20px;
+        margin: 8px;
+        height: 45px;
+        background-color: #EEB700;
+        border-radius: 20px;
+        width: 18em;
+        margin-left: 35px;
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+
+    }
+    .nav_bar span{
+        color: #1B1F2D;
+    }
+
+    /* Device card adjustments */
+    .device-cards {
+        display: flex;
+        overflow-x: auto;
+        padding: 10px;
+        scroll-snap-type: x mandatory;
+        box-sizing: border-box;
+    }
+
+    .device-card {
+        background-color: #1B1F2D;
+        border-radius: 8px;
+        padding: 10px;
+        margin-right: 10px;
+        min-width: 300px; /* Reduce min-width to fit more cards in smaller screen */
+        height: 120px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        scroll-snap-align: center;
+        box-sizing: border-box;
+        gap: 1em;
+        font-size: 13px;
+    }
+    .left_side{
+        display: block;
+        text-align: left;
+    }
+    .right_side span{
+        font-size: 90px;
+    }
+    .device-card .status {
+        color: #f1c40f;
+        font-size: 0.9em;
+    }
+    .device-card-func{
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+    }
+
+    .device-card button {
+        background-color: #f1c40f;
+        color: #252837;
+        min-width: 6em;
+        width: 7em;
+        height: 2em;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 18px;
+        cursor: pointer;
+        margin-top: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+    }
+    .status-bar{
+        margin-top: 10px;
+        min-width: 2em;
+        height: 1em;
+        background-color: #34C759;
+        border-radius: 18px;
+    }
+  }
+
+/* 425 reso */
+  @media only screen and (min-width: 425px) {
+    .navigate_container{
+        margin-top: 1rem;
+        height: 100vh;
+        padding-bottom: 120px;
+        outline: 4px dotted salmon;
+        width: 25.8rem;
+    }
+    .back_container{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 32px;
+        width: 32px;
+        background-color: #333741;
+        border-radius: 1rem;
+        margin-bottom: 30px;
+        border: none;
+    }
+    .material-symbols-outlined{
+        color: white;
+    }
+    
+    .image_container{
+        background-image: url(../images/Map.png);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        outline: 4px solid red;
+        width: 24.5em;
+        height: 300px;
+        margin-left: 9.5px;
+    }
+    .image_container img{
+        width: 18em;
+        height: 300px;
+    }
+
+    
+    .nav_bar{
+        position: sticky;
+        bottom: 0;
+        margin: 8px;
+        height: 45px;
+        background-color: #EEB700;
+        border-radius: 20px;
+
+    }
+  }

@@ -4,7 +4,7 @@ import WelcomePage2 from "./Pages/WelcomePage2";
 import SignUp  from "./Pages/SignUp";
 import Login from "./Pages/Login";
 import Home from "./Pages/Home";
-import Navigate from "./Pages/Navigate";
+import Navigate from "./Pages/MonitoringPage/Navigate";
 import Profile from "./Pages/Profile";
 import Settings from "./Pages/Settings";
 import './App.css';
