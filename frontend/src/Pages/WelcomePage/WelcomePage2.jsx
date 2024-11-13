@@ -1,10 +1,10 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import './Welcomepage.css';
-import bikeImage from './images/bike.png';
-import locationImage from './images/location.png';
-import motorbg from './images/motorbg.png';
-import trackicon from './images/motoricon.png';
+import bikeImage from '../images/bike.png';
+import locationImage from '../images/location.png';
+import motorbg from '../images/motorbg.png';
+import trackicon from '../images/motoricon.png';
 
 const WelcomePage2= ()=>{
     const navigate = useNavigate();

@@ -133,3 +133,32 @@
     margin-top: 15px;
     font-size: 14px;
   }
+
+
+@media (max-width: 320px){
+
+    .SignUp-container{
+        padding:30px;
+    }
+
+    .signup-form, .Login-form{
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        bottom: 10px;
+        position: relative;
+    }
+
+    
+.input-field {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    background-color: #2c2e38;
+    color: #fdfdfd;
+    outline: none;
+}
+
+}

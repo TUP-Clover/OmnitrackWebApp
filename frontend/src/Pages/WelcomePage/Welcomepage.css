@@ -105,10 +105,57 @@
 
 
 
-
-
 /* Mobile responsiveness */
-@media (max-width: 500px) {
+@media (max-width:320px) {
+
+    .container {
+        width: 100%;
+        max-width: 100%;
+        text-align: center;
+        padding: 4px;
+    
+    }
+
+    .welcomepageheader h1 {
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+        margin-top: 3rem;
+    }
+
+    .welcomepageheader p {
+        font-size: 1rem;
+        margin-bottom: 0.1rem;
+    }
+
+    .image-container .motorbg {
+        padding: 10px;
+        bottom: 30px;
+    }
+    
+    .image-container .bike {
+        width: 90%;
+        height: auto;
+    }
+
+    .image-container .location {
+        margin-left: 1rem;
+    }
+
+    .start-button-mobile, .start-button-desktop {
+        padding: 7px;
+        position: relative;
+        bottom: 60px;
+        }
+
+    .SignUp-button, .Login-button{
+      bottom: 60px;
+      position: relative;
+    }
+    
+
+    
+}
+@media  (max-width: 500px) {
     .default-body {
         background-color: #1A1B28;
         
