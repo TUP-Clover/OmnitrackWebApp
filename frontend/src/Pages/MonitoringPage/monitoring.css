@@ -314,12 +314,19 @@
         align-items: center;
         outline: 4px solid red;
         width: 21.5em;
-        height: 300px;
+        height: 350px;
         margin-left: 7.5px;
     }
     .image_container img{
         width: 18em;
         height: 300px;
+    }
+    .devices_container {
+        min-height: 230px;
+        background-color: #333741;
+        border-top-left-radius: 20px;
+        border-top-right-radius: 20px;
+        overflow: hidden; /* Prevent overflow on small screens */
     }
 
     .nav_bar{
@@ -355,7 +362,7 @@
         padding: 10px;
         margin-right: 10px;
         min-width: 300px; /* Reduce min-width to fit more cards in smaller screen */
-        height: 120px;
+        height: 150px;
         display: flex;
         flex-direction: row;
         align-items: center;

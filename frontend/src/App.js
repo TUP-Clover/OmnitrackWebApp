@@ -3,7 +3,6 @@ import WelcomePage1 from "./Pages/WelcomePage/WelcomePage1";
 import WelcomePage2 from "./Pages//WelcomePage/WelcomePage2";
 import SignUp  from "./Pages/LoginSignUpPage/SignUp";
 import Login from "./Pages/LoginSignUpPage/Login";
-import Home from "./Pages/Home";
 import Navigate from "./Pages/MonitoringPage/Navigate";
 import Profile from "./Pages/Profile";
 import Settings from "./Pages/Settings";
@@ -18,7 +17,6 @@ function App() {
       <Route path="/WelcomePage2" element={<WelcomePage2/>}></Route>
       <Route path="/SignUp" element={<SignUp/>}></Route>
       <Route path="/Login" element={<Login/>}></Route>
-      <Route path="/Home" element={<Home/>}></Route>
       <Route path="/Navigate" element={<Navigate/>}></Route>
       <Route path="/Profile" element={<Profile/>}></Route>
       <Route path="/Settings" element={<Settings/>}></Route>

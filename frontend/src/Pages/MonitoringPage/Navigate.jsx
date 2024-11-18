@@ -42,7 +42,7 @@ const SwipeableDeviceCards = () => {
   return (
     <div className="device-cards" {...handlers}>
       <DeviceCard name="Click" id="072910T" status="Low Signal" />
-      <DeviceCard name="Another Device" id="123456A" status="Active"/>
+      <DeviceCard name="Device Two" id="123456A" status="Active"/>
       <DeviceCard name="Device Three" id="789012B" status="Inactive"/>
       <DeviceCard name="Device Four" id="345678C" status="Low Battery"/>
       {/* Add more DeviceCard components as needed */}

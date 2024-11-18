@@ -10,7 +10,7 @@ const Login = () => {
   };
 
   const handleLoginClick = () => {
-    navigate("/Home");
+    navigate("/Navigate");
   }
 
   useEffect(() => {
