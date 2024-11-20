@@ -1,36 +1,53 @@
-import React from "react";
+import React, { useState } from 'react';
 import { useSwipeable } from 'react-swipeable';
-import './monitoring.css';
+import './monitoring.css'; // Include your other styles
 
-const Navigate = () => (
+const Navigate = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  <div className="navigate_container">
-    <button className="back_container">
-        <span class="material-symbols-outlined">arrow_back</span>
-    </button>
-    <div className="image_container"></div>
-    <div className="devices_container">
-      {/* Swipeable Device Cards */}
-      <SwipeableDeviceCards />
+  const toggleModal = () => {
+    setIsModalOpen(!isModalOpen);
+  };
+
+  return (
+    <div className="navigate_container">
+      <div className="image_container"></div>
+      <div className="devices_container">
+        {/* Swipeable Device Cards */}
+        <SwipeableDeviceCards />
+      </div>
+      <div className="nav_bar">
+        <span className="material-symbols-outlined">home</span>
+        <span className="material-symbols-outlined" onClick={toggleModal}>
+          add_circle
+        </span>
+        <span className="material-symbols-outlined">settings</span>
+      </div>
+
+      {/* Modal Component */}
+      {isModalOpen && (
+        <div className="modal-overlay" onClick={toggleModal}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <h2>Please input your device ID</h2>
+            <p>Note: Device ID are located at the back of your OmniTrack Device</p>
+            <input type="text" placeholder="Enter your device ID" />
+            <button>Add</button>
+          </div>
+        </div>
+      )}
     </div>
-    <div className="nav_bar">
-    <span class="material-symbols-outlined">home</span>
-      <span class="material-symbols-outlined">add_circle</span>
-      <span class="material-symbols-outlined">settings</span>
-    </div>
-  </div>
-);
+  );
+};
+
 const SwipeableDeviceCards = () => {
-  // Handlers for swipe gestures using `react-swipeable`
   const handlers = useSwipeable({
     onSwipedLeft: () => scrollCards('right'),
     onSwipedRight: () => scrollCards('left'),
   });
 
-  // Function to handle scrolling
   const scrollCards = (direction) => {
     const container = document.querySelector('.device-cards');
-    const scrollAmount = 150; // Adjust this based on card width
+    const scrollAmount = 150;
 
     if (direction === 'left') {
       container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
@@ -42,10 +59,9 @@ const SwipeableDeviceCards = () => {
   return (
     <div className="device-cards" {...handlers}>
       <DeviceCard name="Click" id="072910T" status="Low Signal" />
-      <DeviceCard name="Device Two" id="123456A" status="Active"/>
-      <DeviceCard name="Device Three" id="789012B" status="Inactive"/>
-      <DeviceCard name="Device Four" id="345678C" status="Low Battery"/>
-      {/* Add more DeviceCard components as needed */}
+      <DeviceCard name="Device Two" id="123456A" status="Active" />
+      <DeviceCard name="Device Three" id="789012B" status="Inactive" />
+      <DeviceCard name="Device Four" id="345678C" status="Low Battery" />
     </div>
   );
 };
@@ -63,10 +79,10 @@ const DeviceCard = ({ name, id, status }) => {
         </div>
       </div>
       <div className="right_side">
-        <span class="material-symbols-outlined" >share_location</span>
+        <span className="material-symbols-outlined">share_location</span>
       </div>
-      
     </div>
   );
 };
+
 export default Navigate;
