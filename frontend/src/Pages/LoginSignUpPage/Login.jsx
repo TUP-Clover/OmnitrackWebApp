@@ -38,7 +38,7 @@ const Login = () => {
         localStorage.setItem("email", data.user.email);
 
         // Redirect to the protected page (e.g., map page)
-        navigate("/Navigate");
+        navigate("/Monitor");
       } else {
         setErrorMessage(data.message || "Login failed");
       }
