@@ -1,10 +1,21 @@
-import React, { useState } from 'react';
-import { useSwipeable } from 'react-swipeable';
+import React, { useContext, useState, useEffect } from 'react';
+import axios from "axios";
+
+import { UserContext } from "../LoginSignUpPage/UserContext";
+import MapboxComponent from './MapboxComponent';
+import SwipeableDeviceCards from './SwipeableDeviceCards';
+
 import './Monitor.css'; // Include your other styles
 
 const Monitor = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isNavbarExpanded, setIsNavbarExpanded] = useState(false);
+  const [coordinates, setCoordinates] = useState([]);
+
+  const [deviceIdInput, setDeviceIdInput] = useState("");
+  const [devices, setDevices] = useState([]);
+
+  const { user } = useContext(UserContext);
 
   const toggleModal = () => {
     setIsModalOpen(!isModalOpen);
@@ -18,12 +29,84 @@ const Monitor = () => {
     setIsNavbarExpanded(false);
   };
 
+  const handleAddDevice = async () => {
+    if (!deviceIdInput.trim()) {
+      alert("Device ID cannot be empty.");
+      return;
+    }
+  
+    try {
+
+      const response = await axios.post('http://localhost:8800/add-device', {
+        userId: user.userId,  // Current user ID
+        deviceId: deviceIdInput.trim(),  // Trim whitespace
+      });
+    
+      const data = response.data;
+  
+      if (data.success) {
+        setCoordinates((prevCoordinates) => [...prevCoordinates, ...data.coordinates]);
+        setDevices(data.devices);
+        
+        alert("Device successfully added to your account.");
+        setIsModalOpen(false); // Close modal
+        setDeviceIdInput(""); // Reset input field
+      } else {
+        alert(data.message || "Failed to add device. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error adding device:", error);
+      alert("An error occurred. Please try again.");
+    }
+  }
+
+  useEffect(() => {
+    if (!user) return; 
+
+    const fetchUserDevices = async () => {
+      try {
+        const response = await axios.post('http://localhost:8800/get-devices', { userId: user.userId });
+
+        if (response.data.success) {
+          setDevices(response.data.devices);
+        } else {
+          console.warn("No devices found or error:", response.data.message);
+        }
+      } catch (error) {
+        console.error("Error fetching devices:", error);
+      }
+    };
+
+    fetchUserDevices();
+  }, [user]);
+
+  useEffect(() => {
+    if (!user) return; 
+
+    const fetchUserModules = async () => {
+      try {
+        // Make a request to your backend to fetch user-specific data
+        const response = await axios.post('http://localhost:8800/userModules', { userId: user.userId });
+
+        if (response.data) {
+          setCoordinates(response.data); // Set coordinates
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchUserModules();
+  }, [user]);
+
   return (
     <body className='test-body'>
         <div className="parent-container">
-            <div className="mapbox-container"></div>
+            <div className="mapbox-container">
+              <MapboxComponent coordinates={coordinates} />
+            </div>
             <div className="device-container">
-              <SwipeableDeviceCards />
+              <SwipeableDeviceCards devices={devices} />
             </div>
             <div
               className={`navbar-container ${isNavbarExpanded ? 'expanded' : ''}`}
@@ -47,9 +130,14 @@ const Monitor = () => {
               <div className="modal-overlay" onClick={toggleModal}>
                 <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                   <h2>Please input your device ID</h2>
-                  <p>Note: Device ID are located at the back of your OmniTrack Device</p>
-                  <input type="text" placeholder="Enter your device ID" />
-                  <button>Add</button>
+                  <p>Note: Device ID is located at the back of your OmniTrack Device</p>
+                  <input
+                    type="text"
+                    placeholder="Enter your device ID"
+                    value={deviceIdInput}
+                    onChange={(e) => setDeviceIdInput(e.target.value)}
+                  />
+                  <button onClick={handleAddDevice}>Add</button>
                 </div>
               </div>
             )}
@@ -57,52 +145,5 @@ const Monitor = () => {
     </body>
   );
 };
-
-const SwipeableDeviceCards = () => {
-  const handlers = useSwipeable({
-    onSwipedLeft: () => scrollCards('right'),
-    onSwipedRight: () => scrollCards('left'),
-  });
-
-  const scrollCards = (direction) => {
-    const container = document.querySelector('.device-cards');
-    const scrollAmount = 150;
-
-    if (direction === 'left') {
-      container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
-    } else if (direction === 'right') {
-      container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-    }
-  };
-
-  return (
-    <div className="device-cards" {...handlers}>
-      <DeviceCard name="Click" id="072910T" status="Low Signal" />
-      <DeviceCard name="Device Two" id="123456A" status="Active" />
-      <DeviceCard name="Device Three" id="789012B" status="Inactive" />
-      <DeviceCard name="Device Four" id="345678C" status="Low Battery" />
-    </div>
-  );
-};
-
-const DeviceCard = ({ name, id, status }) => {
-  return (
-    <div className="device-card">
-      <div className="left_side">
-        <h4>Device Name: {name}</h4>
-        <p>Device ID: {id}</p>
-        <p className="status">Device Status: {status}</p>
-        <div className="device-card-func">
-          <button>Track</button>
-          <div className="status-bar"></div>
-        </div>
-      </div>
-      <div className="right_side">
-        <span className="material-symbols-outlined">share_location</span>
-      </div>
-    </div>
-  );
-};
-
 
 export default Monitor;

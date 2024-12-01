@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { UserContext } from "./UserContext"; 
 import './LoginSignup.css'; // Make sure this points to your CSS file
 
 const Login = () => {
@@ -7,8 +8,10 @@ const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const { loginUser, logoutUser } = useContext(UserContext);
 
   const handleSignUpClick = () => {
+    logoutUser(); 
     navigate("/signup"); // Redirect to Sign Up page
   };
 
@@ -32,12 +35,10 @@ const Login = () => {
       const data = await response.json();
 
       if (response.ok && data.userExists) {
-        // Store session data in localStorage or state (if needed)
-        localStorage.setItem("userId", data.user.userId);
-        localStorage.setItem("username", data.user.username);
-        localStorage.setItem("email", data.user.email);
+        // Update user context
+        loginUser(data.user);
 
-        // Redirect to the protected page (e.g., map page)
+        // Redirect to the protected page (e.g., Monitor page)
         navigate("/Monitor");
       } else {
         setErrorMessage(data.message || "Login failed");
