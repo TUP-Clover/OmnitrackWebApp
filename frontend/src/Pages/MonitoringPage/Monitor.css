@@ -33,9 +33,15 @@
     justify-content: space-around;
     align-items: center;
 }
-.profile-icon {
-    display: none; 
+.profile-icon-container {
+    display: none;
 }
+.expanded-profile p {
+    display: none; /* Initially hidden */
+    margin-left: 1em;
+    font-size: 0.9em;
+    color: #1B1F2D;
+  }
 .navbar-container span{
     color: #1B1F2D;
 }
@@ -181,22 +187,76 @@
 .navbar-container:hover .icon-text {
     display: block; /* Display all the icon texts */
 }
+.monitor-title{
+    display: none;
+}
 
 /*RESPONSIVE CSS*/
 @media (min-width: 768px) {
+    .test-body{
+        background-color: #1B1F2D;
+    }
     .parent-container{
         padding-left: 2.78em;
     }
-    .profile-icon{
-        background-image: url(../images/profile1.jpg);
-        background-size: cover;
-        background-position: center;
-        display: inline;
-        width: 2em;
-        height: 2em;
-        border-radius: 20px;
-        margin-top: 3em;
+    .device-container{
+        background-color: #333741;
     }
+    .mapbox-container{
+        padding: 0.5em;
+    }
+    .monitor-title{
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
+        margin-top: 1em;
+        padding-left: 2em;
+    }
+    .monitor-title h5{
+        font-size: 1.5em;
+        color: #BDBDBD;
+    }
+    .monitor-title img{
+        height: 50px;
+        width: 50px;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+    }
+    .profile-icon-container {
+        display: flex; /* Ensure flex layout */
+        align-items: center;
+        justify-content: center; /* Center the profile icon */
+        width: 100%; /* Ensure it spans the full width of the navbar */
+        padding: 0.5em;
+        transition: all 0.3s ease; /* Smooth transition for the expanded state */
+        gap: 1em; /* Add spacing between elements */
+    }
+    
+    .expanded-profile {
+        display: flex;
+        align-items: center;
+        width: auto; /* Prevent width from forcing misalignment */
+        white-space: nowrap; /* Prevent text wrapping */
+    }
+    
+    .expanded-profile .profile-icon img {
+        border: 2px solid #1B1F2D;
+        border-radius: 50%; /* Circular profile picture */
+        width: 2em; /* Size of the profile picture */
+        height: 2em;
+        object-fit: cover; /* Ensure the image fits well */
+    }
+    
+    .navbar-container.expanded .profile-icon-container {
+        justify-content: flex-start; /* Align content to the left when expanded */
+        padding-left: 4em; /* Add some left padding */
+    }
+    .navbar-container.expanded .expanded-profile p {
+      display: block; /* Show when sidebar is expanded */
+
+    } 
     .navbar-container {
         position: fixed;
         border-radius: 0;
@@ -216,9 +276,11 @@
       }
       
       .navbar-container.expanded {
-        width: 17em; /* Expanded width */
+        width: 20em; /* Expanded width */
         border-top-right-radius: 10px;
         border-bottom-right-radius: 10px;
+        align-items: flex-start;
+        padding-left: 5em;
       }
       
       .navbar-container span {
@@ -226,18 +288,17 @@
         color: #1b1f2d;
         transition: color 0.3s ease; /* Smooth color transition */
       }
+      .icon-divs .icon-text{
+        transition: color 0.3s ease;
+      }
       
       .navbar-container.expanded span {
-        background-color: salmon;
         margin-left: 3em;
 
-      }
-      
-      .navbar-container span:hover {
-        color: #fff; /* Change color on hover */
-      }
-      .icon-text:hover {
-        color: #fff; /* Change color on hover */
+      }     
+      .icon-divs:hover span,
+      .icon-divs:hover .icon-text {
+          color: #fff; /* Turn both the icon and text white */
       }
       
     .navbar-container span{
@@ -245,12 +306,19 @@
     }
     
     .device-card{
-        margin-top: 2em;
+        margin-top: 1em;
     }
 
-    .icon-divs{
+    .icon-divs {
         display: flex;
-        border: 2px dotted salmon;
-    }
+        align-items: center; /* Vertically centers icons and text */
+        gap: 1em; /* Adds space between the icon and text */
+        padding: 0.5em 1em; /* Add spacing for a clean look */
+        transition: background-color 0.3s ease;
+        cursor: pointer; /* Add pointer effect on hover */
+      }
+      .icon-divs:hover {
+        background-color: rgba(0, 0, 0, 0.2); /* Adds hover effect */
+        border-radius: 10px;
+      }
 }
-      

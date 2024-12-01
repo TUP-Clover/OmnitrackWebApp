@@ -17,6 +17,11 @@ const MapboxComponent = ({ coordinates }) => {
         center: [121.00826, 14.678813], // Initial center coordinates [lng, lat]
         zoom: 12,
       });
+            // Apply border-radius directly to the map's canvas
+            const mapCanvas = mapContainerRef.current.querySelector(".mapboxgl-canvas");
+            if (mapCanvas) {
+              mapCanvas.style.borderRadius = "10px"; // Add rounded corners
+            }
     }
 
     // Remove existing markers before adding new ones

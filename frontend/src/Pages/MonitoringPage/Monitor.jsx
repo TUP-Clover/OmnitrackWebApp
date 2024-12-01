@@ -1,4 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react';
+import motoricon from '../images/motoricon.png';
+import profileicon from '../images/profile1.jpg'
 import axios from "axios";
 
 import { UserContext } from "../LoginSignUpPage/UserContext";
@@ -100,8 +102,16 @@ const Monitor = () => {
   }, [user]);
 
   return (
-    <body className='test-body'>
+    <div className='test-body'>
         <div className="parent-container">
+          <div className="monitor-title">
+              <div className="title-text">
+                <h5>Location Monitoring</h5>
+              </div>
+              <div className="motor-icon">
+                <img src={motoricon} alt="Icon-Bike" />
+              </div>
+            </div>
             <div className="mapbox-container">
               <MapboxComponent coordinates={coordinates} />
             </div>
@@ -112,7 +122,14 @@ const Monitor = () => {
               className={`navbar-container ${isNavbarExpanded ? 'expanded' : ''}`}
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}>
-              <div className="profile-icon"></div>
+              <div className="profile-icon-container">
+                  <div className="expanded-profile">
+                    <div className="profile-icon">
+                      <img src={profileicon} alt="Profile-Picture" />
+                    </div>
+                    <p>Allen Luis Alvarez</p>
+                  </div>
+                </div>
               <div className="icon-divs">
                 <span className="material-symbols-outlined">home</span>
                 <div className="icon-text">Home</div>
@@ -142,7 +159,7 @@ const Monitor = () => {
               </div>
             )}
         </div>
-    </body>
+    </div>
   );
 };
 
