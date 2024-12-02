@@ -1,4 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
+import { useNavigate } from "react-router-dom";
 import motoricon from '../images/motoricon.png';
 import profileicon from '../images/profile1.jpg'
 import axios from "axios";
@@ -17,6 +18,8 @@ const Monitor = () => {
   const [deviceIdInput, setDeviceIdInput] = useState("");
   const [devices, setDevices] = useState([]);
 
+  const navigate = useNavigate();
+
   const { user } = useContext(UserContext);
 
   const toggleModal = () => {
@@ -30,6 +33,10 @@ const Monitor = () => {
   const handleMouseLeave = () => {
     setIsNavbarExpanded(false);
   };
+
+  const handleSettingsClick = () => {
+    navigate("/Settings"); 
+  };  
 
   const handleAddDevice = async () => {
     if (!deviceIdInput.trim()) {
@@ -137,7 +144,7 @@ const Monitor = () => {
               <div className="icon-divs" onClick={toggleModal}>
                 <span className="material-symbols-outlined">add_circle</span>
                 <div className="icon-text">Add Device</div></div>
-              <div className="icon-divs">
+              <div className="icon-divs" onClick={handleSettingsClick}>
                 <span className="material-symbols-outlined">settings</span>
                 <div className="icon-text">Settings</div>
               </div>

@@ -1,0 +1,197 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+*{
+    font-family: "Montserrat", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+.settings-body{
+    border: 4px solid green;
+    background-color: #1B1F2D;
+    width: 100vw;
+    height: 100vh;
+}
+.Settings-container{
+    border: 3px solid purple;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1em;
+}
+.Settings-container p{
+    font-weight: bold;
+}
+.settings-header{
+    margin-top: 2em;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    width: 90%;
+    gap: 1em;
+    color: #BDBDBD;
+}
+.back-button{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #333741;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    height: 30px;
+    width: 30px;
+    border-radius: 20px;
+    cursor: pointer;
+}
+.profile-card{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    background-color: #333741;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    border-radius: 15px;
+    width: 90%;
+    height: 97px;
+    gap: 1em;
+}
+.profile-pic{
+    border: 3px solid greenyellow;
+    width: 60px;
+    height: 60px;
+    border-radius: 50px;
+    object-fit: cover; /* Ensure the image fits well */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.profile-card .profile-pic img{
+    width: 60px;
+    height: 60px;
+    border-radius: 50px;
+    object-fit: cover; /* Ensure the image fits well */
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+.profile-details{
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    width: 60%;
+    height: 40px;
+    gap: 5px;
+}
+.profile-details p{
+    font-weight: bold;
+}
+.profile-details button{
+    outline: none;
+    background: none;
+    border: none;
+    color: white;
+}
+.profile-details button:hover{
+    text-decoration: underline;
+    cursor: pointer;
+}
+.options-container{
+    margin-top: 1em;
+    width: 85%;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5em;
+}
+.options-container span{
+    color: #5F6368;
+}
+.options-container p{
+    margin-left: 1em;
+    width: 80%;
+    text-align: left;
+}
+.option-div{
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+
+/* Modal overlay */
+.modal-overlay-mobile-num {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+        
+/* Modal content */
+.modal-content-mobile-num {
+    background-color: #1B1F2D;
+    border: 1px solid #E0DEDE;
+    color: #ffd700; /* Gold color */
+    padding: 20px;
+    border-radius: 10px;
+    width: clamp(300px, 90%, 400px);
+    text-align: center;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+    text-align: center;
+}
+
+.modal-content-mobile-num h2 {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+        
+.modal-content-mobile-num p {
+    font-size: 12px;
+    color: #aaa; /* Light gray */
+    margin-bottom: 15px;
+}
+        
+.modal-content-mobile-num input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #E0DEDE;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    background-color: #E0DEDE;
+    color: black;
+}
+        
+.modal-content-mobile-num button {
+    width: 15em;
+    max-width: 240px;
+    padding: 10px;
+    background-color: #EEB700;
+    color: #333741; /* Match the modal's background */
+    border: none;
+    border-radius: 15px;
+    font-size: 14px;
+    cursor: pointer;
+}
+        
+.modal-content-mobile-num button:hover {
+    background-color: #e6c200; /* Slightly darker gold for hover effect */
+}
+.modal-verify-mobile-num{
+ 
+    display: flex;
+    justify-content: center;
+    gap: 0.4em;
+    width: 100%;
+}
+.modal-verify-mobile-num button{
+    height: 2.8em;
+    border-radius: 7px;
+    width: 7em;
+}
+
+

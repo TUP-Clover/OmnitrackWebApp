@@ -184,15 +184,16 @@
     color: #1B1F2D;
 }
 
-.navbar-container:hover .icon-text {
-    display: block; /* Display all the icon texts */
-}
+
 .monitor-title{
     display: none;
 }
 
 /*RESPONSIVE CSS*/
 @media (min-width: 768px) {
+    .navbar-container:hover .icon-text {
+        display: block; /* Display all the icon texts */
+    }
     .test-body{
         background-color: #1B1F2D;
     }

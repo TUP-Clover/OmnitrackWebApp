@@ -7,6 +7,10 @@
   box-sizing: border-box;
 }
 
+.default-body{
+    background-color: #ffc107;
+}
+
 .signup-body, .login-body {
     align-items: center;
     justify-content: center;
@@ -36,7 +40,7 @@
 
 .Login-container{
   width: 100%;
-  padding: 70px;
+  padding: 75px;
   background-color: #17191f;
   border-radius: 40px;
   color: #fdfdfd;
@@ -83,6 +87,7 @@
     display: flex;
     flex-direction: column;
     gap: 20px;
+    padding: 10px;
 }
 
 .input-field {

@@ -10,6 +10,7 @@ import Login from "./Pages/LoginSignUpPage/Login";
 
 import Monitor from "./Pages/MonitoringPage/Monitor"
 import Settings from "./Pages/SettingsPage/Settings";
+import ManageDevices from "./Pages/ManageDevices/ManageDevices";
 
 import './App.css';
 
@@ -25,6 +26,7 @@ function App() {
 					<Route path="/Login" element={<Login/>}></Route>
 					<Route path="/Monitor" element={<Monitor/>}></Route>
 					<Route path="/Settings" element={<Settings/>}></Route>
+					<Route path="/ManageDevices" element={<ManageDevices/>}></Route>
 					{/*<Route path="/Profile" element={<Profile/>}></Route>
 					*/}
 				</Routes>
