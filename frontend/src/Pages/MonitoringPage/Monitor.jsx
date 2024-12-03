@@ -4,8 +4,10 @@ import motoricon from '../images/motoricon.png';
 import profileicon from '../images/profile1.jpg'
 import axios from "axios";
 
-import { UserContext } from "../LoginSignUpPage/UserContext";
-import MapboxComponent from './MapboxComponent';
+import { UserContext } from "../../Components/UserContext";
+import MapboxComponent from '../../Components/MapboxComponent';
+import Loader from '../../Loader/Loader';
+
 import SwipeableDeviceCards from './SwipeableDeviceCards';
 
 import './Monitor.css'; // Include your other styles
@@ -21,7 +23,8 @@ const Monitor = () => {
   const navigate = useNavigate();
 
   const { user } = useContext(UserContext);
-
+  const [dataloading, setDataLoading] = useState(true);
+  
   const toggleModal = () => {
     setIsModalOpen(!isModalOpen);
   };
@@ -70,43 +73,37 @@ const Monitor = () => {
   }
 
   useEffect(() => {
-    if (!user) return; 
-
-    const fetchUserDevices = async () => {
+    const fetchData = async () => {
       try {
-        const response = await axios.post('http://localhost:8800/get-devices', { userId: user.userId });
-
-        if (response.data.success) {
-          setDevices(response.data.devices);
+        const [devicesResponse, coordinatesResponse] = await Promise.all([
+          axios.post('http://localhost:8800/get-devices', { userId: user.userId }),
+          axios.post('http://localhost:8800/get-coordinates', { userId: user.userId }),
+        ]);
+  
+        // Handle devices response
+        if (devicesResponse.data.success) {
+          setDevices(devicesResponse.data.devices);
         } else {
-          console.warn("No devices found or error:", response.data.message);
+          console.warn("No devices found or error:", devicesResponse.data.message);
         }
-      } catch (error) {
-        console.error("Error fetching devices:", error);
-      }
-    };
-
-    fetchUserDevices();
-  }, [user]);
-
-  useEffect(() => {
-    if (!user) return; 
-
-    const fetchUserModules = async () => {
-      try {
-        // Make a request to your backend to fetch user-specific data
-        const response = await axios.post('http://localhost:8800/userModules', { userId: user.userId });
-
-        if (response.data) {
-          setCoordinates(response.data); // Set coordinates
+  
+        // Handle coordinates response
+        if (coordinatesResponse.data) {
+          setCoordinates(coordinatesResponse.data);
         }
       } catch (error) {
         console.error("Error fetching data:", error);
+      } finally {
+        setDataLoading(false); // Set loading to false after both requests complete
       }
     };
-
-    fetchUserModules();
+  
+    fetchData();
   }, [user]);
+
+  if (dataloading) {
+    return <Loader/>
+  }
 
   return (
     <div className='test-body'>
@@ -134,9 +131,9 @@ const Monitor = () => {
                     <div className="profile-icon">
                       <img src={profileicon} alt="Profile-Picture" />
                     </div>
-                    <p>Allen Luis Alvarez</p>
+                    <p>{user ? user.username : "Loading..."}</p>
                   </div>
-                </div>
+              </div>
               <div className="icon-divs">
                 <span className="material-symbols-outlined">home</span>
                 <div className="icon-text">Home</div>

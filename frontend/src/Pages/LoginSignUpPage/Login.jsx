@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { UserContext } from "./UserContext"; 
+import { UserContext } from "../../Components/UserContext"; 
 import './LoginSignup.css'; // Make sure this points to your CSS file
 
 const Login = () => {
@@ -8,10 +8,9 @@ const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-  const { loginUser, logoutUser } = useContext(UserContext);
+  const { loginUser } = useContext(UserContext);
 
   const handleSignUpClick = () => {
-    logoutUser(); 
     navigate("/signup"); // Redirect to Sign Up page
   };
 
@@ -36,7 +35,7 @@ const Login = () => {
 
       if (response.ok && data.userExists) {
         // Update user context
-        loginUser(data.user);
+        await loginUser(data.user);
 
         // Redirect to the protected page (e.g., Monitor page)
         navigate("/Monitor");

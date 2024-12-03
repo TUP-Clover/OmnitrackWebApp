@@ -1,6 +1,5 @@
 import express from "express";
 import cors from "cors";
-import axios from "axios";
 import admin from "firebase-admin";
 import bcrypt from "bcrypt";
 import session from "express-session";
@@ -97,54 +96,6 @@ app.post("/login", async (req, res) => {
     }
 });
 
-app.post('/userModules', async (req, res) => {
-  const { userId } = req.body;
-
-  if (!userId) {
-    return res.status(400).json({ error: "User ID is required" });
-  }
-
-  try {
-    // Fetch devices from Firebase
-    const devicesRef = db.ref('/devices'); // Reference to the 'devices' node
-    const devicesSnapshot = await devicesRef.once('value'); // Get all data from 'devices'
-    const devicesData = devicesSnapshot.val();
-
-    if (!devicesData) {
-      return res.status(404).json({ error: 'No devices found' });
-    }
-
-    // Filter devices for the logged-in user
-    const ownedModules = Object.values(devicesData)
-      .filter(device => device.Owner === userId && device.Claimed)
-      .map(device => device.Module);
-
-    // Fetch coordinates from Firebase
-    const coordinatesRef = db.ref('/coordinates'); // Reference to the 'coordinates' node
-    const coordinatesSnapshot = await coordinatesRef.once('value'); // Get all data from 'coordinates'
-    const coordinatesData = coordinatesSnapshot.val();
-
-    if (!coordinatesData) {
-      return res.status(404).json({ error: 'No coordinates found' });
-    }
-
-    // Filter coordinates by owned modules
-    const parsedCoordinates = Object.keys(coordinatesData)
-      .map(id => ({
-        Longitude: coordinatesData[id].Longitude,
-        Latitude: coordinatesData[id].Latitude,
-        Module: coordinatesData[id].Module,
-        Timestamp: coordinatesData[id].Timestamp,
-      }))
-      .filter(coordinate => ownedModules.includes(coordinate.Module));
-
-    res.json(parsedCoordinates); // Send filtered coordinates back to frontend
-  } catch (error) {
-    console.error("Error fetching data:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-
 app.post("/add-device", async (req, res) => {
   const { userId, deviceId } = req.body;
 
@@ -206,6 +157,60 @@ app.post("/add-device", async (req, res) => {
   }
 });
 
+app.post('/get-coordinates', async (req, res) => {
+  const { userId } = req.body;
+
+  if (!userId) {
+    return res.status(400).json({ error: "User ID is required" });
+  }
+
+  try {
+    // Fetch devices from Firebase
+    const devicesRef = db.ref('/devices'); // Reference to the 'devices' node
+    const devicesSnapshot = await devicesRef.once('value'); // Get all data from 'devices'
+    const devicesData = devicesSnapshot.val();
+
+    if (!devicesData) {
+      return res.status(404).json({ error: 'No devices found' });
+    }
+
+    // Filter devices for the logged-in user and create a lookup for their Color
+    const ownedDevices = Object.values(devicesData).filter(
+      (device) => device.Owner === userId && device.Claimed
+    );
+
+    const deviceColorMap = ownedDevices.reduce((map, device) => {
+      map[device.Module] = device.Color || "defaultColor"; // Use a default color if none is set
+      return map;
+    }, {});
+
+    // Fetch coordinates from Firebase
+    const coordinatesRef = db.ref('/coordinates'); // Reference to the 'coordinates' node
+    const coordinatesSnapshot = await coordinatesRef.once('value'); // Get all data from 'coordinates'
+    const coordinatesData = coordinatesSnapshot.val();
+
+    if (!coordinatesData) {
+      return res.status(404).json({ error: 'No coordinates found' });
+    }
+
+    // Filter coordinates by owned modules
+    const parsedCoordinates = Object.keys(coordinatesData)
+      .map(id => ({
+        Longitude: coordinatesData[id].Longitude,
+        Latitude: coordinatesData[id].Latitude,
+        Module: coordinatesData[id].Module,
+        Timestamp: coordinatesData[id].Timestamp,
+        Color: deviceColorMap[coordinatesData[id].Module] || "defaultColor", // Map the color
+      }))
+      .filter((coordinate) => ownedDevices.some((device) => device.Module === coordinate.Module));
+
+    res.json(parsedCoordinates); // Send filtered coordinates back to frontend
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 app.post("/get-devices", async (req, res) => {
   const { userId } = req.body;
 
@@ -234,6 +239,72 @@ app.post("/get-devices", async (req, res) => {
   } catch (error) {
     console.error("Error fetching devices:", error);
     return res.status(500).json({ success: false, message: "Internal server error." });
+  }
+});
+
+app.post('/remove-device', async (req, res) => {
+  const { userId, deviceId } = req.body;
+  
+  try {
+    // Retrieve the device data from the database
+    const deviceRef = db.ref(`/devices/${deviceId}`);
+    const deviceSnapshot = await deviceRef.once('value');
+    const deviceData = deviceSnapshot.val();
+
+    if (!deviceData) {
+      return res.status(404).json({ success: false, message: "Device not found" });
+    }
+
+    // Validate ownership
+    if (deviceData.Owner !== userId) {
+      return res.status(403).json({ success: false, message: "Unauthorized action" });
+    }
+
+    // Update the device properties
+    await deviceRef.update({
+      Claimed: false,
+      Owner: null,
+    });
+
+    return res.status(200).json({ success: true, message: "Device successfully removed" });
+  } catch (error) {
+    console.error("Error removing device:", error);
+    return res.status(500).json({ success: false, message: "Internal server error" });
+  }
+});
+
+app.post('/update-device', async (req, res) => {
+  const { userId, deviceId, newName, newColor } = req.body;
+
+  if (!userId || !deviceId || !newName) {
+      return res.status(400).json({ success: false, message: "Invalid input." });
+  }
+
+  try {
+      const deviceRef = db.ref(`/devices/${deviceId}`);
+      const snapshot = await deviceRef.once("value");
+
+      if (!snapshot.exists()) {
+          return res.status(404).json({ success: false, message: "Device not found." });
+      }
+
+      const deviceData = snapshot.val();
+
+      // Validate ownership
+      if (deviceData.Owner !== userId) {
+          return res.status(403).json({ success: false, message: "Unauthorized action." });
+      }
+
+      // Update device name
+      await deviceRef.update({ 
+        Name: newName,
+        Color: newColor,
+      });
+
+      return res.status(200).json({ success: true, message: "Device updated successfully." });
+  } catch (error) {
+      console.error("Error updating device:", error);
+      return res.status(500).json({ success: false, message: "Internal server error." });
   }
 });
 
