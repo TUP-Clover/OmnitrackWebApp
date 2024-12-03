@@ -5,19 +5,24 @@ import { UserContext } from "../../Components/UserContext";
 
 import profileicon from '../images/profile1.jpg'
 
+// Calling other component
+import useMediaQuery from '../MonitoringPage/useMediaQuery'; // Import the custom hook
+import ManageDeviceComponent from '../ManageDevices/ManageDevices'
+
 export const Settings = () => {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isChangeDeviceModalOpen, setIsChangeDeviceModalOpen] = useState(false);
   
   const { user, logoutUser } = useContext(UserContext);
+
+  const isLargeScreen = useMediaQuery("(min-width: 768px)"); // Check if screen is >= 768px
   
   const handleBackClick = () => {
     navigate("/Monitor"); 
   };
 
-  const handleManageDevicesClick = () => {
-    navigate("/ManageDevices"); 
-  };
+
   const handProfileClick = () => {
     navigate("/Profile"); 
   };
@@ -29,6 +34,20 @@ export const Settings = () => {
 
   const toggleModal = () => {
     setIsModalOpen(!isModalOpen);
+  };
+
+  const handleManageDevicesClick = () => {
+    if (isLargeScreen) {
+      // Open settings modal for larger screens
+      setIsChangeDeviceModalOpen(true);
+    } else {
+      // Navigate to the settings page for smaller screens
+      navigate("/ManageDevices");
+    }
+  };
+
+  const closeManageDeviceModal = () => {
+    setIsChangeDeviceModalOpen(false);
   };
   return (
     <div className="settings-body">
@@ -47,7 +66,7 @@ export const Settings = () => {
             </div>
             <div className="profile-details">
               <p>{user ? user.username : "Loading..."}</p>
-              <button>View Profile</button>
+              <button onClick={handProfileClick}>View Profile</button>
             </div>
           </div>
           <div className="options-container">
@@ -85,6 +104,14 @@ export const Settings = () => {
                 </div>
               </div>
             )}
+            {/* Render Settings modal if isSettingsModalOpen is true */}
+             {isChangeDeviceModalOpen && isLargeScreen && (
+               <div className="modal-Mdev-larger" onClick={closeManageDeviceModal}>
+                <div className="modal-content-Mdev" onClick={(e) => e.stopPropagation()}>
+                <ManageDeviceComponent />
+                </div>
+                </div>
+                )}
           </div>
       </div>
     </div>

@@ -3,9 +3,21 @@
     background-color: #1B1F2D;
     width: 100vw;
     height: 100vh;
+    display: flex;
+    justify-content: center;
+}
+.back-button-manage{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #333741;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    height: 30px;
+    width: 30px;
+    border-radius: 20px;
+    cursor: pointer;
 }
 .managedevices-container{
-    border: 3px solid purple;
     width: 100%;
     height: 100%;
     display: flex;
@@ -33,6 +45,11 @@
     flex-direction: column;
     gap: 1em;
 }
+.mdev-div{
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}
 .Mdevices-cards{
     border-radius: 10px;
     background-color: #333741;
@@ -45,7 +62,6 @@
     height: 50%;
     display: flex;
     justify-content: space-between;
-    text-align: left;
     padding: 15px;
 }
 .top-mdev p{
@@ -126,4 +142,40 @@
         
 .modal-content-remove-device button:hover {
     background-color: #e6c200; /* Slightly darker gold for hover effect */
+}
+
+@media (min-width:768px) {
+    .back-button-manage{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .Manage-body{
+        background-color: #1B1F2D;
+        border: none;
+        width: 380px;
+        height: 420px;
+        border-radius: 20px;
+        display: flex;
+        justify-content: center;
+        position: fixed;
+        left: 495px;
+        top: 120px;
+    }
+    .mdev-div{
+        overflow:auto;
+        height: 17em;
+    }
+    .mdev-div::-webkit-scrollbar {
+        display: none;
+    }
+    .top-mdev{
+        width: 100%;
+        height: 50%;
+        display: flex;
+        justify-content: space-between;
+        padding: 15px;
+    }
+    
 }

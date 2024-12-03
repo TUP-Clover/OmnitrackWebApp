@@ -78,11 +78,11 @@ const ManageDevices = () => {
         setSelectedDeviceId(deviceId);
         setIsModalOpen(!isModalOpen);
     };
-
-    const handleEditClick = (deviceId, currentName) => {
+    const handleEditClick = (deviceId, currentName, currentColor) => {
         setSelectedDeviceId(deviceId);
         setUpdatedName(currentName); // Initialize with the current name
         setIsEditing(true); // Enter editing mode
+        setSelectedColor(currentColor);
     };
 
     const toggleColorPicker = () => {
@@ -142,16 +142,14 @@ const ManageDevices = () => {
     <div className='Manage-body'>
         <div className="managedevices-container">
             <div className="managedevices-header">
-                <div className="back-button" onClick={handleBackClick}>
+                <div className="back-button-manage" onClick={handleBackClick}>
                     <span className="material-symbols-outlined">arrow_back</span>
-                </div>
-                <div className="save-button" onClick={handleSaveClick}>
-                     {isEditing && <span>SAVE</span>}
                 </div>
                 <div className="managedevices-title">
                     <p>Manage Devices</p>
                 </div>
                 <div className="Mdevices-container">
+                    <div className="mdev-div">
                     {devices.map((device) => (
                         <div className="Mdevices-cards"  key={device.id}>
                             <div className="top-mdev">
@@ -169,8 +167,19 @@ const ManageDevices = () => {
                                     <p>Module: {device.Module}</p>
                                 </div>
                                 <div className="mdev-edit-icon">
-                                    <span className="material-symbols-outlined" onClick={() => handleEditClick(device.id, device.Name)}>edit</span>
+                                    <span
+                                        className="material-symbols-outlined"
+                                        onClick={() => {
+                                            if (isEditing && selectedDeviceId === device.id) {
+                                                handleSaveClick();
+                                            } else {
+                                                handleEditClick(device.id, device.Name, device.Color);
+                                            }
+                                        }}>
+                                        {isEditing && selectedDeviceId === device.id ? "save" : "edit"}
+                                    </span>
                                 </div>
+
                             </div>
                             <div className="bottom-mdev">
                             <button className="mdev-change-color-button" 
@@ -199,6 +208,7 @@ const ManageDevices = () => {
                             </div>
                         </div>
                     ))}
+                    </div>
                 </div>
             </div>
                 {/* Modal Component */}

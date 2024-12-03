@@ -19,6 +19,7 @@
     "express-session": "^1.18.1",
     "firebase-admin": "^13.0.1",
     "mapbox-gl": "^3.8.0",
-    "nodemon": "^3.1.7"
+    "nodemon": "^3.1.7",
+    "react-color": "^2.19.3"
   }
 }

@@ -12,11 +12,15 @@ import SwipeableDeviceCards from './SwipeableDeviceCards';
 
 import './Monitor.css'; // Include your other styles
 
+// Calling other component
+import useMediaQuery from './useMediaQuery'; // Import the custom hook
+import SettingsComponent from '../SettingsPage/Settings'
+
 const Monitor = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isNavbarExpanded, setIsNavbarExpanded] = useState(false);
   const [coordinates, setCoordinates] = useState([]);
-
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [deviceIdInput, setDeviceIdInput] = useState("");
   const [devices, setDevices] = useState([]);
 
@@ -25,6 +29,8 @@ const Monitor = () => {
   const { user } = useContext(UserContext);
   const [dataloading, setDataLoading] = useState(true);
   
+  const isLargeScreen = useMediaQuery("(min-width: 768px)"); // Check if screen is >= 768px
+
   const toggleModal = () => {
     setIsModalOpen(!isModalOpen);
   };
@@ -36,10 +42,21 @@ const Monitor = () => {
   const handleMouseLeave = () => {
     setIsNavbarExpanded(false);
   };
-
+  
   const handleSettingsClick = () => {
-    navigate("/Settings"); 
-  };  
+    if (isLargeScreen) {
+      // Open settings modal for larger screens
+      setIsSettingsModalOpen(true);
+    } else {
+      // Navigate to the settings page for smaller screens
+      navigate("/Settings");
+    }
+  };
+
+  const closeSettingsModal = () => {
+    setIsSettingsModalOpen(false);
+  };
+
 
   const handleAddDevice = async () => {
     if (!deviceIdInput.trim()) {
@@ -146,6 +163,14 @@ const Monitor = () => {
                 <div className="icon-text">Settings</div>
               </div>
             </div>
+            {/* Render Settings modal if isSettingsModalOpen is true */}
+            {isSettingsModalOpen && isLargeScreen && (
+              <div className="modal-screen-larger" onClick={closeSettingsModal}>
+                <div className="modal-content-screen" onClick={(e) => e.stopPropagation()}>
+                  <SettingsComponent />
+                </div>
+              </div>
+            )}
             {/* Modal Component */}
             {isModalOpen && (
               <div className="modal-overlay" onClick={toggleModal}>
