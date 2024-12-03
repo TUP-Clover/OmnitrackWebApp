@@ -6,6 +6,7 @@ export const UserContext = createContext();
 // Provide context
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // Check localStorage for user data (if stored there during login)
@@ -18,6 +19,7 @@ export const UserProvider = ({ children }) => {
     if (storedUser.userId) {
       setUser(storedUser);
     }
+    setLoading(false)
   }, []);
 
   const loginUser = (userData) => {
@@ -34,7 +36,7 @@ export const UserProvider = ({ children }) => {
   };
 
   return (
-    <UserContext.Provider value={{ user, loginUser, logoutUser }}>
+    <UserContext.Provider value={{ user, loading, loginUser, logoutUser }}>
       {children}
     </UserContext.Provider>
   );

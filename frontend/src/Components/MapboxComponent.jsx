@@ -14,8 +14,8 @@ const MapboxComponent = ({ coordinates }) => {
       mapRef.current = new mapboxgl.Map({
         container: mapContainerRef.current,
         style: "mapbox://styles/mapbox/streets-v11",
-        center: [121.00826, 14.678813], // Initial center coordinates [lng, lat]
-        zoom: 12,
+        center: [120.984353, 14.586988], // Initial center coordinates [lng, lat]
+        zoom: 16,
       });
             // Apply border-radius directly to the map's canvas
             const mapCanvas = mapContainerRef.current.querySelector(".mapboxgl-canvas");
@@ -29,15 +29,11 @@ const MapboxComponent = ({ coordinates }) => {
     const markers = [];
 
     coordinates.forEach((coord) => {
-      const { Longitude, Latitude, Module } = coord;
-
-      // Create a custom marker based on the Module type
-      const color =
-        Module === "A9G" ? "red" : Module === "SIM808" ? "blue" : "green";
+      const { Longitude, Latitude, Module, Color } = coord;
 
       // Create marker element
       const markerElement = document.createElement("div");
-      markerElement.style.backgroundColor = color;
+      markerElement.style.backgroundColor = Color;
       markerElement.style.width = "15px";
       markerElement.style.height = "15px";
       markerElement.style.borderRadius = "50%";

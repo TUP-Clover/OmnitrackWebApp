@@ -23,7 +23,7 @@ const SwipeableDeviceCards = ({ devices }) => {
         {devices.map((device) => (
           <DeviceCard
             key={device.id}
-            name="Device: Name" // Example name, replace if you have better info
+            name={device.Name} 
             id={device.Module}
             status="Active" // Placeholder for now
           />
@@ -36,7 +36,7 @@ const SwipeableDeviceCards = ({ devices }) => {
     return (
       <div className="device-card">
         <div className="left_side">
-          <h4>Device Name: {name}</h4>
+          <h4>{name}</h4>
           <p>Module: {id}</p>
           <p className="status">Device Status: {status}</p>
           <div className="device-card-func">

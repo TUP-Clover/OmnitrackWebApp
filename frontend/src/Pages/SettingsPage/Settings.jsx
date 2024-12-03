@@ -1,18 +1,27 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import './Settings.css';
 import { useNavigate } from "react-router-dom";
+import { UserContext } from "../../Components/UserContext";
 
 import profileicon from '../images/profile1.jpg'
 
 export const Settings = () => {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  
+  const { user, logoutUser } = useContext(UserContext);
+  
   const handleBackClick = () => {
     navigate("/Monitor"); 
   };
+
   const handleManageDevicesClick = () => {
     navigate("/ManageDevices"); 
+  };
+
+  const handleLogOutClick = () => {
+    logoutUser(); 
+    navigate("/login"); 
   };
 
   const toggleModal = () => {
@@ -23,7 +32,7 @@ export const Settings = () => {
       <div className='Settings-container'>
         <div className="settings-header">
           <div className="back-button" onClick={handleBackClick}>
-            <span class="material-symbols-outlined">arrow_back</span>
+            <span className="material-symbols-outlined">arrow_back</span>
           </div>
           <div className="settings-title">
             <p>Settings</p>
@@ -34,30 +43,29 @@ export const Settings = () => {
               <img src={profileicon} alt="Profile-Picture" />
             </div>
             <div className="profile-details">
-              <p>Allen Luis, Alvarez</p>
+              <p>{user ? user.username : "Loading..."}</p>
               <button>View Profile</button>
             </div>
           </div>
           <div className="options-container">
             <div className="option-div" onClick={handleManageDevicesClick}>
-              <span class="material-symbols-outlined">devices</span>
+              <span className="material-symbols-outlined">devices</span>
               <p>Manage Devices</p>
               <span class="material-symbols-outlined">chevron_right</span>
             </div>
             <div className="option-div" onClick={toggleModal} >
-              <span class="material-symbols-outlined">phone_iphone</span>
+              <span className="material-symbols-outlined">phone_iphone</span>
               <p>Change Mobile Number</p>
-              <span class="material-symbols-outlined">chevron_right</span>
+              <span className="material-symbols-outlined">chevron_right</span>
             </div>
             <div className="option-div">
-              <span class="material-symbols-outlined">developer_guide</span>
+              <span className="material-symbols-outlined">developer_guide</span>
               <p>Guides</p>
-              <span class="material-symbols-outlined">chevron_right</span>
+              <span className="material-symbols-outlined">chevron_right</span>
             </div>
             <div className="option-div">
-              <span class="material-symbols-outlined">logout</span>
-              <p>Logout</p>
-              <span class="material-symbols-outlined">chevron_right</span>
+              <span className="material-symbols-outlined" onClick={handleLogOutClick}>logout</span>
+                <p onClick={handleLogOutClick}>Logout</p>
             </div>
               {/* Modal Component */}
               {isModalOpen && (
