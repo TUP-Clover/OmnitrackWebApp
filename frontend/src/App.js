@@ -6,11 +6,12 @@ import { UserProvider } from "./Pages/LoginSignUpPage/UserContext";
 import SignUp  from "./Pages/LoginSignUpPage/SignUp";
 import Login from "./Pages/LoginSignUpPage/Login";
 
-//import Profile from "./Pages/Profile";
+
 
 import Monitor from "./Pages/MonitoringPage/Monitor"
 import Settings from "./Pages/SettingsPage/Settings";
 import ManageDevices from "./Pages/ManageDevices/ManageDevices";
+import Profile from "./Pages/ProfilePage/Profile";
 
 import './App.css';
 
@@ -27,8 +28,8 @@ function App() {
 					<Route path="/Monitor" element={<Monitor/>}></Route>
 					<Route path="/Settings" element={<Settings/>}></Route>
 					<Route path="/ManageDevices" element={<ManageDevices/>}></Route>
-					{/*<Route path="/Profile" element={<Profile/>}></Route>
-					*/}
+					<Route path="/Profile" element={<Profile/>}></Route>
+					
 				</Routes>
 			</BrowserRouter>
 		</UserProvider>

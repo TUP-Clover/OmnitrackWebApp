@@ -14,6 +14,9 @@ export const Settings = () => {
   const handleManageDevicesClick = () => {
     navigate("/ManageDevices"); 
   };
+  const handProfileClick = () => {
+    navigate("/Profile"); 
+  };
 
   const toggleModal = () => {
     setIsModalOpen(!isModalOpen);
@@ -35,7 +38,7 @@ export const Settings = () => {
             </div>
             <div className="profile-details">
               <p>Allen Luis, Alvarez</p>
-              <button>View Profile</button>
+              <button onClick={handProfileClick}>View Profile</button>
             </div>
           </div>
           <div className="options-container">
