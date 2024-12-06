@@ -6,11 +6,11 @@ import axios from 'axios';
 import { useNavigate } from "react-router-dom";
 
 import { UserContext } from "../../Components/UserContext";
-
+import useMediaQuery from '../MonitoringPage/useMediaQuery'; // Assuming you already have this custom hook
 import './ManageDevices.css';
 
 
-const ManageDevices = () => {
+const ManageDevices = ({ onBack }) => {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
@@ -24,22 +24,34 @@ const ManageDevices = () => {
     const [updatedName, setUpdatedName] = useState(""); 
     const navigate = useNavigate();
 
+    const isLargeScreen = useMediaQuery("(min-width: 768px)"); // Check if screen is >= 768px
+
     // Handle save or back logic
     const handleBackClick = () => {
+        // If editing, confirm before leaving
         if (isEditing) {
-            const userConfirmed = window.confirm("You have unsaved changes. Do you want to save them before leaving?");
-            
+            const userConfirmed = window.confirm(
+                "You have unsaved changes. Do you want to save them before leaving?"
+            );
+    
             if (userConfirmed) {
-                handleSaveClick();  // Call the save function if the user confirms
+                handleSaveClick(); // Save and then decide navigation
             } else {
-                // If the user cancels, just navigate back without saving
-                navigate('/Settings');
+                setIsEditing(false); // Cancel editing
+            }
+        }
+    
+        if (isLargeScreen) {
+            // For larger screens, use the provided `onBack` function
+            if (onBack) {
+                onBack();
             }
         } else {
-            // If no edits are being made, just navigate back
+            // For smaller screens, navigate back to the Settings page
             navigate('/Settings');
         }
     };
+    
 
     const handleSaveClick = async () => {
         try {

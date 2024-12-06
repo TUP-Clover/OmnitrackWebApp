@@ -150,8 +150,10 @@
         justify-content: center;
         align-items: center;
     }
-
-    .Manage-body{
+    .back-button-manage span{
+        color: white;
+    }
+    .Manage-body {
         background-color: #1B1F2D;
         border: none;
         width: 380px;
@@ -159,13 +161,14 @@
         border-radius: 20px;
         display: flex;
         justify-content: center;
-        position: fixed;
-        left: 495px;
-        top: 120px;
+        align-items: center; /* Add this for proper centering */
+        position: relative; /* Use relative instead of fixed */
+        right: 0.7em;
+        bottom: 1em;
     }
     .mdev-div{
         overflow:auto;
-        height: 17em;
+        height: 18em;
     }
     .mdev-div::-webkit-scrollbar {
         display: none;

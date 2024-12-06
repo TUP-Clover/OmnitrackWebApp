@@ -108,7 +108,7 @@ export const Settings = () => {
              {isChangeDeviceModalOpen && isLargeScreen && (
                <div className="modal-Mdev-larger" onClick={closeManageDeviceModal}>
                 <div className="modal-content-Mdev" onClick={(e) => e.stopPropagation()}>
-                <ManageDeviceComponent />
+                <ManageDeviceComponent onBack={closeManageDeviceModal}/>
                 </div>
                 </div>
                 )}
