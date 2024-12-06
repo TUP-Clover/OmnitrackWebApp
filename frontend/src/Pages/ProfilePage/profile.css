@@ -88,3 +88,42 @@
     align-items: end;
     height: 35px;
 }
+
+@media (min-width:768px) {
+    .profile-body{
+        border: none;
+        width: 380px;
+        height: 420px;
+        border-radius: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center; /* Add this for proper centering */
+        position: relative; /* Use relative instead of fixed */
+        right: 0.7em;
+    }
+    .profile-header{
+        margin-top: 0;
+    }
+    .profile-header span{
+        color: white;
+    }
+    .profile-profile-card{
+        margin-top: 1em;
+    }
+    .profile2-details{
+        margin-top: 1em;
+    }
+    .name-div{
+        /* border: 2px solid greenyellow; */
+        width: 100%;
+    }
+    /* .name-div p{
+        border: 2px solid salmon;
+        width: 100%;
+        text-align: left;
+        margin-right: 2em;
+    }
+    .edit-profile-div{
+        border: 2px solid goldenrod;
+    } */
+}

@@ -8,11 +8,13 @@ import profileicon from '../images/profile1.jpg'
 // Calling other component
 import useMediaQuery from '../MonitoringPage/useMediaQuery'; // Import the custom hook
 import ManageDeviceComponent from '../ManageDevices/ManageDevices'
+import ProfileComponent from '../ProfilePage/Profile'
 
 export const Settings = () => {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isChangeDeviceModalOpen, setIsChangeDeviceModalOpen] = useState(false);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   
   const { user, logoutUser } = useContext(UserContext);
 
@@ -23,9 +25,6 @@ export const Settings = () => {
   };
 
 
-  const handProfileClick = () => {
-    navigate("/Profile"); 
-  };
 
   const handleLogOutClick = () => {
     logoutUser(); 
@@ -46,8 +45,21 @@ export const Settings = () => {
     }
   };
 
+  const handProfileClick = () => {
+    if (isLargeScreen) {
+      // Open settings modal for larger screens
+      setIsProfileModalOpen(true);
+    } else {
+      // Navigate to the settings page for smaller screens
+      navigate("/Profile");
+    }
+  };
+
   const closeManageDeviceModal = () => {
     setIsChangeDeviceModalOpen(false);
+  };
+  const closeProfileModal = () => {
+    setIsProfileModalOpen(false);
   };
   return (
     <div className="settings-body">
@@ -112,6 +124,14 @@ export const Settings = () => {
                 </div>
                 </div>
                 )}
+              {/* Render Settings modal if isSettingsModalOpen is true */}
+              {isProfileModalOpen && isLargeScreen && (
+                  <div className="modal-Profile-larger" onClick={closeProfileModal}>
+                  <div className="modal-content-Profile" onClick={(e) => e.stopPropagation()}>
+                <ProfileComponent onBack={closeProfileModal}/>
+              </div>
+            </div>
+            )}  
           </div>
       </div>
     </div>

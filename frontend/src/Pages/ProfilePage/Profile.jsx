@@ -3,13 +3,28 @@ import './profile.css';
 import profileicon from '../images/profile1.jpg'
 import { useNavigate } from "react-router-dom";
 
+import useMediaQuery from '../MonitoringPage/useMediaQuery'; // Assuming you already have this custom hook
 
-const Profile = () => {
+
+const Profile = ({ onBack }) => {
   const navigate = useNavigate();
 
-  const handleBackClick = () => {
-    navigate("/Settings"); 
-  };
+  const isLargeScreen = useMediaQuery("(min-width: 768px)"); // Check if screen is >= 768px
+
+      // Handle save or back logic
+      const handleBackClick = () => {
+        // If editing, confirm before leaving
+    
+        if (isLargeScreen) {
+            // For larger screens, use the provided `onBack` function
+            if (onBack) {
+                onBack();
+            }
+        } else {
+            // For smaller screens, navigate back to the Settings page
+            navigate('/Settings');
+        }
+    };
   return (
     <div className="profile-body">
       <div className="profile-header">
