@@ -11,7 +11,7 @@ app.use(express.json());
 app.use(
     cors({
       origin: "http://localhost:3000", // Your React app's URL
-      methods: ["GET", "POST"],
+      methods: ["GET", "POST", "PATCH"],
       credentials: true, // Allow cookies to be sent
     })
   );
@@ -52,7 +52,6 @@ app.post("/login", async (req, res) => {
   
     try {
       // Fetch user from Firebase using the username
-      const db = admin.database();
       const usersRef = db.ref("/users");
       const snapshot = await usersRef.orderByChild("username").equalTo(username).once("value");
       
@@ -72,14 +71,20 @@ app.post("/login", async (req, res) => {
       if (!passwordMatch) {
         return res.status(401).json({ message: "Invalid password" });
       }
-  
+
+      // Check if the user has owned any devices
+      const devicesRef = db.ref("/devices");
+      const devicesSnapshot = await devicesRef.orderByChild("Owner").equalTo(userKey).once("value");
+      const isNewUser = !devicesSnapshot.exists(); // User is new if no devices are found
+
       // Store user info in session
       req.session.user = {
         userId: userKey, // Use the Firebase unique ID as the userId
         username: user.username,
         email: user.email,
+        isNewUser, // Add the isNewUser flag
       };
-  
+
       // Send response
       return res.json({
         userExists: true,
@@ -88,73 +93,13 @@ app.post("/login", async (req, res) => {
           userId: userKey, // Include the Firebase unique ID in the response
           username: user.username,
           email: user.email,
+          isNewUser, // Include the isNewUser flag in the response
         },
       });
     } catch (error) {
       console.error("Login error:", error);
       return res.status(500).json({ message: "Internal server error" });
     }
-});
-
-app.post("/add-device", async (req, res) => {
-  const { userId, deviceId } = req.body;
-
-  if (!userId || !deviceId) {
-    return res.status(400).json({ success: false, message: "Invalid request data." });
-  }
-
-  try {
-    const devicesRef = db.ref("/devices");
-    const snapshot = await devicesRef.orderByKey().equalTo(deviceId).once("value");
-
-    if (!snapshot.exists()) {
-      return res.status(404).json({ success: false, message: "Device ID not found." });
-    }
-
-    const deviceData = snapshot.val()[deviceId];
-
-    if (deviceData.Claimed) {
-      return res.status(400).json({ success: false, message: "Device is already claimed." });
-    }
-
-    // Update device ownership
-    await devicesRef.child(deviceId).update({
-      Owner: userId,
-      Claimed: true,
-    });
-
-    // Fetch coordinates for the claimed device
-    const coordinatesRef = db.ref("/coordinates");
-    const coordSnapshot = await coordinatesRef.orderByChild("Module").equalTo(deviceData.Module).once("value");
-
-    const coordinates = [];
-    if (coordSnapshot.exists()) {
-      coordSnapshot.forEach((child) => {
-        coordinates.push(child.val());
-      });
-    }
-
-    // Fetch the user's devices after the device is added
-    const userDevicesRef = db.ref("/devices").orderByChild("Owner").equalTo(userId);
-    const userDevicesSnapshot = await userDevicesRef.once("value");
-
-    const devices = [];
-    if (userDevicesSnapshot.exists()) {
-      userDevicesSnapshot.forEach((childSnapshot) => {
-        devices.push(childSnapshot.val());
-      });
-    }
-
-    return res.json({
-      success: true,
-      message: "Device Successfully Added.",
-      coordinates, // Include coordinates in the response
-      devices, // Include updated devices for the user
-    });
-  } catch (error) {
-    console.error("Error adding device:", error);
-    return res.status(500).json({ success: false, message: "Internal server error." });
-  }
 });
 
 app.post('/get-coordinates', async (req, res) => {
@@ -180,7 +125,7 @@ app.post('/get-coordinates', async (req, res) => {
     );
 
     const deviceColorMap = ownedDevices.reduce((map, device) => {
-      map[device.Module] = device.Color || "defaultColor"; // Use a default color if none is set
+      map[device.Module] = device.Color || "#000000"; // Use a default color if none is set
       return map;
     }, {});
 
@@ -200,7 +145,7 @@ app.post('/get-coordinates', async (req, res) => {
         Latitude: coordinatesData[id].Latitude,
         Module: coordinatesData[id].Module,
         Timestamp: coordinatesData[id].Timestamp,
-        Color: deviceColorMap[coordinatesData[id].Module] || "defaultColor", // Map the color
+        Color: deviceColorMap[coordinatesData[id].Module] || "#000000", // Map the color
       }))
       .filter((coordinate) => ownedDevices.some((device) => device.Module === coordinate.Module));
 
@@ -242,38 +187,78 @@ app.post("/get-devices", async (req, res) => {
   }
 });
 
-app.post('/remove-device', async (req, res) => {
+app.patch("/claim-device", async (req, res) => {
   const { userId, deviceId } = req.body;
-  
+
+  if (!userId || !deviceId) {
+    return res.status(400).json({ success: false, message: "Invalid request data." });
+  }
+
   try {
-    // Retrieve the device data from the database
-    const deviceRef = db.ref(`/devices/${deviceId}`);
-    const deviceSnapshot = await deviceRef.once('value');
-    const deviceData = deviceSnapshot.val();
+    // Reference the devices node
+    const devicesRef = db.ref("/devices");
+    const snapshot = await devicesRef.orderByKey().equalTo(deviceId).once("value");
 
-    if (!deviceData) {
-      return res.status(404).json({ success: false, message: "Device not found" });
+    if (!snapshot.exists()) {
+      return res.status(404).json({ success: false, message: "Device ID not found." });
     }
 
-    // Validate ownership
-    if (deviceData.Owner !== userId) {
-      return res.status(403).json({ success: false, message: "Unauthorized action" });
+    const deviceData = snapshot.val()[deviceId];
+
+    if (deviceData.Claimed) {
+      return res.status(400).json({ success: false, message: "Device is already claimed." });
     }
 
-    // Update the device properties
-    await deviceRef.update({
-      Claimed: false,
-      Owner: null,
+    // Update the ownership and claim status of the device
+    await devicesRef.child(deviceId).update({
+      Owner: userId,
+      Claimed: true,
     });
 
-    return res.status(200).json({ success: true, message: "Device successfully removed" });
+    // Fetch coordinates for the claimed device and include the device's color
+    const coordinatesRef = db.ref("/coordinates");
+    const coordSnapshot = await coordinatesRef.orderByChild("Module").equalTo(deviceData.Module).once("value");
+
+    const coordinates = [];
+    if (coordSnapshot.exists()) {
+      coordSnapshot.forEach((child) => {
+        const coordinate = child.val();
+        // Include the color from the device data
+        coordinates.push({
+          ...coordinate,
+          Color: deviceData.Color || "#000000", // Fallback to black if no color is set
+        });
+      });
+    }
+
+    // Fetch all devices owned by the user after claiming the new device
+    const userDevicesRef = db.ref("/devices").orderByChild("Owner").equalTo(userId);
+    const userDevicesSnapshot = await userDevicesRef.once("value");
+
+    const devices = [];
+    if (userDevicesSnapshot.exists()) {
+      userDevicesSnapshot.forEach((childSnapshot) => {
+        devices.push({
+          id: childSnapshot.key, // Include the deviceId as `id`
+          ...childSnapshot.val(), // Spread all other device properties
+        });
+      });
+    }
+
+    // Send back the updated data
+    return res.json({
+      success: true,
+      message: "Device successfully claimed.",
+      coordinates, // Include updated coordinates with Color
+      devices, // Include the user's updated devices with device_id
+    });
   } catch (error) {
-    console.error("Error removing device:", error);
-    return res.status(500).json({ success: false, message: "Internal server error" });
+    console.error("Error claiming device:", error);
+    return res.status(500).json({ success: false, message: "Internal server error." });
   }
 });
 
-app.post('/update-device', async (req, res) => {
+app.patch('/update-device', async (req, res) => {
   const { userId, deviceId, newName, newColor } = req.body;
 
   if (!userId || !deviceId || !newName) {
@@ -305,6 +290,50 @@ app.post('/update-device', async (req, res) => {
   } catch (error) {
       console.error("Error updating device:", error);
       return res.status(500).json({ success: false, message: "Internal server error." });
+  }
+});
+
+app.patch('/remove-device', async (req, res) => {
+  const { userId, deviceId } = req.body;
+  
+  try {
+    // Retrieve the device data from the database
+    const deviceRef = db.ref(`/devices/${deviceId}`);
+    const deviceSnapshot = await deviceRef.once('value');
+    const deviceData = deviceSnapshot.val();
+
+    if (!deviceData) {
+      return res.status(404).json({ success: false, message: "Device not found" });
+    }
+
+    // Validate ownership
+    if (deviceData.Owner !== userId) {
+      return res.status(403).json({ success: false, message: "Unauthorized action" });
+    }
+
+    // Update the device properties
+    await deviceRef.update({
+      Claimed: false,
+      Owner: null,
+    });
+    
+    // Check if the user still owns any devices
+    const userDevicesRef = db.ref(`/devices`).orderByChild("Owner").equalTo(userId);
+    const userDevicesSnapshot = await userDevicesRef.once('value');
+    const userDevices = userDevicesSnapshot.val();
+
+    // If no devices are owned, mark the user as a new user
+    const isNewUser = !userDevices || Object.keys(userDevices).length === 0;
+
+    return res.status(200).json({
+      success: true,
+      message: "Device successfully removed",
+      isNewUser, // Return the isNewUser flag
+    });
+
+  } catch (error) {
+    console.error("Error removing device:", error);
+    return res.status(500).json({ success: false, message: "Internal server error" });
   }
 });
 

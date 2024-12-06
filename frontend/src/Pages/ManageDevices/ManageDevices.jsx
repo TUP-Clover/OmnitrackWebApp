@@ -14,9 +14,10 @@ const ManageDevices = ({ onBack }) => {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
+    const [dataloading, setDataLoading] = useState(true);
     const [colorPickerVisible, setColorPickerVisible] = useState(false);  
 
-    const { user } = useContext(UserContext);
+    const { user, loginUser } = useContext(UserContext);
 
     const [devices, setDevices] = useState([]);
     const [selectedDeviceId, setSelectedDeviceId] = useState(null);
@@ -57,7 +58,7 @@ const ManageDevices = ({ onBack }) => {
         try {
             if (selectedDeviceId) {
                 // Send updated name to the backend
-                const response = await axios.post("http://localhost:8800/update-device", {
+                const response = await axios.patch("http://localhost:8800/update-device", {
                     userId: user.userId,
                     deviceId: selectedDeviceId,
                     newName: updatedName,
@@ -117,13 +118,18 @@ const ManageDevices = ({ onBack }) => {
 
     const handleConfirmDelete = async (selectedDeviceId) => {
         try {
-            const response = await axios.post('http://localhost:8800/remove-device', {
+            const response = await axios.patch('http://localhost:8800/remove-device', {
               userId: user.userId,
               deviceId: selectedDeviceId,
             });
 
             if (response.data.success) {
-              setDevices(devices.filter(device => device.id !== selectedDeviceId));
+                setDevices(devices.filter(device => device.id !== selectedDeviceId));
+            
+                  // If no devices left, set isNewUser to true
+                if (response.data.isNewUser) {
+                    loginUser({ ...user, isNewUser: true }); // Update the user context with isNewUser = true
+                }
             } else {
               console.warn("Error: ", response.data.message);
             }
@@ -134,21 +140,29 @@ const ManageDevices = ({ onBack }) => {
 
     useEffect(() => {
         const fetchUserDevices = async () => {
-          try {
-            const response = await axios.post('http://localhost:8800/get-devices', { userId: user.userId });
-    
-            if (response.data.success) {
-              setDevices(response.data.devices);
-            } else {
-              console.warn("No devices found or error:", response.data.message);
+            
+            if (!user || user.isNewUser) {
+                setDataLoading(false);
+                return; // Skip if user is new
             }
-          } catch (error) {
-            console.error("Error fetching devices:", error);
-          }
+
+            try {
+                const response = await axios.post('http://localhost:8800/get-devices', { userId: user.userId });
+        
+                if (response.data.success) {
+                setDevices(response.data.devices);
+                } else {
+                console.warn("No devices found or error:", response.data.message);
+                }
+            } catch (error) {
+                console.error("Error fetching devices:", error);
+            } finally {
+                setDataLoading(false); // Set loading to false after both requests complete
+            }
         };
     
         fetchUserDevices();
-      }, [user]);
+    }, [user]);
     
   return (
     <div className='Manage-body'>
@@ -162,37 +176,40 @@ const ManageDevices = ({ onBack }) => {
                 </div>
                 <div className="Mdevices-container">
                     <div className="mdev-div">
-                    {devices.map((device) => (
-                        <div className="Mdevices-cards"  key={device.id}>
-                            <div className="top-mdev">
-                                <div className="mdev-text-div">
-                                    {selectedDeviceId === device.id ? (
-                                        <input
-                                            type="text"
-                                            value={updatedName}
-                                            onChange={handleNameChange}
-                                            className="editable-input"
-                                        />
-                                    ) : (
-                                        <p>Device Name: {device.Name}</p>
-                                    )}
-                                    <p>Module: {device.Module}</p>
+                    {dataloading ? ( 
+                        <p>Loading...</p>
+                    ) : devices && devices.length > 0 ? (   
+                        devices.map((device) => (
+                            <div className="Mdevices-cards"  key={device.id}>
+                                <div className="top-mdev">
+                                    <div className="mdev-text-div">
+                                        {selectedDeviceId === device.id ? (
+                                            <input
+                                                type="text"
+                                                value={updatedName}
+                                                onChange={handleNameChange}
+                                                className="editable-input"
+                                            />
+                                        ) : (
+                                            <p>Device Name: {device.Name}</p>
+                                        )}
+                                        <p>Module: {device.Module}</p>
+                                    </div>
+                                    <div className="mdev-edit-icon">
+                                        <span
+                                            className="material-symbols-outlined"
+                                            onClick={() => {
+                                                if (isEditing && selectedDeviceId === device.id) {
+                                                    handleSaveClick();
+                                                } else {
+                                                    handleEditClick(device.id, device.Name, device.Color);
+                                                }
+                                            }}>
+                                            {isEditing && selectedDeviceId === device.id ? "save" : "edit"}
+                                        </span>
                                 </div>
-                                <div className="mdev-edit-icon">
-                                    <span
-                                        className="material-symbols-outlined"
-                                        onClick={() => {
-                                            if (isEditing && selectedDeviceId === device.id) {
-                                                handleSaveClick();
-                                            } else {
-                                                handleEditClick(device.id, device.Name, device.Color);
-                                            }
-                                        }}>
-                                        {isEditing && selectedDeviceId === device.id ? "save" : "edit"}
-                                    </span>
-                                </div>
-
                             </div>
+
                             <div className="bottom-mdev">
                             <button className="mdev-change-color-button" 
                                 style={{
@@ -209,6 +226,7 @@ const ManageDevices = ({ onBack }) => {
                                 disabled={!isEditing || selectedDeviceId !== device.id}> 
                                     <span className="material-symbols-outlined">palette</span>
                             </button>
+
                             {colorPickerVisible && selectedDeviceId === device.id &&(
                                 <ChromePicker
                                     color={selectedColor || device.Color}
@@ -219,7 +237,10 @@ const ManageDevices = ({ onBack }) => {
                                 <button className='mdev-remove-button' onClick={() => toggleModal(device.id)}>Remove Device</button>
                             </div>
                         </div>
-                    ))}
+                    ))
+                    ) : (
+                        <p>No Devices</p> 
+                    )}
                     </div>
                 </div>
             </div>

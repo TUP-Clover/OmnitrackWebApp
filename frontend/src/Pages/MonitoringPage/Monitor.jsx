@@ -26,7 +26,7 @@ const Monitor = () => {
 
   const navigate = useNavigate();
 
-  const { user } = useContext(UserContext);
+  const { user, loginUser } = useContext(UserContext);
   const [dataloading, setDataLoading] = useState(true);
   
   const isLargeScreen = useMediaQuery("(min-width: 768px)"); // Check if screen is >= 768px
@@ -59,6 +59,8 @@ const Monitor = () => {
 
 
   const handleAddDevice = async () => {
+    if (!user.userId) return;
+    
     if (!deviceIdInput.trim()) {
       alert("Device ID cannot be empty.");
       return;
@@ -66,7 +68,7 @@ const Monitor = () => {
   
     try {
 
-      const response = await axios.post('http://localhost:8800/add-device', {
+      const response = await axios.patch('http://localhost:8800/claim-device', {
         userId: user.userId,  // Current user ID
         deviceId: deviceIdInput.trim(),  // Trim whitespace
       });
@@ -77,6 +79,11 @@ const Monitor = () => {
         setCoordinates((prevCoordinates) => [...prevCoordinates, ...data.coordinates]);
         setDevices(data.devices);
         
+        loginUser({ ...user, isNewUser: false });  // Update user context
+
+        // Persist the updated user in localStorage
+        localStorage.setItem("isNewUser", "false");  // Store the updated isNewUser flag in localStorage
+
         alert("Device successfully added to your account.");
         setIsModalOpen(false); // Close modal
         setDeviceIdInput(""); // Reset input field
@@ -91,6 +98,11 @@ const Monitor = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+      if (!user || user.isNewUser) {
+        setDataLoading(false);
+        return; // Skip if user is new
+      }
+      
       try {
         const [devicesResponse, coordinatesResponse] = await Promise.all([
           axios.post('http://localhost:8800/get-devices', { userId: user.userId }),
@@ -109,16 +121,21 @@ const Monitor = () => {
           setCoordinates(coordinatesResponse.data);
         }
       } catch (error) {
-        console.error("Error fetching data:", error);
+        if (error.response && error.response.status === 404) {
+          console.log("No devices found.");
+          return;
+        } else {
+          console.error("Error fetching data:", error);
+        }
       } finally {
         setDataLoading(false); // Set loading to false after both requests complete
       }
-    };
+  };
   
     fetchData();
   }, [user]);
 
-  if (dataloading) {
+  if (dataloading ) {
     return <Loader/>
   }
 
@@ -134,10 +151,14 @@ const Monitor = () => {
               </div>
             </div>
             <div className="mapbox-container">
-              <MapboxComponent coordinates={coordinates} />
+              <MapboxComponent coordinates={coordinates}/>
             </div>
             <div className="device-container">
-              <SwipeableDeviceCards devices={devices} />
+              {dataloading ? (
+                <Loader/> // Display a loading message or spinner
+              ) : (
+                <SwipeableDeviceCards devices={devices} dataloading={dataloading} />
+              )}
             </div>
             <div
               className={`navbar-container ${isNavbarExpanded ? 'expanded' : ''}`}

@@ -49,9 +49,10 @@ const MapboxComponent = ({ coordinates }) => {
     });
 
     // Cleanup markers on unmount or update
+    /*
     return () => {
       markers.forEach((marker) => marker.remove());
-    };
+    };*/
   }, [coordinates]);
 
   return <div ref={mapContainerRef} style={{ height: "100%", width: "100%" }} />;

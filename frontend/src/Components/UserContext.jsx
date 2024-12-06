@@ -14,6 +14,7 @@ export const UserProvider = ({ children }) => {
       userId: localStorage.getItem("userId"),
       username: localStorage.getItem("username"),
       email: localStorage.getItem("email"),
+      isNewUser: localStorage.getItem("isNewUser") === 'true',
     };
 
     if (storedUser.userId) {
@@ -28,6 +29,7 @@ export const UserProvider = ({ children }) => {
     localStorage.setItem("userId", userData.userId);
     localStorage.setItem("username", userData.username);
     localStorage.setItem("email", userData.email);
+    localStorage.setItem("isNewUser", userData.isNewUser);
   };
 
   const logoutUser = () => {
