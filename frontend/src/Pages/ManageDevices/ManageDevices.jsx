@@ -6,6 +6,7 @@ import axios from 'axios';
 import { useNavigate } from "react-router-dom";
 
 import { UserContext } from "../../Components/UserContext";
+import { useDevices } from '../../Components/DeviceContext';
 import useMediaQuery from '../MonitoringPage/useMediaQuery'; // Assuming you already have this custom hook
 import './ManageDevices.css';
 
@@ -17,10 +18,11 @@ const ManageDevices = ({ onBack }) => {
     const [dataloading, setDataLoading] = useState(true);
     const [colorPickerVisible, setColorPickerVisible] = useState(false);  
 
+    const { devices, setDevices, setCoordinates} = useDevices();
     const { user, loginUser } = useContext(UserContext);
 
-    const [devices, setDevices] = useState([]);
     const [selectedDeviceId, setSelectedDeviceId] = useState(null);
+    const [selectedDeviceModule, setSelectedDeviceModule] = useState(null);
     const [selectedColor, setSelectedColor] = useState(null);  
     const [updatedName, setUpdatedName] = useState(""); 
     const navigate = useNavigate();
@@ -74,6 +76,16 @@ const ManageDevices = ({ onBack }) => {
                                 : device
                         )
                     );
+
+                     // Update local coordinates state
+                    setCoordinates((prevCoordinates) =>
+                        prevCoordinates.map((coordinate) =>
+                        coordinate.Module === selectedDeviceModule // Match by DeviceId
+                            ? { ...coordinate, Color: selectedColor } // Update the color
+                            : coordinate
+                        )
+                    );
+                    setSelectedDeviceModule(null);
                     setSelectedDeviceId(null);
                 } else {
                     console.warn("Failed to update device:", response.data.message);
@@ -87,10 +99,12 @@ const ManageDevices = ({ onBack }) => {
         }
     };
         
-    const toggleModal = (deviceId = null) => {
+    const toggleModal = (deviceId = null, deviceModule) => {
         setSelectedDeviceId(deviceId);
+        setSelectedDeviceModule(deviceModule);
         setIsModalOpen(!isModalOpen);
     };
+
     const handleEditClick = (deviceId, currentName, currentColor) => {
         setSelectedDeviceId(deviceId);
         setUpdatedName(currentName); // Initialize with the current name
@@ -104,11 +118,12 @@ const ManageDevices = ({ onBack }) => {
 
     const handleColorChange = (color) => {
         setSelectedColor(color.hex); // Update the selected color
-            setDevices((prevDevices) =>
-                prevDevices.map((dev) =>
-                    dev.id === selectedDeviceId ? { ...dev, Color: color.hex } : dev
-                )
-            );  // Update the color with the selected color's hex code
+        
+        setDevices((prevDevices) =>
+            prevDevices.map((dev) =>
+                dev.id === selectedDeviceId ? { ...dev, Color: color.hex } : dev
+            )
+        );  // Update the color with the selected color's hex code
     };
 
     // Handle name change
@@ -116,7 +131,7 @@ const ManageDevices = ({ onBack }) => {
         setUpdatedName(e.target.value);
     };
 
-    const handleConfirmDelete = async (selectedDeviceId) => {
+    const handleConfirmDelete = async (selectedDeviceId, selectedDeviceModule) => {
         try {
             const response = await axios.patch('http://localhost:8800/remove-device', {
               userId: user.userId,
@@ -124,9 +139,13 @@ const ManageDevices = ({ onBack }) => {
             });
 
             if (response.data.success) {
-                setDevices(devices.filter(device => device.id !== selectedDeviceId));
-            
-                  // If no devices left, set isNewUser to true
+                setDevices((prevDevices) => prevDevices.filter((device) => device.id !== selectedDeviceId));
+
+                setCoordinates((prevCoordinates) =>
+                    prevCoordinates.filter((coordinate) => coordinate.Module !== selectedDeviceModule)
+                );
+                
+                // If no devices left, set isNewUser to true
                 if (response.data.isNewUser) {
                     loginUser({ ...user, isNewUser: true }); // Update the user context with isNewUser = true
                 }
@@ -135,7 +154,7 @@ const ManageDevices = ({ onBack }) => {
             }
           } catch (error) {
             console.error("Error fetching devices:", error);
-          }
+        }
     }
 
     useEffect(() => {
@@ -162,7 +181,7 @@ const ManageDevices = ({ onBack }) => {
         };
     
         fetchUserDevices();
-    }, [user]);
+    }, [user, setDevices]);
     
   return (
     <div className='Manage-body'>
@@ -183,7 +202,7 @@ const ManageDevices = ({ onBack }) => {
                             <div className="Mdevices-cards"  key={device.id}>
                                 <div className="top-mdev">
                                     <div className="mdev-text-div">
-                                        {selectedDeviceId === device.id ? (
+                                        {selectedDeviceId === device.id && isEditing ? (
                                             <input
                                                 type="text"
                                                 value={updatedName}
@@ -202,6 +221,8 @@ const ManageDevices = ({ onBack }) => {
                                                 if (isEditing && selectedDeviceId === device.id) {
                                                     handleSaveClick();
                                                 } else {
+                                                    setSelectedDeviceId(device.id); // Ensure the right device is selected
+                                                    setSelectedDeviceModule(device.Module);
                                                     handleEditClick(device.id, device.Name, device.Color);
                                                 }
                                             }}>
@@ -219,7 +240,6 @@ const ManageDevices = ({ onBack }) => {
                                 }} 
                                 onClick={() => {
                                     if (isEditing && selectedDeviceId === device.id) {
-                                        setSelectedDeviceId(device.id); // Ensure the right device is selected
                                         toggleColorPicker();
                                     }
                                 }}
@@ -227,14 +247,17 @@ const ManageDevices = ({ onBack }) => {
                                     <span className="material-symbols-outlined">palette</span>
                             </button>
 
-                            {colorPickerVisible && selectedDeviceId === device.id &&(
+                            {colorPickerVisible && isEditing && selectedDeviceId === device.id &&(
                                 <ChromePicker
                                     color={selectedColor || device.Color}
                                     onChange={handleColorChange}  // Update color when user selects a new one
                                     onClick={toggleColorPicker} // Show color picker when clicked
                                 />
                             )}
-                                <button className='mdev-remove-button' onClick={() => toggleModal(device.id)}>Remove Device</button>
+                                <button className='mdev-remove-button' onClick={() => {
+                                    toggleModal(device.id, device.Module)
+                                    setIsEditing(false)
+                                    }}>Remove Device</button>
                             </div>
                         </div>
                     ))
@@ -251,7 +274,7 @@ const ManageDevices = ({ onBack }) => {
                         <h4>Are you sure you want to remove your device?</h4>
                             <div className="mdev-button-remove">
                                 <button onClick={() => {
-                                handleConfirmDelete(selectedDeviceId)
+                                handleConfirmDelete(selectedDeviceId,selectedDeviceModule)
                                 toggleModal()}}>Confirm</button>
                                 <button onClick={toggleModal}>Cancel</button>
                             </div>

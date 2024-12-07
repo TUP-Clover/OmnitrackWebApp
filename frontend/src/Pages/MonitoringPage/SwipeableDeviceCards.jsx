@@ -1,8 +1,11 @@
 import React from 'react';
 import { useSwipeable } from 'react-swipeable';
+import { useDevices } from '../../Components/DeviceContext';
 import Loader from '../../Loader/Loader';
 
-const SwipeableDeviceCards = ({ devices, dataloading }) => {
+const SwipeableDeviceCards = ({ dataloading }) => {
+  const { devices } = useDevices();
+
   const handlers = useSwipeable({
     onSwipedLeft: () => scrollCards('right'),
     onSwipedRight: () => scrollCards('left'),

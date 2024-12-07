@@ -5,6 +5,7 @@ import profileicon from '../images/profile1.jpg'
 import axios from "axios";
 
 import { UserContext } from "../../Components/UserContext";
+import { useDevices } from "../../Components/DeviceContext";
 import MapboxComponent from '../../Components/MapboxComponent';
 import Loader from '../../Loader/Loader';
 
@@ -19,13 +20,12 @@ import SettingsComponent from '../SettingsPage/Settings'
 const Monitor = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isNavbarExpanded, setIsNavbarExpanded] = useState(false);
-  const [coordinates, setCoordinates] = useState([]);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [deviceIdInput, setDeviceIdInput] = useState("");
-  const [devices, setDevices] = useState([]);
 
   const navigate = useNavigate();
 
+  const { setDevices, setCoordinates } = useDevices();
   const { user, loginUser } = useContext(UserContext);
   const [dataloading, setDataLoading] = useState(true);
   
@@ -133,7 +133,7 @@ const Monitor = () => {
   };
   
     fetchData();
-  }, [user]);
+  }, [user, setDevices, setCoordinates]);
 
   if (dataloading ) {
     return <Loader/>
@@ -151,13 +151,13 @@ const Monitor = () => {
               </div>
             </div>
             <div className="mapbox-container">
-              <MapboxComponent coordinates={coordinates}/>
+              <MapboxComponent/>
             </div>
             <div className="device-container">
               {dataloading ? (
                 <Loader/> // Display a loading message or spinner
               ) : (
-                <SwipeableDeviceCards devices={devices} dataloading={dataloading} />
+                <SwipeableDeviceCards dataloading={dataloading} />
               )}
             </div>
             <div
