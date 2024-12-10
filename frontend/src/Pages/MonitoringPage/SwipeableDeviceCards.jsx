@@ -3,8 +3,8 @@ import { useSwipeable } from 'react-swipeable';
 import { useDevices } from '../../Components/DeviceContext';
 import Loader from '../../Loader/Loader';
 
-const SwipeableDeviceCards = ({ dataloading }) => {
-  const { devices } = useDevices();
+const SwipeableDeviceCards = ({ dataloading, setActiveDevice }) => {
+  const { devices, locations } = useDevices();
 
   const handlers = useSwipeable({
     onSwipedLeft: () => scrollCards('right'),
@@ -35,7 +35,10 @@ const SwipeableDeviceCards = ({ dataloading }) => {
             key={device.id}
             name={device.Name}
             module={device.Module}
+            color={device.Color}
             status="Active" // Placeholder for now
+            location={locations[device.Module] ? locations[device.Module].name : "Loading..."} // Display the latest location name
+            onTrack={() => setActiveDevice(device.Module)} // Track button log
           />
         ))
       ) : (
@@ -45,16 +48,19 @@ const SwipeableDeviceCards = ({ dataloading }) => {
   );
 };
 
-const DeviceCard = ({module, name, status }) => {
+const DeviceCard = ({module, name, color, location, onTrack }) => {
   return (
     <div className="device-card">
       <div className="left_side">
         <h4>{name}</h4>
         <p>Module: {module}</p>
-        <p className="status">Device Status: {status}</p>
+        <p className="status">{location || "Loading location..."}</p>
         <div className="device-card-func">
-          <button>Track</button>
-          <div className="status-bar"></div>
+          <button onClick={onTrack}>Track</button>
+          <div
+            className="status-bar"
+            style={{ backgroundColor: color }} // Dynamic color
+          ></div>
         </div>
       </div>
       <div className="right_side">

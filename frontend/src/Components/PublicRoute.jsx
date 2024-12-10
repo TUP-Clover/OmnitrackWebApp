@@ -1,8 +1,6 @@
-import React, { useContext, useEffect } from 'react';
+import { useContext, useEffect } from 'react';
 import { UserContext } from './UserContext';
 import { useNavigate } from 'react-router-dom';
-
-import Loader from '../Loader/Loader';
 
 const PublicRoute = ({ children }) => {
   const { user, loading } = useContext(UserContext);
@@ -15,11 +13,7 @@ const PublicRoute = ({ children }) => {
     }
   }, [user, loading, navigate]);
 
-  if (loading) {
-    return <Loader/>// Show a loading state while user data is being checked
-  }
-
-  return children;  // Render the route if user is not logged in
+  return user ? null : children;  // Render the route if user is not logged in
 };
 
 export default PublicRoute;

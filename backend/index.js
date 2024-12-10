@@ -3,6 +3,11 @@ import cors from "cors";
 import admin from "firebase-admin";
 import bcrypt from "bcrypt";
 import session from "express-session";
+import multer from "multer";
+import path from "path";
+import fs from "fs";
+
+import { fileURLToPath } from 'url';
 import { readFile } from "fs/promises";
 
 const app = express();
@@ -10,7 +15,7 @@ const app = express();
 app.use(express.json()); 
 app.use(
     cors({
-      origin: "http://localhost:3000", // Your React app's URL
+      origin: "http://localhost:3000", // for Hosting 'https://trackmoto.horsemendevs.com',
       methods: ["GET", "POST", "PATCH"],
       credentials: true, // Allow cookies to be sent
     })
@@ -28,6 +33,37 @@ admin.initializeApp({
 
 const db = admin.database();
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Multer storage configuration
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, path.join(__dirname, 'public/images'));
+    },
+    filename: (req, file, cb) => {
+        const timestamp = Date.now();
+        const ext = path.extname(file.originalname);
+        cb(null, `${timestamp}_profileimage${ext}`);
+    },
+});
+
+const upload = multer({
+    storage: storage,
+    fileFilter: (req, file, cb) => {
+        const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
+        if (allowedTypes.includes(file.mimetype)) {
+            cb(null, true);
+        } else {
+            cb(new Error("Only JPEG, JPG, and PNG files are allowed."));
+        }
+    },
+    limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB limit
+});
+
+// Serve the 'public' folder statically
+app.use('/public', express.static(path.join(__dirname, 'public')));
+
 // Root endpoint
 app.get("/", (req, res) => {
   res.json({ message: "This is the backend" });
@@ -39,9 +75,24 @@ app.use(
       secret: "secret-key", 
       resave: false,
       saveUninitialized: true,
-      cookie: { secure: false }, // set to `true` if using https
+      cookie: {
+        secure: false, // Set to true if using HTTPS
+        httpOnly: true, // Prevents client-side JavaScript from accessing cookies
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds
+      },
     })
 );
+
+// Get session user endpoint
+app.get("/get-session-user", (req, res) => {
+  if (req.session.user) {
+    // Send the user details stored in the session
+    res.json(req.session.user);
+  } else {
+    // Session does not exist or expired
+    res.status(401).json({ error: "Unauthorized" });
+  }
+});
 
 app.post("/login", async (req, res) => {
     const { username, password } = req.body;
@@ -82,6 +133,8 @@ app.post("/login", async (req, res) => {
         userId: userKey, // Use the Firebase unique ID as the userId
         username: user.username,
         email: user.email,
+        mobile: user.mobile,
+        profileImage: user.profileImage,
         isNewUser, // Add the isNewUser flag
       };
 
@@ -93,6 +146,8 @@ app.post("/login", async (req, res) => {
           userId: userKey, // Include the Firebase unique ID in the response
           username: user.username,
           email: user.email,
+          mobile: user.mobile,
+          profileImage: user.profileImage,
           isNewUser, // Include the isNewUser flag in the response
         },
       });
@@ -100,6 +155,16 @@ app.post("/login", async (req, res) => {
       console.error("Login error:", error);
       return res.status(500).json({ message: "Internal server error" });
     }
+});
+
+app.post("/logout", (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      return res.status(500).json({ error: "Failed to log out" });
+    }
+    res.clearCookie("connect.sid"); // Clear the session cookie
+    res.json({ message: "Logged out successfully" });
+  });
 });
 
 app.post('/get-coordinates', async (req, res) => {
@@ -293,6 +358,115 @@ app.patch('/update-device', async (req, res) => {
   }
 });
 
+app.patch('/update-user-profile', async (req, res) => {
+    const { userId, username, mobile, email } = req.body;
+
+    // Validate required inputs
+    if (!userId || (!username && !mobile && !email)) {
+        return res.status(400).json({ success: false, message: "Invalid input." });
+    }
+
+    try {
+        const userRef = db.ref(`/users/${userId}`);
+        const snapshot = await userRef.once("value");
+
+        if (!snapshot.exists()) {
+            return res.status(404).json({ success: false, message: "User not found." });
+        }
+
+        const userData = snapshot.val();
+
+        // Prepare update object
+        const updatedData = {};
+        if (username) updatedData.username = username;
+        if (mobile) updatedData.mobile = mobile;
+        if (email) updatedData.email = email;
+
+        // Update user profile
+        await userRef.update(updatedData);
+
+        // Update session with the new values
+        if (req.session.user) {
+            if (username) req.session.user.username = username;
+            if (mobile) req.session.user.mobile = mobile;
+            if (email) req.session.user.email = email;
+
+            // Save the session changes
+            req.session.save((err) => {
+                if (err) {
+                    console.error("Error saving session:", err);
+                    return res.status(500).json({ success: false, message: "Error saving session." });
+                }
+
+                return res.status(200).json({
+                    success: true,
+                    message: "User profile updated successfully.",
+                    updatedUser: req.session.user, // Return updated session user info
+                });
+            });
+        } else {
+            return res.status(200).json({
+                success: true,
+                message: "User profile updated successfully. No session to update.",
+            });
+        }
+    } catch (error) {
+        console.error("Error updating user profile:", error);
+        return res.status(500).json({ success: false, message: "Internal server error." });
+    }
+});
+
+app.post("/update-profile-image", upload.single("image"), async (req, res) => {
+    const { userId } = req.body;
+
+    // Validate required fields
+    if (!userId || !req.file) {
+        return res.status(400).json({ success: false, message: "Invalid input or missing image file." });
+    }
+
+    try {
+        // Get the user from Firebase by userId
+        const userRef = db.ref(`/users/${userId}`);
+        const snapshot = await userRef.once("value");
+
+        if (!snapshot.exists()) {
+            return res.status(404).json({ success: false, message: "User not found." });
+        }
+
+        const newImagePath = req.file.filename;
+        // Update user profile with the new image path
+        await userRef.update({ profileImage: newImagePath });
+
+        // Update session with the new values
+        if (req.session.user) {
+            if (newImagePath) req.session.user.profileImage = newImagePath;
+
+            // Save the session changes
+            req.session.save((err) => {
+                if (err) {
+                    console.error("Error saving session:", err);
+                    return res.status(500).json({ success: false, message: "Error saving session." });
+                }
+
+                return res.status(200).json({
+                    success: true,
+                    message: "Profile image updated successfully.",
+                    updatedUser: req.session.user, // Return updated session user info
+                });
+            });
+        } else {
+            return res.status(200).json({
+                success: true,
+                message: "Profile image updated successfully. No session to update.",
+                profileImage: newImagePath,
+            });
+        }
+    } catch (error) {
+        console.error("Error updating profile image:", error);
+        return res.status(500).json({ success: false, message: "Internal server error." });
+    }
+});
+    
 app.patch('/remove-device', async (req, res) => {
   const { userId, deviceId } = req.body;
   
@@ -333,6 +507,72 @@ app.patch('/remove-device', async (req, res) => {
 
   } catch (error) {
     console.error("Error removing device:", error);
+    return res.status(500).json({ success: false, message: "Internal server error" });
+  }
+});
+
+app.patch('/remove-image', async (req, res) => {
+  const { userId } = req.body;
+
+  try {
+    // Retrieve the user data from Firebase
+    const userRef = db.ref(`/users/${userId}`);
+    const userSnapshot = await userRef.once('value');
+    const userData = userSnapshot.val();
+
+    if (!userData) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    // Validate that the user has a profile image to remove
+    const profileImage = userData.profileImage;
+    if (!profileImage) {
+      return res.status(400).json({ success: false, message: "No profile image to remove." });
+    }
+
+    // Construct the path to the image file
+    const imagePath = path.join(__dirname, 'public/images', path.basename(profileImage));
+
+    // Remove the profile image field from the database
+    await userRef.update({
+      profileImage: null, // Set the profileImage field to null
+    });
+
+    // Check if the file exists before deleting
+    fs.unlink(imagePath, (err) => {
+      if (err) {
+        console.error("Error deleting file:", err);
+        return res.status(500).json({ success: false, message: "Failed to delete image from server." });
+      }
+
+      console.log("File successfully deleted:", imagePath);
+
+      // Update session with the new values
+      if (req.session.user) {
+        req.session.user.profileImage = null;
+
+        // Save the session changes
+        req.session.save((err) => {
+          if (err) {
+            console.error("Error saving session:", err);
+            return res.status(500).json({ success: false, message: "Error saving session." });
+          }
+
+          return res.status(200).json({
+            success: true,
+            message: "Profile image updated successfully.",
+            updatedUser: req.session.user, // Return updated session user info
+          });
+        });
+      } else {
+        return res.status(200).json({
+          success: true,
+          message: "Profile image updated successfully. No session to update.",
+        });
+      }
+    });
+  } catch (error) {
+    console.error("Error removing profile image:", error);
     return res.status(500).json({ success: false, message: "Internal server error" });
   }
 });

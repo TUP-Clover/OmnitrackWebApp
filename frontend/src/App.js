@@ -21,8 +21,8 @@ import './App.css';
 function App() {
   return (
     <div className="App">
-		<UserProvider>
-			<BrowserRouter>
+		<BrowserRouter>
+			<UserProvider>
 				<DeviceProvider>
 					<Routes>
 						<Route path="/" element={<PublicRoute><WelcomePage1/></PublicRoute>}></Route>
@@ -37,8 +37,8 @@ function App() {
 						<Route path="/Profile" element={<ProtectedRoute><Profile/></ProtectedRoute>}></Route>
 					</Routes>
 				</DeviceProvider>
-			</BrowserRouter>
-		</UserProvider>
+			</UserProvider>
+		</BrowserRouter>
     </div>
   );
 }

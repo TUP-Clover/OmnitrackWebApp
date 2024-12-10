@@ -3,8 +3,6 @@ import './Settings.css';
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../Components/UserContext";
 
-import profileicon from '../images/profile1.jpg'
-
 // Calling other component
 import useMediaQuery from '../MonitoringPage/useMediaQuery'; // Import the custom hook
 import ManageDeviceComponent from '../ManageDevices/ManageDevices'
@@ -24,11 +22,8 @@ export const Settings = () => {
     navigate("/Monitor"); 
   };
 
-
-
   const handleLogOutClick = () => {
     logoutUser(); 
-    navigate("/login"); 
   };
 
   const toggleModal = () => {
@@ -74,7 +69,7 @@ export const Settings = () => {
         </div>
           <div className="profile-card">
             <div className="profile-pic">
-              <img src={profileicon} alt="Profile-Picture" />
+              <img src={`http://localhost:8800/public/images/${user.profileImage}`} alt="Profile-Picture" />
             </div>
             <div className="profile-details">
               <p>{user ? user.username : "Loading..."}</p>
@@ -85,7 +80,7 @@ export const Settings = () => {
             <div className="option-div" onClick={handleManageDevicesClick}>
               <span className="material-symbols-outlined">devices</span>
               <p>Manage Devices</p>
-              <span class="material-symbols-outlined">chevron_right</span>
+              <span className="material-symbols-outlined">chevron_right</span>
             </div>
             <div className="option-div" onClick={toggleModal} >
               <span className="material-symbols-outlined">phone_iphone</span>

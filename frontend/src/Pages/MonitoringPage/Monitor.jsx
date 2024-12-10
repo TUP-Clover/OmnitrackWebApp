@@ -1,7 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
 import motoricon from '../images/motoricon.png';
-import profileicon from '../images/profile1.jpg'
 import axios from "axios";
 
 import { UserContext } from "../../Components/UserContext";
@@ -22,6 +21,7 @@ const Monitor = () => {
   const [isNavbarExpanded, setIsNavbarExpanded] = useState(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [deviceIdInput, setDeviceIdInput] = useState("");
+  const [activeDevice, setActiveDevice] = useState(null);
 
   const navigate = useNavigate();
 
@@ -151,13 +151,13 @@ const Monitor = () => {
               </div>
             </div>
             <div className="mapbox-container">
-              <MapboxComponent/>
+              <MapboxComponent activeDevice={activeDevice}/>
             </div>
             <div className="device-container">
               {dataloading ? (
                 <Loader/> // Display a loading message or spinner
               ) : (
-                <SwipeableDeviceCards dataloading={dataloading} />
+                <SwipeableDeviceCards setActiveDevice={setActiveDevice} dataloading={dataloading} />
               )}
             </div>
             <div
@@ -167,7 +167,7 @@ const Monitor = () => {
               <div className="profile-icon-container">
                   <div className="expanded-profile">
                     <div className="profile-icon">
-                      <img src={profileicon} alt="Profile-Picture" />
+                    <img src={`http://localhost:8800/public/images/${user.profileImage}`} alt="Profile-Picture" />
                     </div>
                     <p>{user ? user.username : "Loading..."}</p>
                   </div>

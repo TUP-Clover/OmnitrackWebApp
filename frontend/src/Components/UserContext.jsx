@@ -5,41 +5,83 @@ export const UserContext = createContext();
 
 // Provide context
 export const UserProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
+    
+    const fetchSessionUser = async () => {
+        try {
+            const response = await fetch("http://localhost:8800/get-session-user", {
+                credentials: "include", // Include cookies for the session
+            });
 
-  useEffect(() => {
-    // Check localStorage for user data (if stored there during login)
-    const storedUser = {
-      userId: localStorage.getItem("userId"),
-      username: localStorage.getItem("username"),
-      email: localStorage.getItem("email"),
-      isNewUser: localStorage.getItem("isNewUser") === 'true',
+            // Check if the response status is OK (200)
+            if (response.ok) {
+                const userData = await response.json();
+                setUser(userData);
+            } else {
+                setUser(null);
+                return;
+            }
+        } catch (error) {
+            // Catch network or other errors
+            console.error("Error fetching session user:", error);
+            setUser(null); // Set user to null in case of an error
+        }
+        setLoading(false); // End the loading state
     };
 
-    if (storedUser.userId) {
-      setUser(storedUser);
+    useEffect(() => {
+        // Check localStorage for user data (if stored there during login)
+        const storedUser = {
+            userId: localStorage.getItem("userId"),
+            username: localStorage.getItem("username"),
+            email: localStorage.getItem("email"),
+            mobile: localStorage.getItem("mobile"),
+            profileImage: localStorage.getItem("profileImage"),
+            isNewUser: localStorage.getItem("isNewUser") === 'true',
+        }
+
+        if (storedUser.userId) {
+            setUser(storedUser);
+        }
+        
+        setLoading(false);
+    }, []);
+
+    if (loading) {
+        return <p>Loading</p>;
     }
-    setLoading(false)
-  }, []);
+    
+    const loginUser = (userData) => {
+        setUser(userData);
 
-  const loginUser = (userData) => {
-    setUser(userData);
-    // Optionally, persist user in localStorage
-    localStorage.setItem("userId", userData.userId);
-    localStorage.setItem("username", userData.username);
-    localStorage.setItem("email", userData.email);
-    localStorage.setItem("isNewUser", userData.isNewUser);
-  };
+        // Optionally, persist user in localStorage
+        localStorage.setItem("userId", userData.userId);
+        localStorage.setItem("username", userData.username);
+        localStorage.setItem("email", userData.email);
+        localStorage.setItem("mobile", userData.mobile);
+        localStorage.setItem("profileImage", userData.profileImage);
+        localStorage.setItem("isNewUser", userData.isNewUser);
+    };
 
-  const logoutUser = () => {
-    setUser(null);
-    localStorage.clear(); // Clear localStorage on logout
-  };
+    const logoutUser = async () => {
+        try {
+            const response = await fetch("http://localhost:8800/logout", {
+              method: "POST",
+              credentials: "include",
+            });
+            if (response.ok) {
+              setUser(null); // Clear user from context
+            }
+          } catch (error) {
+            console.error("Error during logout:", error);
+        }
+        localStorage.clear(); // Clear localStorage on logout
+    };
 
-  return (
-    <UserContext.Provider value={{ user, loading, loginUser, logoutUser }}>
-      {children}
-    </UserContext.Provider>
-  );
+    return (
+        <UserContext.Provider value={{ user, setUser, loading, loginUser, logoutUser, fetchSessionUser }}>
+            {children}
+        </UserContext.Provider>
+    );
 };
