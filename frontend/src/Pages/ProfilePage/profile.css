@@ -58,21 +58,25 @@
     border-radius: 10px;
     height: 40px;
     width: 130px;
+    cursor: pointer;
+}
+.add-image:hover{
+    background-color: #36383a;
 }
 .add-image button{
     border: none;
     background: none;
     color: white;
+    cursor: pointer;
 }
 .add-image span{
-    color: #1B1F2D;
+    color: white;
 }
 .profile2-details{
     width: 80%;
     height: 50%;
 
 }
-
 .prof-details{
     display: flex;
     flex-direction: row;
@@ -87,6 +91,84 @@
     display: flex;
     align-items: end;
     height: 35px;
+}
+.edit-profile-div span:hover{
+    color: white;
+    cursor: pointer;
+}
+.Chp-modal{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+.Chp-modal-content{
+    background-color: #1B1F2D;
+    border: 1px solid #ffd700;
+    padding: 20px;
+    border-radius: 10px;
+    width: clamp(300px, 90%, 400px); /* Responsive width */
+    max-height: 90%; /* Prevent overflow */
+    text-align: center;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+.Chp-modal-buttons{
+    margin-top: 1em;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 1em;
+}
+.Chp-modal-buttons button{
+    border-radius: 4px;
+    padding: 0 16px;
+    cursor: pointer;
+    background-color: #ffd700;
+    border: 1px solid rgba(0, 0, 0, 0.16);
+    height: 25px;
+}
+.Chp-modal-content input{
+    margin-top: 1em;
+}
+.Chp-modal-content input[type="file"]::file-selector-button{
+    border-radius: 4px;
+    padding: 0 16px;
+    height: 20px;
+    cursor: pointer;
+    background-color: #ffd700;
+    border: 1px solid rgba(0, 0, 0, 0.16);
+    box-shadow: 0px 1px 0px rgba(0, 0, 0, 0.05);
+    margin-right: 16px;
+    transition: background-color 200ms;
+}
+.profile-buttons{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1em;
+}
+.remove-image-profile button{
+    background: none;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    color: white;
+}
+.remove-image-profile button:hover{
+    text-decoration: underline;
+    color: #ffd700;
 }
 
 @media (min-width:768px) {

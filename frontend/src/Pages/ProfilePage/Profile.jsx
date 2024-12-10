@@ -172,20 +172,24 @@ const Profile = ({ onBack }) => {
                 <div className="profile2-picture">
                     <img src={`http://localhost:8800/public/images/${user.profileImage}`} alt="Profile-Picture" />
                 </div>
-                <div className="add-image">
-                    <span className="material-symbols-outlined">add_a_photo</span>
-                    <button onClick={OpenEditProfileModal}>Edit Image</button>
+                <div className="profile-buttons">
+                    <div className="add-image">
+                        <span className="material-symbols-outlined">add_a_photo</span>
+                        <button onClick={OpenEditProfileModal}>Edit Image</button>
+                    </div>
+                    <div className="remove-image-profile">
+                        <button onClick={handleRemoveImageClick}>Remove</button> 
+                    </div>
                 </div>
 
                 {isModalOpen && (
-                    <div className="modal">
-                        <div className="modal-content">
+                    <div className="Chp-modal">
+                        <div className="Chp-modal-content">
                             <h2>Edit Profile Image</h2>
                             <input type="file" onChange={handleFileChange} accept="image/*" />
-                            <div className="modal-buttons">
+                            <div className="Chp-modal-buttons">
                                 <button onClick={handleAddImageClick}>Confirm</button>
                                 <button onClick={CloseModal}>Cancel</button>
-                                <button onClick={handleRemoveImageClick}>Remove</button> 
                             </div>
                         </div>
                     </div>
