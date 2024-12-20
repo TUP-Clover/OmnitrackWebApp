@@ -11,6 +11,7 @@ const MapboxComponent = ( {activeDevice}) => {
   const markersRef = useRef({}); // Use a ref to store markers by Module
   const { coordinates, locations, setLocations } = useDevices();
 
+  /*
   const reverseGeocode = async (longitude, latitude) => {
     const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${longitude},${latitude}.json?access_token=${mapboxgl.accessToken}`;
     return fetch(url)
@@ -23,7 +24,7 @@ const MapboxComponent = ( {activeDevice}) => {
       })
       .catch(() => "Error fetching location");
   };
-
+  */
   useEffect(() => {
     // Initialize Mapbox map
     if (!mapRef.current) {
@@ -51,8 +52,8 @@ const MapboxComponent = ( {activeDevice}) => {
     coordinates.forEach((coord) => {
       const { Longitude, Latitude, Module, Color, Timestamp } = coord;
       updatedModules.add(Module); // Track the module
-
-      // Check if the module has already been updated with a more recent timestamp
+      
+      /*// Check if the module has already been updated with a more recent timestamp
       if (!locations[Module] || Timestamp > locations[Module].Timestamp) {
       // Reverse geocode the most recent coordinates
         reverseGeocode(Longitude, Latitude).then((location) => {
@@ -66,7 +67,7 @@ const MapboxComponent = ( {activeDevice}) => {
             },
           }));
         });
-      }
+      }*/
 
       // If there is already an array of markers for this module, add the new coordinate as a new marker
       if (!existingMarkers[Module]) {
@@ -98,7 +99,7 @@ const MapboxComponent = ( {activeDevice}) => {
       }
     });
 
-  }, [coordinates, locations, setLocations]);
+  }, [coordinates, /*locations,*/ setLocations]);
 
    // Center map on the active device's latest coordinates
    useEffect(() => {
