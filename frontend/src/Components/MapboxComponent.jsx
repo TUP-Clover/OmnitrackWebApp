@@ -8,97 +8,142 @@ mapboxgl.accessToken = "pk.eyJ1IjoiamVkZHJhc2NvIiwiYSI6ImNtMDgzOWpqNzBseTQybG9re
 const MapboxComponent = ( {activeDevice}) => {
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
+  const routesRef = useRef({});
   const markersRef = useRef({}); // Use a ref to store markers by Module
   const { coordinates, locations, setLocations } = useDevices();
+  
 
-  const reverseGeocode = async (longitude, latitude) => {
-    const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${longitude},${latitude}.json?access_token=${mapboxgl.accessToken}`;
-    return fetch(url)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.features && data.features.length > 0) {
-          return data.features[0].place_name; // Return the first result
-        }
-        return "Unknown Location"; // Default if no result found
-      })
-      .catch(() => "Error fetching location");
+  // const reverseGeocode = async (longitude, latitude) => {
+  //   const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${longitude},${latitude}.json?access_token=${mapboxgl.accessToken}`;
+  //   return fetch(url)
+  //     .then((response) => response.json())
+  //     .then((data) => {
+  //       if (data.features && data.features.length > 0) {
+  //         return data.features[0].place_name; // Return the first result
+  //       }
+  //       return "Unknown Location"; // Default if no result found
+  //     })
+  //     .catch(() => "Error fetching location");
+  // };
+  const fetchSnappedSegment = async (start, end) => {
+    const waypoints = `${start.join(",")};${end.join(",")}`;
+    const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${waypoints}?geometries=geojson&access_token=${mapboxgl.accessToken}`;
+    const response = await fetch(url);
+  
+    if (response.ok) {
+      const data = await response.json();
+      if (data.routes && data.routes.length > 0) {
+        return data.routes[0].geometry.coordinates; // Return snapped segment
+      }
+    }
+    return null;
   };
-
+  
   useEffect(() => {
-    // Initialize Mapbox map
     if (!mapRef.current) {
       mapRef.current = new mapboxgl.Map({
         container: mapContainerRef.current,
         style: "mapbox://styles/mapbox/streets-v11",
-        center: [120.984353, 14.586988], // Initial center coordinates [lng, lat]
+        center: [120.984353, 14.586988],
         zoom: 16,
       });
-
-      // Apply border-radius directly to the map's canvas
-      const mapCanvas = mapContainerRef.current.querySelector(".mapboxgl-canvas");
-      if (mapCanvas) {
-        mapCanvas.style.borderRadius = "10px"; // Add rounded corners
-      }
     }
-
+  
     const map = mapRef.current;
-    const existingMarkers = markersRef.current;
-
-    // Create a set to track the modules that are present in the current coordinates
-    const updatedModules = new Set();
-
-    // Loop through all coordinates and add/update markers
-    coordinates.forEach((coord) => {
-      const { Longitude, Latitude, Module, Color, Timestamp } = coord;
-      updatedModules.add(Module); // Track the module
-
-      // Check if the module has already been updated with a more recent timestamp
-      if (!locations[Module] || Timestamp > locations[Module].Timestamp) {
-      // Reverse geocode the most recent coordinates
-        reverseGeocode(Longitude, Latitude).then((location) => {
-          setLocations((prev) => ({
-            ...prev,
-            [Module]: { 
-              name: location, // Geocoded location name
-              Longitude, // Latest Longitude
-              Latitude,  // Latest Latitude
-              Timestamp: Timestamp || null, // Store the timestamp to track the most recent
-            },
-          }));
-        });
+  
+    map.on("style.load", async () => {
+      const updatedModules = new Set();
+  
+      for (const coord of coordinates) {
+        const { Longitude, Latitude, Module, Color } = coord;
+        updatedModules.add(Module);
+  
+        // Manage marker
+        const markerElement = document.createElement("div");
+        markerElement.style.backgroundColor = Color;
+        markerElement.style.width = "15px";
+        markerElement.style.height = "15px";
+        markerElement.style.borderRadius = "50%";
+        markerElement.style.border = "2px solid white";
+  
+        if (!markersRef.current[Module]) {
+          markersRef.current[Module] = new mapboxgl.Marker({ element: markerElement })
+            .setLngLat([Longitude, Latitude])
+            .addTo(map);
+        } else {
+          markersRef.current[Module].setLngLat([Longitude, Latitude]);
+        }
+  
+        // Handle tracking for just the last segment
+        if (!routesRef.current[Module]) routesRef.current[Module] = [];
+        const previousCoordinate = routesRef.current[Module].slice(-1)[0];
+        const currentCoordinate = [Longitude, Latitude];
+  
+        if (previousCoordinate) {
+          const snappedSegment = await fetchSnappedSegment(previousCoordinate, currentCoordinate);
+          if (snappedSegment) {
+            const lineSourceId = `line-source-${Module}`;
+            if (!map.getSource(lineSourceId)) {
+              map.addSource(lineSourceId, {
+                type: "geojson",
+                data: {
+                  type: "FeatureCollection",
+                  features: [],
+                },
+              });
+  
+              map.addLayer({
+                id: `line-layer-${Module}`,
+                type: "line",
+                source: lineSourceId,
+                paint: {
+                  "line-color": Color,
+                  "line-opacity": 0.4,
+                  "line-width": 4,
+                },
+              });
+            }
+  
+            // Update line with the snapped segment
+            map.getSource(lineSourceId).setData({
+              type: "FeatureCollection",
+              features: [
+                {
+                  type: "Feature",
+                  geometry: {
+                    type: "LineString",
+                    coordinates: snappedSegment,
+                  },
+                },
+              ],
+            });
+          }
+        }
+  
+        // Update route history
+        routesRef.current[Module].push(currentCoordinate);
+        if (routesRef.current[Module].length > 15) {
+          routesRef.current[Module].shift(); // Optional: Limit the length of the history
+        }
       }
-
-      // If there is already an array of markers for this module, add the new coordinate as a new marker
-      if (!existingMarkers[Module]) {
-        existingMarkers[Module] = []; // Initialize an empty array for this module's markers
-      }
-
-      // Create a new marker for this coordinate
-      const markerElement = document.createElement("div");
-      markerElement.style.backgroundColor = Color;
-      markerElement.style.width = "15px";
-      markerElement.style.height = "15px";
-      markerElement.style.borderRadius = "50%";
-      markerElement.style.border = "2px solid white";
-
-      const marker = new mapboxgl.Marker({ element: markerElement })
-        .setLngLat([parseFloat(Longitude), parseFloat(Latitude)])
-        .setPopup(new mapboxgl.Popup().setText(`Module: ${Module}`))
-        .addTo(map);
-
-      // Store the marker in the array for this module
-      existingMarkers[Module].push(marker);
+      
+  
+      // Cleanup unused modules
+      Object.keys(markersRef.current).forEach((module) => {
+        if (!updatedModules.has(module)) {
+          markersRef.current[module].remove();
+          delete markersRef.current[module];
+  
+          const lineSourceId = `line-source-${module}`;
+          if (map.getSource(lineSourceId)) {
+            map.removeLayer(`line-layer-${module}`);
+            map.removeSource(lineSourceId);
+          }
+        }
+      });
     });
+  }, [coordinates]);
 
-    // Remove markers for modules that no longer exist
-    Object.keys(existingMarkers).forEach((module) => {
-      if (!updatedModules.has(module)) {
-        existingMarkers[module].forEach((marker) => marker.remove());
-        delete existingMarkers[module]; // Delete the module from the markers ref
-      }
-    });
-
-  }, [coordinates, locations, setLocations]);
 
    // Center map on the active device's latest coordinates
    useEffect(() => {
