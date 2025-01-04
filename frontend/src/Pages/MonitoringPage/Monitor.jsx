@@ -23,6 +23,9 @@ const Monitor = () => {
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [deviceIdInput, setDeviceIdInput] = useState("");
   const [activeDevice, setActiveDevice] = useState(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false); // State for menu bar
+  const [selectedFilter, setSelectedFilter] = useState("today"); // State for dropdown selection
+  const [selectedDate, setSelectedDate] = useState(""); // State for custom date selection
 
   const navigate = useNavigate();
 
@@ -58,7 +61,26 @@ const Monitor = () => {
     setIsSettingsModalOpen(false);
   };
 
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  
+    // Toggle CSS classes for animation
+    const menuBar = document.getElementById("menu-bar");
+    const nav = document.getElementById("nav");
+    menuBar.classList.toggle("change");
+    nav.classList.toggle("change");
+  };
 
+  const handleFilterChange = (event) => {
+    setSelectedFilter(event.target.value);
+    if (event.target.value !== "custom") {
+      setSelectedDate(""); // Clear custom date when not selecting "Custom"
+    }
+  };
+
+  const handleDateChange = (event) => {
+    setSelectedDate(event.target.value);
+  };
   const handleAddDevice = async () => {
     if (!user.userId) return;
     
@@ -148,8 +170,47 @@ const Monitor = () => {
                 <h5>Location Monitoring</h5>
               </div>
               <div className="motor-icon">
-                <img src={motoricon} alt="Icon-Bike" />
-              </div>
+            <img src={motoricon} alt="Icon-Bike" />
+          </div>
+          <div className='History-container'>
+            <h4>Travel History</h4>
+            <select value={selectedFilter} onChange={handleFilterChange}>
+              <option value="today">Today</option>
+              <option value="custom">Custom</option>
+              <option value="all">Show All</option>
+            </select>
+            {selectedFilter === "custom" && (
+              <input
+                type="date"
+                value={selectedDate}
+                onChange={handleDateChange}
+              />
+            )}
+          </div>
+        </div>
+        {/* Hamburger Menu for Mobile */}
+        <div id="menu">
+          <div id="menu-bar" onClick={toggleMenu} className={isMenuOpen ? "change" : ""}>
+            <div id="bar1" className="bar"></div>
+            <div id="bar2" className="bar"></div>
+            <div id="bar3" className="bar"></div>
+          </div>
+          {isMenuOpen && (
+            <nav className="nav" id="nav">
+              <ul>
+                <li onClick={() => setSelectedFilter("today")}>Today</li>
+                <li onClick={() => setSelectedFilter("custom")}>Custom</li>
+                <li onClick={() => setSelectedFilter("all")}>Show All</li>
+              </ul>
+              {selectedFilter === "custom" && (
+                <input
+                  type="date"
+                  value={selectedDate}
+                  onChange={handleDateChange}
+                />
+              )}
+            </nav>
+          )}
             </div>
             <div className="mapbox-container">
               <MapboxComponent activeDevice={activeDevice}/>
