@@ -53,7 +53,7 @@ const SignUp = () => {
             <form class="SignUp-form-desktop">
                 <input type="text" placeholder="Name" class="input-field"></input>
             <div class="input-group">
-                <input type="tel" placeholder="Mobile Number" class="input-field"></input>
+                <input type="text" placeholder="Email" class="input-field"></input>
                 <button class="verify-button">Verify</button>
             </div>
             <input type="tel"placeholder="Verification Code" class="input-field"></input>
@@ -80,7 +80,7 @@ const SignUp = () => {
             <form class="signup-form">
                 <input type="text" placeholder="Name" class="input-field"></input>
             <div class="input-group">
-                <input type="tel" placeholder="Mobile Number" class="input-field"></input>
+                <input type="text" placeholder="Email" class="input-field"></input>
                 <button class="verify-button">Verify</button>
             </div>
             <input type="tel"placeholder="Verification Code" class="input-field"></input>
