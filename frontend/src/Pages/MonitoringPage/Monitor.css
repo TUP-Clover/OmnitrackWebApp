@@ -207,10 +207,135 @@
         gap: 1em;
         font-size: 13px;
     }
-    
+    /* Base Menu Styles */
+#menu {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    z-index: 1000;
+  }
+  
+  #menu-bar {
+    margin-top: 1em;
+    width: 45px;
+    height: 20px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+  }
+  
+  .bar {
+    width: 100%;
+    height: 5px;
+    background-color: #020202;
+    border-radius: 5px;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+  }
+  
+  #bar1 {
+    transform: translateY(-4px);
+  }
+  
+  #bar3 {
+    transform: translateY(4px);
+  }
+  
+  /* Change state for menu toggle */
+  .change #bar1 {
+    transform: translateY(4px) rotate(-45deg);
+  }
+  
+  .change #bar2 {
+    opacity: 0;
+  }
+  
+  .change #bar3 {
+    transform: translateY(-6px) rotate(45deg);
+  }
+  
+  /* Menu Background */
+  .nav {
+    position: absolute;
+    top: 50px;
+    left: 0;
+    width: 200px;
+    background-color: #1B1F2D;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    transform: scaleY(0);
+    transform-origin: top;
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  .nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .nav li {
+    padding: 12px 8px;
+    color: white;
+    cursor: pointer;
+    font-size: 12px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+    font-weight: 500;
+  }
+  
+  .nav li:hover {
+    background-color: #EEB700;
+    color: #333741;
+  }
+  
+  /* Show menu when toggle is active */
+  .change + .nav {
+    transform: scaleY(1);
+  }
+  
+  /* Date Input Styles */
+  .nav input[type="date"] {
+    margin-top: 10px;
+    padding: 8px;
+    border: 1px solid #EEB700;
+    border-radius: 5px;
+    background-color: #E0DEDE;
+    color: #0f0f0f;
+    font-size: 14px;
+    width: 100%;
+    box-sizing: border-box;
+    font-weight: bold;
+  }
+  
+  .nav input[type="date"]:focus {
+    outline: none;
+    border-color: #FFD700;
+  }
+
+  .nav ul h5{
+    font-size: 15px;
+    color: rgb(0, 0, 0);
+    background-color: rgb(255, 255, 255);
+    border-radius: 3px;
+  }
+  
+ 
 }
 /*RESPONSIVE CSS*/
 @media (min-width: 768px) {
+
+    #menu{
+        display: none;
+    }
+    .History-container-mobile{
+        display: none;
+    }
+
     .navbar-container:hover .icon-text {
         display: block; /* Display all the icon texts */
     }
@@ -233,6 +358,7 @@
         align-items: center;
         margin-top: 1em;
         padding-left: 2em;
+        position: relative;
     }
     .monitor-title h5{
         font-size: 1.5em;
@@ -364,4 +490,87 @@
         text-align: center;
         box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
     }
+
+/* Travel History Dropdown */
+.filter-dropdown {
+    padding: 10px;
+    background-color: #1B1F2D;  /* Dark background */
+    color: #132664;  /* White text */
+    border-radius: 8px;
+    font-size: 14px;
+    border: none;
+    width: auto;
+    margin-left: 1em;
+    transition: background-color 0.3s ease;
+}
+
+.filter-dropdown:hover {
+    background-color: #f3f4f5;  /* Slightly lighter dark blue on hover */
+}
+
+.filter-dropdown option {
+    background-color: #333741;  /* Darker background for options */
+    color: #fff;  /* White text for options */
+}
+
+.filter-dropdown option:hover {
+    background-color: #283C58;  /* Hover effect on options */
+}
+
+/* Custom Date Input */
+.custom-date-input {
+    margin-top: 0.5em;
+    padding: 20px;
+    background-color: #1B1F2D;  /* Dark background */
+    border: 1px solid #EEB700;  /* Gold border */
+    border-radius: 8px;
+    color: #a00a0a;  /* White text */
+    font-size: 14px;
+    width: 180px;
+}
+
+/* Adjust styles for the History section */
+.History-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: #BDBDBD;
+    font-size: 18px;
+    position: relative;
+    left: 5em;
+    gap: 1em; /* Adding some spacing between elements */
+}
+
+/* Styling the select dropdown inside the History container */
+.History-container select {
+    background-color: #dfdfdf;  /* Light background for select */
+    border-radius: 2px 10px;
+    font-size: 12px;
+    padding: 2px 8px;  /* Slightly more padding for better appearance */
+    margin-left: 10px;
+    border: none;  /* Remove border for a cleaner look */
+    color: #0a0a0a;  /* Dark text for select */
+    width: auto;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+}
+
+/* Hover effect for the select dropdown */
+.History-container select:hover {
+    background-color: #f0f0f0;
+}
+
+/* Adjust the History container title styles */
+.History-container h4 {
+    font-size: 15px;
+    color: #BDBDBD;
+}
+
+.History-container input{
+    background-color: rgb(247, 247, 247);
+    font-size: 12px;
+    border-radius: 2px 10px;
+}
+
+
 }
