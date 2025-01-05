@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect, useCallback } from 'react';
 import { useNavigate } from "react-router-dom";
 import motoricon from '../images/motoricon.png';
 import axios from "axios";
@@ -26,6 +26,7 @@ const Monitor = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false); // State for menu bar
   const [selectedFilter, setSelectedFilter] = useState("today"); // State for dropdown selection
   const [selectedDate, setSelectedDate] = useState(""); // State for custom date selection
+  const [userLocation, setUserLocation] = useState(null); // User's current location
 
   const navigate = useNavigate();
 
@@ -64,12 +65,22 @@ const Monitor = () => {
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   
-    // Toggle CSS classes for animation
     const menuBar = document.getElementById("menu-bar");
     const nav = document.getElementById("nav");
-    menuBar.classList.toggle("change");
-    nav.classList.toggle("change");
+  
+    if (menuBar) {
+      menuBar.classList.toggle("change");
+    } else {
+      console.error("menu-bar element not found.");
+    }
+  
+    if (nav) {
+      nav.classList.toggle("change");
+    } else {
+      console.error("nav element not found.");
+    }
   };
+  
 
   const handleFilterChange = (event) => {
     setSelectedFilter(event.target.value);
@@ -119,6 +130,28 @@ const Monitor = () => {
     }
   }
 
+  // Fetch the user's current location
+  const getCurrentLocation = useCallback(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setUserLocation({
+            lat: position.coords.latitude,
+            lon: position.coords.longitude,
+          });
+          console.log(`User Location: Latitude: ${position.coords.latitude}, Longitude: ${position.coords.longitude}`);
+          toast.success("User location accessed successfully.");
+        },
+        (error) => {
+          toast.error("Failed to get location. Please enable location services.");
+          console.error("Geolocation Error:", error);
+        }
+      );
+    } else {
+      toast.error("Geolocation is not supported by this browser.");
+    }
+  }, []);
+
   useEffect(() => {
     const fetchData = async () => {
       if (!user || user.isNewUser) {
@@ -157,6 +190,12 @@ const Monitor = () => {
   
     fetchData();
   }, [user, setDevices, setCoordinates]);
+
+   // Fetch user location on mount
+   useEffect(() => {
+    getCurrentLocation();
+  }, [getCurrentLocation]);
+
 
   if (dataloading ) {
     return <Loader/>
@@ -219,7 +258,7 @@ const Monitor = () => {
               {dataloading ? (
                 <Loader/> // Display a loading message or spinner
               ) : (
-                <SwipeableDeviceCards setActiveDevice={setActiveDevice} dataloading={dataloading} />
+                <SwipeableDeviceCards setActiveDevice={setActiveDevice} dataloading={dataloading}  userLocation={userLocation} />
               )}
             </div>
             <div

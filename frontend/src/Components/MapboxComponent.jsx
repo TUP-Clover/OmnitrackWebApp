@@ -4,7 +4,6 @@ import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css"; // Import the required CSS
 
 mapboxgl.accessToken = "pk.eyJ1IjoiYWxnYXJzb24xMjMiLCJhIjoiY20xZzF2eGF0MXI2ZzJxc2JtdndtMnNxYyJ9.MNUnBpkh2xyALMzDRP3EGQ";
-
 const MapboxComponent = ({ activeDevice }) => {
     const mapContainerRef = useRef(null);
     const mapRef = useRef(null);
@@ -134,7 +133,7 @@ const MapboxComponent = ({ activeDevice }) => {
                             reverseGeocode(Longitude, Latitude).then((location) => {
                                 setLocations((prev) => ({
                                     ...prev,
-                                    [module]: { name: location, Longitude, Latitude, Timestamp }
+                                    [module]: { name: location, Longitude, Latitude, Timestamp,  coordinates: { Longitude, Latitude }  }
                                 }));
                             });
                         }
@@ -142,7 +141,7 @@ const MapboxComponent = ({ activeDevice }) => {
                 }
             }
         },
-        [fetchRoute]
+        [fetchRoute, setLocations]
     );
     
     useEffect(() => {
