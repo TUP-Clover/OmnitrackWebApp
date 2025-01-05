@@ -106,6 +106,7 @@
     align-items: center;
     justify-content: center;
     font-size: 12px;
+    font-weight:600;
 }
 .status-bar{
     margin-top: 10px;
@@ -191,11 +192,11 @@
     .device-card {
         background-color: #1B1F2D;
         border-radius: 8px;
-        padding: 30px;
+        padding: 20px;
         margin-right: 10px;
         min-width: 290px; /* Reduce min-width to fit more cards in smaller screen */
         max-width: 200px;
-        max-height: 150px;
+        max-height: 130px;
         height: 100%;
         display: flex;
         flex-direction: row;
@@ -205,7 +206,13 @@
         scroll-snap-align: center;
         box-sizing: border-box;
         gap: 1em;
-        font-size: 13px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .device-card h4{
+        margin-bottom:2px;
+        font-size: 14px;
     }
     /* Base Menu Styles */
 #menu {
@@ -229,7 +236,8 @@
   .bar {
     width: 100%;
     height: 5px;
-    background-color: #020202;
+    background-color: #EEB700;
+
     border-radius: 5px;
     transition: transform 0.3s ease, opacity 0.3s ease;
   }

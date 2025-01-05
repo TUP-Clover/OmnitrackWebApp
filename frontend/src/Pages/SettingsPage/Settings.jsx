@@ -13,7 +13,12 @@ export const Settings = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isChangeDeviceModalOpen, setIsChangeDeviceModalOpen] = useState(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
-  
+  const [newPassword, setNewPassword] = useState("");
+  const [retypePassword, setRetypePassword] = useState("");
+  const [verificationCode, setVerificationCode] = useState("");
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false); // New password modal state
+  const [email, setEmail] = useState("");
+
   const { user, logoutUser } = useContext(UserContext);
 
   const isLargeScreen = useMediaQuery("(min-width: 768px)"); // Check if screen is >= 768px
@@ -68,6 +73,27 @@ export const Settings = () => {
   const closeProfileModal = () => {
     setIsProfileModalOpen(false);
   };
+  const handleConfirmCode = () => {
+    // Validate the code (you can add API call logic here)
+    if (verificationCode === "123456") { // Replace with actual validation logic
+      setIsPasswordModalOpen(true);
+      setIsModalOpen(false);
+    } else {
+      alert("Invalid verification code. Please try again.");
+    }
+  };
+  const handleChangePassword = () => {
+    if (newPassword !== retypePassword) {
+      alert("Passwords do not match. Please try again.");
+      return;
+    }
+
+    // Add API call logic to update the password here
+    console.log("Password changed successfully!");
+    alert("Password changed successfully!");
+    setIsPasswordModalOpen(false);
+  };
+
   return (
     <div className="settings-body">
       <div className='Settings-container'>
@@ -108,21 +134,54 @@ export const Settings = () => {
               <span className="material-symbols-outlined" onClick={handleLogOutClick}>logout</span>
                 <p onClick={handleLogOutClick}>Logout</p>
             </div>
+
               {/* Modal Component */}
               {isModalOpen && (
               <div className="modal-overlay-mobile-num" onClick={toggleModal}>
                 <div className="modal-content-mobile-num" onClick={(e) => e.stopPropagation()}>
                   <h2>Change Password</h2>
                   <p>Please input your registered email</p>
+                <input
+                  type="text"
+                  placeholder="Enter your email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
                   <div className="modal-verify-mobile-num">
-                    <input type="number"placeholder="Enter your email"/>
-                    <button>Verify</button>
+                  <input
+                    type="text"
+                    placeholder="Enter verification code"
+                    value={verificationCode}
+                    onChange={(e) => setVerificationCode(e.target.value)}
+                  />
+                  <button onClick={handleConfirmCode}>Confirm</button>
                   </div>
-                  <input type="text"placeholder="Enter verification code"/>
-                  <button>Confirm</button>
                 </div>
               </div>
             )}
+               {/* Modal for setting a new password */}
+          {isPasswordModalOpen && (
+            <div className="modal-overlay-new-password" onClick={() => setIsPasswordModalOpen(false)}>
+              <div className="modal-content-new-password" onClick={(e) => e.stopPropagation()}>
+                <h2>Set New Password</h2>
+                <input
+                  type="password"
+                  placeholder="Enter new password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                />
+                <input
+                  type="password"
+                  placeholder="Re-type new password"
+                  value={retypePassword}
+                  onChange={(e) => setRetypePassword(e.target.value)}
+                />
+                <button onClick={handleChangePassword}>Save</button>
+              </div>
+            </div>
+          )}
+        </div>
+
             {/* Render Settings modal if isSettingsModalOpen is true */}
              {isChangeDeviceModalOpen && isLargeScreen && (
                <div className="modal-Mdev-larger" onClick={closeManageDeviceModal}>
@@ -141,8 +200,9 @@ export const Settings = () => {
             )}  
           </div>
       </div>
-    </div>
+
   )
+
 }
 
 export default Settings;

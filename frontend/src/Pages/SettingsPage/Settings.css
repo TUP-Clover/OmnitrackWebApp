@@ -193,6 +193,85 @@
     border-radius: 7px;
     width: 7em;
 }
+    /* Overlay for the modal */
+    .modal-overlay-new-password {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
+    
+    /* Modal container */
+    .modal-content-new-password {
+        background-color: #1B1F2D; /* Dark background to match theme */
+        color: #ffd700; /* Gold text color */
+        padding: 20px;
+        border-radius: 10px;
+        width: clamp(300px, 90%, 400px); /* Responsive width */
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3); /* Subtle shadow */
+        text-align: center;
+    }
+    
+    /* Modal Title */
+    .modal-content-new-password h2 {
+        font-size: 18px;
+        margin-bottom: 15px;
+        color: white; /* White for the title */
+    }
+    
+    /* Input fields for passwords */
+    .modal-content-new-password input {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #E0DEDE; /* Light gray border */
+        border-radius: 10px;
+        background-color: #E0DEDE; /* Light gray background */
+        color: black; /* Dark text for readability */
+        font-size: 14px;
+        outline: none; /* Remove outline on focus */
+        text-align: left; /* Ensure left alignment for text */
+    }
+    
+    /* Submit button for saving new password */
+    .modal-content-new-password button {
+        width: 100%;
+        padding: 10px;
+        background-color: #EEB700; /* Bright gold */
+        color: #333741; /* Match the modal background */
+        border: none;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background-color 0.3s ease; /* Smooth hover effect */
+    }
+    
+    /* Hover effect for button */
+    .modal-content-new-password button:hover {
+        background-color: #e6c200; /* Slightly darker gold */
+    }
+    
+    /* Error or additional text */
+    .modal-content-new-password .error-message {
+        font-size: 12px;
+        color: #ff4d4d; /* Bright red for error messages */
+        margin-bottom: 10px;
+    }
+    
+    /* Flexbox for spacing inputs/buttons */
+    .modal-content-new-password .input-group {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 15px;
+    }
 
 
 @media (min-width:768px) {
@@ -265,6 +344,12 @@
         justify-content: space-between;
     }
 
+    .modal-content-new-password {
+        width: 400px; /* Wider modal for larger screens */
+    }
 }
+
+
+
 
 
