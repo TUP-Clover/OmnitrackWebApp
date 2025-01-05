@@ -163,7 +163,7 @@ const Monitor = () => {
         try {
           const [devicesResponse, coordinatesResponse] = await Promise.all([
             axios.post('http://localhost:8800/get-devices', { userId: user.userId }),
-            axios.post('http://localhost.188:8800/get-coordinates', { userId: user.userId }),
+            axios.post('http://localhost:8800/get-coordinates', { userId: user.userId }),
           ]);
     
           // Handle devices response

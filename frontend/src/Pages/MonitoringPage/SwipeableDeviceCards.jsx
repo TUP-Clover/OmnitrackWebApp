@@ -93,19 +93,28 @@ const DeviceCard = ({module, name, color, location,distance, onTrack }) => {
     <div className="device-card">
       <div className="left_side">
         <h4>{name}</h4>
+  
         <p>Module: {module}</p>
         <p className="status">{location || "Loading location..."}</p>
         <p className="distance">Distance: {distance ? `${distance} km` : "Calculating..."}</p>
         <div className="device-card-func">
           <button onClick={onTrack}>Track</button>
+        <div className='geofence'>
+          <p>Geofence</p>
+          <label class="switch">
+          <input type="checkbox"></input>
+          <span class="slider round"></span>
+        </label>
+        </div>
+        </div>
+      </div>
+      <div className="right_side">
           <div
             className="status-bar"
             style={{ backgroundColor: color }} // Dynamic color
           ></div>
-        </div>
-      </div>
-      <div className="right_side">
         <span className="material-symbols-outlined">share_location</span>
+        
       </div>
     </div>
   );
