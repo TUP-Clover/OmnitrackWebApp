@@ -51,8 +51,8 @@ const SwipeableDeviceCards = ({ dataloading, setActiveDevice,  userLocation  }) 
        calculateDistance(
           Number(userLocation.lat),
           Number(userLocation.lon),
-          Number(deviceLocation.Latitude), // Ensure these are numbers
-          Number(deviceLocation.Longitude)
+         // Number(deviceLocation.Latitude), // Ensure these are numbers
+        //  Number(deviceLocation.Longitude)
         )
       console.log(distance);
       console.log(device);
