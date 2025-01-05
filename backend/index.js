@@ -9,7 +9,8 @@ import fs from "fs";
 import admin from "firebase-admin";
 import dotenv from "dotenv";
 import sgMail from "@sendgrid/mail";
-
+import http from "http";
+import { Server } from "socket.io";
 import { fileURLToPath } from 'url';
 
 dotenv.config();
@@ -17,11 +18,19 @@ dotenv.config();
 const app = express();
 
 app.use(express.json()); 
+const allowedOrigins = ["http://localhost:3000", "http://ip:3000"];
+
 app.use(
-    cors({
-      origin: "http://localhost:3000", // for Hosting 'https://trackmoto.horsemendevs.com',
-      methods: ["GET", "POST", "PATCH"],
-      credentials: true, // Allow cookies to be sent
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true); // Allow requests from allowed origins
+      } else {
+        callback(new Error("Not allowed by CORS")); // Block others
+      }
+    },
+    methods: ["GET", "POST", "PATCH"],
+    credentials: true, // Allow cookies to be sent
     })
   );
 
@@ -595,6 +604,17 @@ app.patch('/remove-image', async (req, res) => {
 
 // --------------- POST REQUEST FROM ESP32 HANDLER --------------- //
 
+// Create an HTTP server with the Express app
+const server = http.createServer(app);
+
+// Initialize Socket.IO and bind it to the HTTP server
+const io = new Server(server, {
+  cors: {
+    origin: allowedOrigins, 
+    methods: ["GET", "POST"],
+  },
+});
+
 app.post("/insert_gps", async (req, res) => {
   const { module, latitude, longitude } = req.body;
 
@@ -608,19 +628,41 @@ app.post("/insert_gps", async (req, res) => {
     const now = new Date();
     const formattedTimestamp = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
 
-    // Save GPS data to Firebase
-    const ref = db.ref("coordinates");
-    const newEntry = {
+    // Fetch all devices from the /devices path
+    const devicesRef = db.ref("devices");
+    const devicesSnapshot = await devicesRef.once("value");
+    const devicesData = devicesSnapshot.val();
+
+    // Find the device matching the given module and extract its color
+    let color = "#000000"; // Default to black if no match is found
+    if (devicesData) {
+      Object.values(devicesData).forEach((device) => {
+        if (device.Module === module) {
+          color = device.Color || "#000000"; // Use default black if color is missing
+        }
+      });
+    }
+
+    // Create a base GPS entry (without color)
+    const baseEntry = {
       Module: module,
       Latitude: latitude,
       Longitude: longitude,
-      Timestamp: formattedTimestamp, // Use formatted timestamp
+      Timestamp: formattedTimestamp,
     };
 
-    await ref.push(newEntry); // Push to Firebase Realtime Database
+    // Save baseEntry to Firebase under the /coordinates path
+    const ref = db.ref("coordinates");
+    await ref.push(baseEntry); // Push base entry to Firebase
+
+    // Add color for emitting via Socket.IO
+    const newCoordinates = { ...baseEntry, Color: color };
+
+    // Emit the new GPS data to all connected Socket.IO clients
+    io.emit("new_coordinates", newCoordinates);
+
     res.status(200).json({
       message: "GPS data inserted successfully",
-      //data: newEntry,
     });
   } catch (error) {
     console.error("Failed to insert GPS data:", error);
@@ -722,6 +764,6 @@ app.patch("/user-signup", async (req, res) => {
 });
 
 // Start server
-app.listen(8800, '0.0.0.0', () => {
+server.listen(8800, '0.0.0.0', () => {
   console.log("Connected to backend on port 8800");
 });

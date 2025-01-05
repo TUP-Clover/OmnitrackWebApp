@@ -10,6 +10,7 @@ import Loader from '../../Loader/Loader';
 
 import SwipeableDeviceCards from './SwipeableDeviceCards';
 import { toast, ToastContainer } from 'react-toastify'
+import { io } from "socket.io-client";
 
 import './Monitor.css'; // Include your other styles
 
@@ -144,42 +145,60 @@ const Monitor = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!user || user.isNewUser) {
-        setDataLoading(false);
-        return; // Skip if user is new
-      }
+        if (!user || user.isNewUser) {
+          setDataLoading(false);
+          return; // Skip if user is new
+        }
+
+        try {
+          const [devicesResponse, coordinatesResponse] = await Promise.all([
+            axios.post('http://localhost:8800/get-devices', { userId: user.userId }),
+            axios.post('http://localhost.188:8800/get-coordinates', { userId: user.userId }),
+          ]);
+    
+          // Handle devices response
+          if (devicesResponse.data.success) {
+            setDevices(devicesResponse.data.devices);
+          } else {
+            console.warn("No devices found or error:", devicesResponse.data.message);
+          }
+    
+          // Handle coordinates response
+          if (coordinatesResponse.data) {
+            setCoordinates(coordinatesResponse.data);
+          }
+        } catch (error) {
+          if (error.response && error.response.status === 404) {
+            console.log("No devices found.");
+            return;
+          } else {
+            console.error("Error fetching data:", error);
+          }
+        } finally {
+          setDataLoading(false); // Set loading to false after both requests complete
+        }
+    };
       
-      try {
-        const [devicesResponse, coordinatesResponse] = await Promise.all([
-          axios.post('http://localhost:8800/get-devices', { userId: user.userId }),
-          axios.post('http://localhost:8800/get-coordinates', { userId: user.userId }),
-        ]);
-  
-        // Handle devices response
-        if (devicesResponse.data.success) {
-          setDevices(devicesResponse.data.devices);
-        } else {
-          console.warn("No devices found or error:", devicesResponse.data.message);
-        }
-  
-        // Handle coordinates response
-        if (coordinatesResponse.data) {
-          setCoordinates(coordinatesResponse.data);
-        }
-      } catch (error) {
-        if (error.response && error.response.status === 404) {
-          console.log("No devices found.");
-          return;
-        } else {
-          console.error("Error fetching data:", error);
-        }
-      } finally {
-        setDataLoading(false); // Set loading to false after both requests complete
-      }
-  };
   
     fetchData();
   }, [user, setDevices, setCoordinates]);
+
+  useEffect(() => {
+    if (!user || user.isNewUser) return;
+
+    const socket = io("http://localhost:8800"); 
+
+    // Listen for new coordinates
+    socket.on("new_coordinates", (newCoordinate) => {
+      console.log("Received new coordinate:", newCoordinate);
+      setCoordinates((prevCoordinates) => [...prevCoordinates, newCoordinate]);
+    });
+
+    // Cleanup on component unmount
+    return () => {
+      socket.disconnect();
+    };
+  }, [user, setCoordinates]);
 
    // Fetch user location on mount
    useEffect(() => {
