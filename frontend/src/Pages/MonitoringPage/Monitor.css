@@ -191,11 +191,11 @@
     .device-card {
         background-color: #1B1F2D;
         border-radius: 8px;
-        padding: 10px;
+        padding: 30px;
         margin-right: 10px;
         min-width: 290px; /* Reduce min-width to fit more cards in smaller screen */
         max-width: 200px;
-        min-height: 120px;
+        max-height: 150px;
         height: 100%;
         display: flex;
         flex-direction: row;
