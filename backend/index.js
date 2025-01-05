@@ -8,9 +8,9 @@ import fs from "fs";
 
 import admin from "firebase-admin";
 import dotenv from "dotenv";
+import sgMail from "@sendgrid/mail";
 
 import { fileURLToPath } from 'url';
-import { readFile } from "fs/promises";
 
 dotenv.config();
 
@@ -629,7 +629,99 @@ app.post("/insert_gps", async (req, res) => {
 });
 
 
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+app.post("/send-otp", async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) return res.status(400).json({ error: "Email is required." });
+
+  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+  const otpExpiry = Date.now() + 3 * 60 * 1000; // 3 minutes
+
+  const signupRef = db.ref("/signup").push();
+
+  await signupRef.set({
+    email,
+    otp,
+    otpExpiry,
+  });
+
+  const msg = {
+    to: email,
+    from: {
+      email: process.env.EMAIL_HOST,
+      name: "TrackMoto",
+    },
+    subject: "TrackMoto Verification Code",
+    text: `Your TrackMoto verification code is: ${otp}. It is valid for 3 minutes.`,
+    html: `<h4>Your TrackMoto verification code is: <h1><strong>${otp}</strong></h1> It is valid for 3 minutes.</h4>`,
+  };
+
+  sgMail
+    .send(msg)
+    .then(() => res.json({ message: "Verification code sent successfully." }))
+    .catch((error) => {
+      console.error(error);
+      res.status(500).json({ error: "Failed to send OTP." });
+    });
+});
+
+app.post("/verify-otp", async (req, res) => {
+  const { email, otp } = req.body;
+
+  if (!email || !otp) return res.status(400).json({ error: "Email and OTP are required." });
+
+  const signupRef = db.ref("/signup");
+  const snapshot = await signupRef.orderByChild("email").equalTo(email).once("value");
+
+  if (!snapshot.exists()) return res.status(404).json({ error: "OTP not found." });
+
+  const userData = Object.values(snapshot.val())[0];
+  const userKey = Object.keys(snapshot.val())[0];
+
+  if (userData.otp !== otp) return res.status(400).json({ error: "Invalid OTP." });
+
+  if (Date.now() > userData.otpExpiry) return res.status(400).json({ error: "OTP has expired." });
+
+  // OTP is valid
+  res.json({ message: "OTP verified successfully.", signupId: userKey });
+});
+
+app.patch("/user-signup", async (req, res) => {
+  const { signupId, username, password } = req.body;
+
+  if (!signupId || !username || !password)
+    return res.status(400).json({ error: "All fields are required." });
+
+  const signupRef = db.ref(`/signup/${signupId}`);
+  const snapshot = await signupRef.once("value");
+
+  if (!snapshot.exists()) return res.status(404).json({ error: "Signup data not found." });
+
+  const { email } = snapshot.val();
+
+  // Hash the password
+  const saltRounds = 10;
+  const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+  const usersRef = db.ref("/users").push();
+
+  await usersRef.set({
+    email,
+    username,
+    password: hashedPassword, // Save the hashed password
+    mobile: "",
+    profileImage: "",
+  });
+
+  // Cleanup the /signup path
+  await signupRef.remove();
+
+  res.json({ message: "User signed up successfully." });
+});
+
 // Start server
-app.listen(8800, () => {
+app.listen(8800, '0.0.0.0', () => {
   console.log("Connected to backend on port 8800");
 });
