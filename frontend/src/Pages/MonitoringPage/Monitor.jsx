@@ -65,12 +65,22 @@ const Monitor = () => {
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   
-    // Toggle CSS classes for animation
     const menuBar = document.getElementById("menu-bar");
     const nav = document.getElementById("nav");
-    menuBar.classList.toggle("change");
-    nav.classList.toggle("change");
+  
+    if (menuBar) {
+      menuBar.classList.toggle("change");
+    } else {
+      console.error("menu-bar element not found.");
+    }
+  
+    if (nav) {
+      nav.classList.toggle("change");
+    } else {
+      console.error("nav element not found.");
+    }
   };
+  
 
   const handleFilterChange = (event) => {
     setSelectedFilter(event.target.value);
