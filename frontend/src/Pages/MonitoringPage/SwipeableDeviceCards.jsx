@@ -7,6 +7,7 @@ const SwipeableDeviceCards = ({ dataloading, setActiveDevice,  userLocation  }) 
   const { devices, locations } = useDevices();
   const [devicesWithDistance, setDevicesWithDistance] = useState([]);
 
+
   const handlers = useSwipeable({
     onSwipedLeft: () => scrollCards('right'),
     onSwipedRight: () => scrollCards('left'),
@@ -26,18 +27,16 @@ const SwipeableDeviceCards = ({ dataloading, setActiveDevice,  userLocation  }) 
  
   const calculateDistance = (lat1, lon1, lat2, lon2) => {
     if (!lat1 || !lon1 || !lat2 || !lon2) return null;
-    const toRad = (value) => (value * Math.PI) / 180;
+    const toRad = (value) => value * (Math.PI / 180);
 
     const R = 6371; // Earth's radius in kilometers
     const dLat = toRad(lat2 - lat1);
     const dLon = toRad(lon2 - lon1);
-    const a =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(toRad(lat1)) *
-        Math.cos(toRad(lat2)) *
-        Math.sin(dLon / 2) *
-        Math.sin(dLon / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const a = Math.sin(dLat / 2) ** 2 +
+              Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+              Math.sin(dLon / 2) ** 2;
+
+  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     return (R * c).toFixed(2);
   };
 
@@ -46,20 +45,21 @@ const SwipeableDeviceCards = ({ dataloading, setActiveDevice,  userLocation  }) 
 
     const updatedDevices = devices.map((device) => {
       const deviceLocation = locations[device.Module]?.coordinates;
-      console.log(deviceLocation);
+     //console.log(deviceLocation);
       const distance = 
        calculateDistance(
           Number(userLocation.lat),
           Number(userLocation.lon),
-         // Number(deviceLocation.Latitude), // Ensure these are numbers
-        //  Number(deviceLocation.Longitude)
+          Number(deviceLocation?.Latitude), // Ensure these are numbers
+          Number(deviceLocation?.Longitude)
         )
-      console.log(distance);
-      console.log(device);
+      //console.log(distance);
+      //console.log(device);
+      //console.log(`Device: ${device.Module}, Distance: ${distance}`);
       return { ...device, distance: distance || 'No distance' }; // Add default value for missing distance
     });
    
-    console.log('Updated devices:', updatedDevices);
+    //console.log('Updated devices:', updatedDevices);
     setDevicesWithDistance(updatedDevices);
   }, [userLocation, devices, locations]);
 
@@ -68,8 +68,8 @@ const SwipeableDeviceCards = ({ dataloading, setActiveDevice,  userLocation  }) 
 
   return (
     <div className="device-cards" {...handlers}>
-      {devices && devices.length > 0 ? (
-        devices.map((device) => (
+      {devicesWithDistance && devicesWithDistance.length > 0 ? (
+        devicesWithDistance.map((device) => (
           <DeviceCard
             key={device.id}
             name={device.Name}
@@ -77,7 +77,7 @@ const SwipeableDeviceCards = ({ dataloading, setActiveDevice,  userLocation  }) 
             color={device.Color}
             status="Active" // Placeholder for now
             location={locations[device.Module] ? locations[device.Module].name : "Loading..."} // Display the latest location name
-            distance={device.distance ? device.distance : "Calculating..."}
+            distance={ device.distance || "Calculating..."}
             onTrack={() => setActiveDevice(device.Module)} // Track button log
           />
         ))
