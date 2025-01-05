@@ -1,5 +1,4 @@
 .Manage-body{
-    border: 4px solid green;
     background-color: #1B1F2D;
     width: 100vw;
     height: 100vh;
@@ -65,7 +64,10 @@
     padding: 15px;
 }
 .top-mdev p{
+    font-weight: 600;
+    text-align: left;
     font-size: 12px;
+    color: white;
 }
 .bottom-mdev{
     width: 100%;

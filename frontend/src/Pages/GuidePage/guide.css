@@ -1,139 +1,213 @@
-.slider-component label {
-    background: #444;
-    color: #fff;
-    transition: transform 400ms ease-out;
-    display: inline-block;
-    min-height: 100%;
-    width: 100vw;
-    height: 100vh;
-    position: relative;
-    z-index: 0;
-    border: 2px solid salmon;
-  }
-  
-  .slider-component form {
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    white-space: nowrap;
-  }
-  
-  .slider-component input {
-    position: absolute;
-  }
-  
-  .slider-component .keys {
-    position: fixed;
-    z-index: 10;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding: 1rem;
-    color: #fff;
-    text-align: center;
-    transition: all 300ms linear;
-    opacity: 0;
-  }
-  
-  .slider-component input:focus ~ .keys {
-    opacity: 0.8;
-  }
-  
-  .slider-component input:nth-of-type(1):checked ~ label:nth-of-type(1),
-  .slider-component input:nth-of-type(2):checked ~ label:nth-of-type(2),
-  .slider-component input:nth-of-type(3):checked ~ label:nth-of-type(3),
-  .slider-component input:nth-of-type(4):checked ~ label:nth-of-type(4),
-  .slider-component input:nth-of-type(5):checked ~ label:nth-of-type(5) {
-    z-index: 1;
-  }
-  
-  .slider-component input:nth-of-type(0):checked ~ label {
-    transform: translate3d(0, 0, 0);
-  }
-  
-  .slider-component input:nth-of-type(1):checked ~ label {
-    transform: translate3d(-100%, 0, 0);
-  }
-  
-  .slider-component input:nth-of-type(2):checked ~ label {
-    transform: translate3d(-200%, 0, 0);
-  }
-  
-  .slider-component input:nth-of-type(3):checked ~ label {
-    transform: translate3d(-300%, 0, 0);
-  }
+/* General Styles */
 
-  .slider-component input:nth-of-type(4):checked ~ label {
-    transform: translate3d(-400%, 0, 0);
-  }
-  
-  .slider-component label {
-    background: #1B1F2D;
-    background-size: cover;
-    font-size: 3rem;
-  }
-  
-  /* .slider-component label[for="diamonds"],
-  .slider-component label[for="hearts"] {
-    background: #cc0000;
-  }
+.slide {
+  background: #444;
+  color: #fff;
+  transition: transform 400ms ease-out;
+  display: inline-block;
+  min-height: 100%;
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  cursor: pointer;
+  overflow-x: hidden;
+}
 
-  .slider-component label[for="Gold"]{
-    background: salmon;
-  } */
-  
-.guide-back-btn{
-    position: fixed;
-    top: 15px;
-    left: 15px;
-    width: 40px;
-    height: 40px;
-    background-color: #333741;
-    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
-    border-radius: 50%;
-    z-index: 99;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+/* Carousel-Specific Styling */
+.carousel-form {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  white-space: nowrap;
+}
+
+.carousel-input {
+  position: absolute;
+}
+
+/* Keys Styling */
+.keys {
+  position: fixed;
+  z-index: 10;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 1rem;
+  color: #fff;
+  text-align: center;
+  transition: all 300ms linear;
+  opacity: 0;
+}
+
+.carousel-input:focus ~ .keys {
+  opacity: 0.8;
+}
+
+/* Input and Label Sync */
+.carousel-input:nth-of-type(1):checked ~ .slide:nth-of-type(1), 
+.carousel-input:nth-of-type(2):checked ~ .slide:nth-of-type(2),
+.carousel-input:nth-of-type(3):checked ~ .slide:nth-of-type(3),
+.carousel-input:nth-of-type(4):checked ~ .slide:nth-of-type(4),
+.carousel-input:nth-of-type(5):checked ~ .slide:nth-of-type(5),
+.carousel-input:nth-of-type(6):checked ~ .slide:nth-of-type(6),
+.carousel-input:nth-of-type(6):checked ~ .slide:nth-of-type(7),
+.carousel-input:nth-of-type(6):checked ~ .slide:nth-of-type(8),
+.carousel-input:nth-of-type(6):checked ~ .slide:nth-of-type(9),
+.carousel-input:nth-of-type(6):checked ~ .slide:nth-of-type(10),
+.carousel-input:nth-of-type(6):checked ~ .slide:nth-of-type(11),
+.carousel-input:nth-of-type(6):checked ~ .slide:nth-of-type(12) {
+  z-index: 0;
+}
+
+.carousel-input:nth-of-type(1):checked ~ .slide {
+  transform: translate3d(0, 0, 0);
+}
+
+.carousel-input:nth-of-type(2):checked ~ .slide {
+  transform: translate3d(-100%, 0, 0);
+}
+
+.carousel-input:nth-of-type(3):checked ~ .slide {
+  transform: translate3d(-200%, 0, 0);
+}
+
+.carousel-input:nth-of-type(4):checked ~ .slide {
+  transform: translate3d(-300%, 0, 0);
+}
+.carousel-input:nth-of-type(5):checked ~ .slide {
+  transform: translate3d(-400%, 0, 0);
+}
+.carousel-input:nth-of-type(6):checked ~ .slide {
+  transform: translate3d(-500%, 0, 0);
+}
+.carousel-input:nth-of-type(7):checked ~ .slide {
+  transform: translate3d(-600%, 0, 0);
+}
+.carousel-input:nth-of-type(8):checked ~ .slide {
+  transform: translate3d(-700%, 0, 0);
+}
+.carousel-input:nth-of-type(9):checked ~ .slide {
+  transform: translate3d(-800%, 0, 0);
+}
+.carousel-input:nth-of-type(10):checked ~ .slide {
+  transform: translate3d(-900%, 0, 0);
+}
+.carousel-input:nth-of-type(11):checked ~ .slide {
+  transform: translate3d(-1000%, 0, 0);
+}
+.carousel-input:nth-of-type(12):checked ~ .slide {
+  transform: translate3d(-1100%, 0, 0);
+}
+
+.slide {
+  background: #1B1F2D;
+  background-size: cover;
+  font-size: 3rem;
+}
+
+
+
+.nav-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  font-size: 1.5rem;
+  cursor: pointer;
+  z-index: 10;
+  transition: background 0.3s ease;
+  height: 100px;
+  width: 20px;
+}
+
+.nav-button.prev {
+  left: 5px;
+  border-radius: 50% 0 0 50%;
+}
+
+.nav-button.next {
+  right: 5px;
+  border-radius: 0 50% 50% 0;
+}
+
+.nav-button:hover {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.nav-button:active {
+  transform: translateY(-50%) scale(0.95);
+}
+
+
+.guide-back-btn {
+  position: fixed;
+  top: 15px;
+  left: 15px;
+  width: 40px;
+  height: 40px;
+  background-color: #333741;
+  box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+  border-radius: 50%;
+  z-index: 99;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .intro-guide{
-    margin-top: 2em;
-    font-size: 30px;
-    border: 2px solid green;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1.5em;
+  height: 2em;
+  font-size: 30px;
+}
+.guide-content{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 11.5em;
+  width: 100%;
+  overflow: hidden;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+.guide {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain; /* Ensures the image fits inside the div while maintaining its aspect ratio */
+}
+.image-div-guide{
+  width: 100%;
+  height: 75%;
+}
+.image-small-guide{
+  width: 100%;
+  height: 75%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.guide-desc {
+  margin-top: 0.5em;
+  width: 100%;
+  height: 25%;
+  font-size: 14px;
+  white-space: normal; /* Allows text to wrap */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-wrap: break-word; /* Ensures long words break to fit the width */
 }
 
-/* Navigation Buttons */
-.carousel-nav {
-    position: fixed;
-    top: 50%; /* Centered vertically */
-    transform: translateY(-50%);
-    width: 50px; /* Adjust width for the desired shape */
-    height: 100px; /* Adjust height for the capsule-like shape */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: rgba(100, 100, 100, 0.8); /* Solid gray background */
-    color: white;
-    border-radius: 25px; /* Capsule shape */
-    cursor: pointer;
-    z-index: 10;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
-    transition: background 0.3s ease, transform 0.2s ease; /* Smooth hover effect */
-  }
-  
-  .carousel-nav.prev {
-    left: 20px; /* Fixed left position */
-  }
-  
-  .carousel-nav.next {
-    right: 20px; /* Fixed right position */
-  }
-  
-  .carousel-nav:hover {
-    background: rgba(255, 255, 255, 0.9);
-    color: black;
-  }
-  
+.guide-desc span{
+  color: #EEB700;
+}
