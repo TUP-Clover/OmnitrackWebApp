@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import './guide.css';
 import { useNavigate } from "react-router-dom";
+import useMediaQuery from '../MonitoringPage/useMediaQuery'; // Assuming you already have this custom hook
+
 import firstStep from "./images/1st.png"
 import secondStep from "./images/2nd.png"
 import thirdStep from "./images/3rd.png"
@@ -14,14 +16,14 @@ import tenthStep from "./images/10th.png"
 import eleventhStep from "./images/11th.png"
 
 
-const Guide = () => {
+const Guide = ({ onBack }) => {
   const navigate = useNavigate();
   const [currentSlide, setCurrentSlide] = useState(0); // Track the current slide
   const totalSlides = 12; // Total number of slides
 
-  const handleBackClick = () => {
-    navigate("/Settings");
-  };
+  const isLargeScreen = useMediaQuery("(min-width: 768px)"); // Check if screen is >= 768px
+
+
 
   const goToNextSlide = () => {
     setCurrentSlide((prevSlide) => (prevSlide + 1) % totalSlides);
@@ -32,6 +34,19 @@ const Guide = () => {
     setCurrentSlide((prevSlide) => (prevSlide - 1 + totalSlides) % totalSlides);
     document.getElementById(`slide-${(currentSlide - 1 + totalSlides) % totalSlides}`).checked = true;
   };
+      // Handle save or back logic
+      const handleBackClick = () => {
+    
+        if (isLargeScreen) {
+            // For larger screens, use the provided `onBack` function
+            if (onBack) {
+                onBack();
+            }
+        } else {
+            // For smaller screens, navigate back to the Settings page
+            navigate('/Settings');
+        }
+    };
 
   return (
     <div className="slider-component">

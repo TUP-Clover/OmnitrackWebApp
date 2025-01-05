@@ -7,11 +7,13 @@ import { UserContext } from "../../Components/UserContext";
 import useMediaQuery from '../MonitoringPage/useMediaQuery'; // Import the custom hook
 import ManageDeviceComponent from '../ManageDevices/ManageDevices'
 import ProfileComponent from '../ProfilePage/Profile'
+import GuideComponent from '../GuidePage/Guide'
 
 export const Settings = () => {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isChangeDeviceModalOpen, setIsChangeDeviceModalOpen] = useState(false);
+  const [isGuideOpen, setIsGuideOpen] = useState(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [newPassword, setNewPassword] = useState("");
   const [retypePassword, setRetypePassword] = useState("");
@@ -57,14 +59,13 @@ export const Settings = () => {
   };
 
   const handleGuideClick = () => {
-    // if (isLargeScreen) {
-    //   // Open settings modal for larger screens
-    //   setIsChangeDeviceModalOpen(true);
-    // } else {
-    //   // Navigate to the settings page for smaller screens
-    //   navigate("/Guide");
-    // }
-    navigate("/Guide");
+    if (isLargeScreen) {
+      // Open settings modal for larger screens
+      setIsGuideOpen(true);
+    } else {
+      // Navigate to the settings page for smaller screens
+      navigate("/Guide");
+    }
   };
 
   const closeManageDeviceModal = () => {
@@ -72,6 +73,9 @@ export const Settings = () => {
   };
   const closeProfileModal = () => {
     setIsProfileModalOpen(false);
+  };
+  const closeGuide = () => {
+    setIsGuideOpen(false);
   };
   const handleConfirmCode = () => {
     // Validate the code (you can add API call logic here)
@@ -197,7 +201,11 @@ export const Settings = () => {
                 <ProfileComponent onBack={closeProfileModal}/>
               </div>
             </div>
-            )}  
+            )}
+            {/* Render Settings modal if isSettingsModalOpen is true */}
+            {isGuideOpen && isLargeScreen && (
+                <GuideComponent onBack={closeGuide}/>
+            )}
           </div>
       </div>
 
