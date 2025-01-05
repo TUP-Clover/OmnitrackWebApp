@@ -187,6 +187,8 @@
             display: flex;
             position: relative;
             gap: 20px;
+            cursor: pointer;
+            /* border: 2px solid red; */
         }
 
         .modal-forgot-pass {
@@ -582,6 +584,7 @@
         
             .button-back-txt{
                 top: 3rem;
+                cursor: pointer;
             }
 
             .button-back-signup-txt{

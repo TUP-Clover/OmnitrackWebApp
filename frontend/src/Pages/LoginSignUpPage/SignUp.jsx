@@ -13,6 +13,15 @@ const SignUp = () => {
     const handleLoginClick = () => {
         navigate("/login"); 
     };
+
+    
+    const handleBackClick = () => {
+        navigate("/WelcomePage2"); 
+    };
+
+    const handleCloseClick = () => {
+        navigate("/WelcomePage2"); 
+    };
    
    /** useEffect(() => {
         // Change body class on component mount
@@ -44,7 +53,7 @@ const SignUp = () => {
             
                 <div className="SignUp-desktop-main-container">
                   <img class="trackiconlogin" src={trackiconlogin} alt= "trackicon"></img>
-                  <div className="button-back-signup-txt">
+                  <div className="button-back-signup-txt" onClick={handleBackClick}>
                 <span className="material-symbols-outlined">arrow_back</span>
                 <div className="SignUp-txt">
                   <h1>Sign Up</h1>
@@ -71,7 +80,7 @@ const SignUp = () => {
               </div>
        <div class ="signup-main-container">
         <header class ="signupheader">
-            <button class="close-button">&times;</button>  
+            <button class="close-button" onClick={handleCloseClick}>&times;</button>  
             <h1 class="headersignup">Sign Up</h1>
             <button onClick={handleLoginClick} className="login">Login</button>
         </header>

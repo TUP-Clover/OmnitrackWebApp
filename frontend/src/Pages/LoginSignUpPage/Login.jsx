@@ -25,6 +25,14 @@ const Login = () => {
     navigate("/signup"); // Redirect to Sign Up page
   };
 
+  const handleBackClick = () => {
+    navigate("/WelcomePage2"); // Redirect to Welcome Page (Desktop Reso)
+  };
+
+  const handleCloseClick = () => {
+    navigate("/WelcomePage2"); // Redirect to Sign Up page
+  };
+
   const handleLoginClick = async (e) => {
     e.preventDefault();
 
@@ -281,7 +289,7 @@ const Login = () => {
     
         <div className="Login-desktop-main-container">
           <img class="trackiconlogin" src={trackiconlogin} alt= "trackicon"></img>
-          <div className="button-back-txt">
+          <div className="button-back-txt" onClick={handleBackClick}>
         <span className="material-symbols-outlined">arrow_back</span>
         <div className="Login-txt">
           <h1>Login</h1>
@@ -323,7 +331,7 @@ const Login = () => {
       
     <div className="login-main-container">
       <header className="loginheader">
-        <button className="close-button">&times;</button>
+        <button className="close-button" onClick={handleCloseClick}>&times;</button>
         <h1 className="headerlogin">Login</h1>
         <button onClick={handleSignUpClick} className="SignUP">
           Sign Up

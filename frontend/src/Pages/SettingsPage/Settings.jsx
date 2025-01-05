@@ -51,6 +51,17 @@ export const Settings = () => {
     }
   };
 
+  const handleGuideClick = () => {
+    // if (isLargeScreen) {
+    //   // Open settings modal for larger screens
+    //   setIsChangeDeviceModalOpen(true);
+    // } else {
+    //   // Navigate to the settings page for smaller screens
+    //   navigate("/Guide");
+    // }
+    navigate("/Guide");
+  };
+
   const closeManageDeviceModal = () => {
     setIsChangeDeviceModalOpen(false);
   };
@@ -88,7 +99,7 @@ export const Settings = () => {
               <p>Change Mobile Number</p>
               <span className="material-symbols-outlined">chevron_right</span>
             </div>
-            <div className="option-div">
+            <div className="option-div" onClick={handleGuideClick}>
               <span className="material-symbols-outlined">developer_guide</span>
               <p>Guides</p>
               <span className="material-symbols-outlined">chevron_right</span>

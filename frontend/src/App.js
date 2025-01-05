@@ -15,6 +15,8 @@ import Monitor from "./Pages/MonitoringPage/Monitor"
 import Settings from "./Pages/SettingsPage/Settings";
 import ManageDevices from "./Pages/ManageDevices/ManageDevices";
 import Profile from "./Pages/ProfilePage/Profile";
+import Guide from "./Pages/GuidePage/Guide";
+
 
 import './App.css';
 
@@ -35,6 +37,8 @@ function App() {
 						<Route path="/Settings" element={<ProtectedRoute><Settings/></ProtectedRoute>}></Route>
 						<Route path="/ManageDevices" element={<ProtectedRoute><ManageDevices/></ProtectedRoute>}></Route>
 						<Route path="/Profile" element={<ProtectedRoute><Profile/></ProtectedRoute>}></Route>
+						<Route path="/Guide" element={<ProtectedRoute><Guide/></ProtectedRoute>}></Route>
+
 					</Routes>
 				</DeviceProvider>
 			</UserProvider>
