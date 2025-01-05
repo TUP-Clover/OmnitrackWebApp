@@ -99,11 +99,11 @@ const SignUp = () => {
     };
 
     
-    const handleBackClick = () => {
+    const handleBackClick = () => { //Back on desktop reso
         navigate("/WelcomePage2"); 
     };
 
-    const handleCloseClick = () => {
+    const handleCloseClick = () => { //Back on mobile reso
         navigate("/WelcomePage2"); 
     };
    
@@ -139,56 +139,58 @@ const SignUp = () => {
                     <div className="SignUp-desktop-main-container">
                         <img class="trackiconlogin" src={trackiconlogin} alt= "trackicon"></img>
                         <div className="button-back-signup-txt">
-                            <span className="material-symbols-outlined">arrow_back</span>
+                            <span className="material-symbols-outlined" onClick={handleBackClick}>arrow_back</span>
                             <div className="SignUp-txt">
                                 <h1>Sign Up</h1>
                             </div>
                         </div>
-                    </div>
-                    
-                    <form class="SignUp-form-desktop">
-                        <input
-                            type="text"
-                            placeholder="Name"
-                            className="input-field"
-                            value={username}
-                            onChange={(e) => setUserName(e.target.value)}
-                        />
-                        <div class ="input-group">
-                            <input
-                                type="password"
-                                placeholder="Password"
-                                className="input-field"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                            />
-                        </div>
-                        <div class="input-group">
+                        <form class="SignUp-form-desktop">
                             <input
                                 type="text"
-                                placeholder="Email"
+                                placeholder="Name"
                                 className="input-field"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                                value={username}
+                                onChange={(e) => setUserName(e.target.value)}
                             />
-                            <button class="verify-button" onClick={handleSendVerificationCode}>Send Verification Code</button>
-                        </div>
-                            <input
-                                type="tel"
-                                placeholder="Verification Code"
-                                className="input-field"
-                                value={verificationCode}
-                                onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, ""))}
-                            />
-                            <button className="verify-button" onClick={handleVerifyOTP}>Verify</button>
-                        <button class="SignUp" onClick={handleSignUp}>Sign Up</button>
-                    </form>
+                            <div class ="input-group">
+                                <input
+                                    type="password"
+                                    placeholder="Password"
+                                    className="input-field"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                />
+                            </div>
+                            <div class="input-group">
+                                <input
+                                    type="text"
+                                    placeholder="Email"
+                                    className="input-field"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                />
+                                <button class="verify-button" onClick={handleSendVerificationCode}>Send Verification Code</button>
+                            </div>
+                            <div className="input-group">
+                                <input
+                                    type="tel"
+                                    placeholder="Verification Code"
+                                    className="input-field"
+                                    value={verificationCode}
+                                    onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, ""))}
+                                />
+                                <button className="verify-button" onClick={handleVerifyOTP}>Verify</button>
+                            </div>
+                            <button class="SignUp" onClick={handleSignUp}>Sign Up</button>
+                        </form>
+                    </div>
+                    
                 </div>
             </div>
 
             <div class ="signup-main-container">
                 <header class ="signupheader">
-                    <button class="close-button">&times;</button>  
+                    <button class="close-button" onClick={handleCloseClick}>&times;</button>  
                     <h1 class="headersignup">Sign Up</h1>
                     <button onClick={handleLoginClick} className="login">Login</button>
                 </header>
@@ -221,6 +223,7 @@ const SignUp = () => {
                             />
                             <button class="verify-button" onClick={handleSendVerificationCode}>Send Verification Code</button>
                         </div>
+                        <div class="input-group">
                             <input
                                 type="tel"
                                 placeholder="Verification Code"
@@ -229,6 +232,7 @@ const SignUp = () => {
                                 onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, ""))}
                             />
                             <button className="verify-button" onClick={handleVerifyOTP}>Verify</button>
+                        </div>
                         <button class="SignUp" onClick={handleLoginClick}>Sign Up</button>
                     </form>
                 </div>

@@ -3,7 +3,7 @@ import { useDevices } from "./DeviceContext";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css"; // Import the required CSS
 
-mapboxgl.accessToken = "pk.eyJ1IjoiamVkZHJhc2NvIiwiYSI6ImNtMDgzOWpqNzBseTQybG9reDgwdG5ma2MifQ.IDJqlXbXAYJKidQGIEakFA";
+mapboxgl.accessToken = "pk.eyJ1IjoiYWxnYXJzb24xMjMiLCJhIjoiY20xZzF2eGF0MXI2ZzJxc2JtdndtMnNxYyJ9.MNUnBpkh2xyALMzDRP3EGQ";
 
 const MapboxComponent = ({ activeDevice }) => {
     const mapContainerRef = useRef(null);

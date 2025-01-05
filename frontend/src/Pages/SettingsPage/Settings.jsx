@@ -96,7 +96,7 @@ export const Settings = () => {
             </div>
             <div className="option-div" onClick={toggleModal} >
               <span className="material-symbols-outlined">phone_iphone</span>
-              <p>Change Mobile Number</p>
+              <p>Change Password</p>
               <span className="material-symbols-outlined">chevron_right</span>
             </div>
             <div className="option-div" onClick={handleGuideClick}>
@@ -112,13 +112,13 @@ export const Settings = () => {
               {isModalOpen && (
               <div className="modal-overlay-mobile-num" onClick={toggleModal}>
                 <div className="modal-content-mobile-num" onClick={(e) => e.stopPropagation()}>
-                  <h2>Change Mobile Number</h2>
-                  <p>Please input OTP number sent to your mobile number</p>
+                  <h2>Change Password</h2>
+                  <p>Please input your registered email</p>
                   <div className="modal-verify-mobile-num">
-                    <input type="number"placeholder="Enter your mobile number"/>
+                    <input type="number"placeholder="Enter your email"/>
                     <button>Verify</button>
                   </div>
-                  <input type="text"placeholder="Enter OTP code"/>
+                  <input type="text"placeholder="Enter verification code"/>
                   <button>Confirm</button>
                 </div>
               </div>

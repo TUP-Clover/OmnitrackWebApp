@@ -72,9 +72,16 @@
     margin: 5px;
     font-size: 1.2rem;
     font-weight: bold;
-    border-radius: 10px;
+    border-radius: 20px;
     cursor: pointer;
     transition: background-color 0.3s ease;
+}
+
+.SignUp-button:hover{
+    color: white;
+}
+.Login-button:hover{
+    color: white;
 }
 
 .SignUp-button:hover, .Login-button:hover {
@@ -381,11 +388,20 @@
     }
 
     .Login-button-desktop, .SignUp-button-desktop{
+        background: rgb(205,92,43);
+        background: radial-gradient(circle, rgba(205,92,43,1) 22%, rgba(205,92,43,1) 46%, rgba(230,163,9,1) 71%);
         width: 70%;
         padding: 10px;
         margin: 20px;
         font-size: 1rem;
-        border-radius: 0px;
+        border-radius: 100px;
+        transition: background-color 0.3s ease;
+    }
+    .SignUp-button-desktop:hover{
+        color: white;
+    }
+    .Login-button-desktop:hover{
+        color: white;
     }
 
 }
@@ -466,11 +482,20 @@
     }
 
     .Login-button-desktop, .SignUp-button-desktop{
+        background: rgb(205,92,43);
+        background: radial-gradient(circle, rgba(205,92,43,1) 22%, rgba(205,92,43,1) 46%, rgba(230,163,9,1) 71%);
         width: 70%;
         padding: 10px;
         margin: 20px;
         font-size: 1rem;
-        border-radius: 0px;
+        border-radius: 100px;
+        transition: background-color 0.3s ease;
+    }
+    .SignUp-button-desktop:hover{
+        color: white;
+    }
+    .Login-button-desktop:hover{
+        color: white;
     }
 
     .trackicon{
@@ -572,8 +597,17 @@
         padding: 10px;
         margin: 20px;
         font-size: 2rem;
-        border-radius: 0px;
+        border-radius: 100px;
         margin-bottom: 3rem;
+        transition: background-color 0.3s ease;
+        background: rgb(205,92,43);
+        background: linear-gradient(90deg, rgba(205,92,43,1) 0%, rgba(205,92,43,1) 45%, rgba(230,163,9,1) 100%);
+    }
+    .SignUp-button-desktop:hover{
+        color: white;
+    }
+    .Login-button-desktop:hover{
+        color: white;
     }
     .trackicon{
         position: absolute;

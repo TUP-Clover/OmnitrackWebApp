@@ -102,6 +102,7 @@
             font-weight: bold;
             cursor: pointer;
             width: 40%;
+            font-size: 12px;
         }
     
         .SignUp, .Login-btn{
@@ -357,7 +358,7 @@
                 background-color: #17191f;
                 display: flex;
                 padding: 1rem;
-                justify-content:space-between;
+                gap: 5em;
                 position: relative;
                 width: 50rem;
                 height: 30rem;
@@ -423,10 +424,10 @@
                 display: flex;
                 position: relative;
                 flex-direction: column;
-                gap: 30px;
+                gap: 20px;
                 padding: 1px;
                 top: 3em;
-                width: 18rem;
+                width: 20rem;
            }
         
         .button-back-txt{
@@ -551,7 +552,7 @@
                 background-color: #17191f;
                 display: flex;
                 padding: 1rem;
-                justify-content:space-between;
+                gap: 5em;
                 position: relative;
                 width: 50rem;
                 height: 30rem;
@@ -576,10 +577,10 @@
                 display: flex;
                 position: relative;
                 flex-direction: column;
-                gap: 30px;
+                gap: 20px;
                 padding: 4px;
                 top: 7rem;
-                width: 17rem;
+                width: 19rem;
             }
         
             .button-back-txt{
@@ -900,7 +901,7 @@
                 display: flex;
                 position: relative;
                 flex-direction: column;
-                gap: 30px;
+                gap: 25px;
                 font-size: 2rem;
                 padding: 4px;
                 top: 15rem;
