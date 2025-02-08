@@ -42,16 +42,15 @@ const SwipeableDeviceCards = ({ dataloading, setActiveDevice,  userLocation  }) 
 
   useEffect(() => {
     if (!userLocation || !devices || !locations) return;
-
+    
     const updatedDevices = devices.map((device) => {
       const deviceLocation = locations[device.Module]?.coordinates;
      //console.log(deviceLocation);
-      const distance = 
-       calculateDistance(
+      const distance = calculateDistance(
           Number(userLocation.lat),
           Number(userLocation.lon),
-          Number(deviceLocation?.Latitude), // Ensure these are numbers
-          Number(deviceLocation?.Longitude)
+          //Number(deviceLocation?.Latitude), // Ensure these are numbers
+          //Number(deviceLocation?.Longitude)
         )
       //console.log(distance);
       //console.log(device);

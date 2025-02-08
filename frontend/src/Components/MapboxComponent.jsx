@@ -66,7 +66,7 @@ const MapboxComponent = ({ activeDevice }) => {
                     // Add road-following routes between consecutive coordinates
                     for (let i = 0; i < sortedCoords.length; i++) {
                         const coord = sortedCoords[i];
-                        const { Longitude, Latitude, Color, Timestamp } = coord;
+                        const { Longitude, Latitude, Color, Name, Timestamp } = coord;
 
                         if (i > 0) {
                             const previousCoord = sortedCoords[i - 1];
@@ -120,7 +120,7 @@ const MapboxComponent = ({ activeDevice }) => {
 
                             const marker = new mapboxgl.Marker({ element: markerElement })
                                 .setLngLat([parseFloat(Longitude), parseFloat(Latitude)])
-                                .setPopup(new mapboxgl.Popup().setText(`Module: ${module}`))
+                                .setPopup(new mapboxgl.Popup().setText(`${Name}`))
                                 .addTo(map);
 
                             if (!markersRef.current[module]) {

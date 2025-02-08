@@ -213,8 +213,11 @@ app.post('/get-coordinates', async (req, res) => {
       (device) => device.Owner === userId && device.Claimed
     );
 
-    const deviceColorMap = ownedDevices.reduce((map, device) => {
-      map[device.Module] = device.Color || "#000000"; // Use a default color if none is set
+    const deviceInfoMap = ownedDevices.reduce((map, device) => {
+      map[device.Module] = {
+        Color: device.Color || "#000000", // Default color if none is set
+        Name: device.Name || "Unnamed Device", // Default name if none is set
+      };
       return map;
     }, {});
 
@@ -229,14 +232,19 @@ app.post('/get-coordinates', async (req, res) => {
 
     // Filter coordinates by owned modules
     const parsedCoordinates = Object.keys(coordinatesData)
-      .map(id => ({
-        Longitude: coordinatesData[id].Longitude,
-        Latitude: coordinatesData[id].Latitude,
-        Module: coordinatesData[id].Module,
-        Timestamp: coordinatesData[id].Timestamp,
-        Color: deviceColorMap[coordinatesData[id].Module] || "#000000", // Map the color
-      }))
-      .filter((coordinate) => ownedDevices.some((device) => device.Module === coordinate.Module));
+    .map(id => {
+      const coordinate = coordinatesData[id];
+      const deviceInfo = deviceInfoMap[coordinate.Module] || {};
+      return {
+        Longitude: coordinate.Longitude,
+        Latitude: coordinate.Latitude,
+        Module: coordinate.Module,
+        Timestamp: coordinate.Timestamp,
+        Color: deviceInfo.Color || "#000000", // Map the color
+        Name: deviceInfo.Name || "Unnamed Device", // Map the name
+      };
+    })
+    .filter((coordinate) => ownedDevices.some((device) => device.Module === coordinate.Module));
 
     res.json(parsedCoordinates); // Send filtered coordinates back to frontend
   } catch (error) {
