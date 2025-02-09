@@ -74,13 +74,15 @@
     font-weight: bold;
     border-radius: 20px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: 0.3s ease;
 }
 
 .SignUp-button:hover{
+    background-color: #D36C24;
     color: white;
 }
 .Login-button:hover{
+    background-color: #D36C24;
     color: white;
 }
 
@@ -96,11 +98,15 @@
     width: 100%;
     font-size: 1.2rem;
     font-weight: bold;
-    border-radius: 10px;
+    border-radius: 20px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: 0.3s ease;
 }
+.start-button-desktop:hover{
+    background-color: #D36C24;
+    color: white;
 
+}
 .start-button:hover {
     background-color: #FFC300;
 }
@@ -295,7 +301,6 @@
         padding: 10px;
         margin: 20px;
         font-size: 1rem;
-        border-radius: 0px;
     }
 
     .Login-button, .SignUp-button{
@@ -380,7 +385,6 @@
         padding: 10px;
         margin: 20px;
         font-size: 1rem;
-        border-radius: 0px;
     }
 
     .Login-button, .SignUp-button{
@@ -388,19 +392,20 @@
     }
 
     .Login-button-desktop, .SignUp-button-desktop{
-        background: rgb(205,92,43);
-        background: radial-gradient(circle, rgba(205,92,43,1) 22%, rgba(205,92,43,1) 46%, rgba(230,163,9,1) 71%);
+        background-color: #FFC300;
         width: 70%;
         padding: 10px;
         margin: 20px;
         font-size: 1rem;
         border-radius: 100px;
-        transition: background-color 0.3s ease;
+        transition: 0.3s ease;
     }
     .SignUp-button-desktop:hover{
+        background-color: #D36C24;
         color: white;
     }
     .Login-button-desktop:hover{
+        background-color: #D36C24;
         color: white;
     }
 
@@ -474,7 +479,6 @@
         padding: 10px;
         margin: 20px;
         font-size: 1rem;
-        border-radius: 0px;
     }
 
     .Login-button, .SignUp-button{
@@ -482,19 +486,20 @@
     }
 
     .Login-button-desktop, .SignUp-button-desktop{
-        background: rgb(205,92,43);
-        background: radial-gradient(circle, rgba(205,92,43,1) 22%, rgba(205,92,43,1) 46%, rgba(230,163,9,1) 71%);
+        background-color: #FFC300;
         width: 70%;
         padding: 10px;
         margin: 20px;
         font-size: 1rem;
         border-radius: 100px;
-        transition: background-color 0.3s ease;
+        transition: 0.3s ease;
     }
     .SignUp-button-desktop:hover{
+        background-color: #D36C24;
         color: white;
     }
     .Login-button-desktop:hover{
+        background-color: #D36C24;
         color: white;
     }
 
@@ -583,7 +588,6 @@
         padding: 10px;
         margin: 20px;
         font-size: 2rem;
-        border-radius: 0px;
         top: 10rem;
         position: relative;
     }
@@ -599,14 +603,15 @@
         font-size: 2rem;
         border-radius: 100px;
         margin-bottom: 3rem;
-        transition: background-color 0.3s ease;
-        background: rgb(205,92,43);
-        background: linear-gradient(90deg, rgba(205,92,43,1) 0%, rgba(205,92,43,1) 45%, rgba(230,163,9,1) 100%);
+        transition: 0.3s ease;
+        background-color: #FFC300;
     }
     .SignUp-button-desktop:hover{
+        background-color: #D36C24;
         color: white;
     }
     .Login-button-desktop:hover{
+        background-color: #D36C24;
         color: white;
     }
     .trackicon{

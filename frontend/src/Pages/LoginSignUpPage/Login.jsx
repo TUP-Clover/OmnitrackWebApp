@@ -298,18 +298,20 @@ const Login = () => {
         <form className="Login-form-desktop">
           <input
             type="text"
-            placeholder="Username"
+            placeholder=" "
             className="input-field"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
           />
+          <label htmlFor="user" className="floating-label-log">Username</label>
           <input
             type="password"
-            placeholder="Password"
+            placeholder=" "
             className="input-field"
             value={password.trim()}
             onChange={(e) => setPassword(e.target.value)}
           />
+          <label htmlFor="pass" className="floating-label-log-pass">Password</label>
           <button className="Login-btn" onClick={handleLoginClick}>
             Login
           </button>

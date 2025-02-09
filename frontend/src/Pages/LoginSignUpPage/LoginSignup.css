@@ -67,6 +67,7 @@
             font-size: 14px;
             color: #080808;
             cursor: pointer;
+            transition: 0.3 ease;
         }
     
         /* Form styling */
@@ -86,13 +87,90 @@
             background-color: #2c2e38;
             color: #fdfdfd;
             outline: none;
+            transition: border-color 0.2s ease;      
+        }
+        input:focus{
+            background-color: #212329;
         }
     
         .input-group {
+            position: relative;
             display: flex;
             gap: 10px;
+            flex-direction: row;
         }
-    
+        .floating-label {
+            position: absolute;
+            top: 50%;
+            left: 1.1rem;
+            transform: translateY(-50%);
+            color: #999;
+            transition: all 0.2s ease-out;
+            pointer-events: none;
+            font-size: 16px;
+        }
+        .input-field:focus + .floating-label,
+        .input-field:not(:placeholder-shown) + .floating-label {
+            top: 0;
+            left: 15px;
+            font-size: 12px;
+            color: white;
+        }
+
+        /* FOR LOGIN INPUT LABEL */
+        .floating-label-log {
+            position: absolute;
+            top: 12%;
+            left: 1.1rem;
+            transform: translateY(-50%);
+            color: #999;
+            transition: all 0.2s ease-out;
+            pointer-events: none;
+            font-size: 16px;
+        }
+        .input-field:focus + .floating-label-log,
+        .input-field:not(:placeholder-shown) + .floating-label-log {
+            top: 1.5%;
+            left: 15px;
+            font-size: 12px;
+            color: white;
+        }
+        .floating-label-log-pass {
+            position: absolute;
+            top: 40.5%;
+            left: 1.1rem;
+            transform: translateY(-50%);
+            color: #999;
+            transition: all 0.2s ease-out;
+            pointer-events: none;
+            font-size: 16px;
+        }
+        .input-field:focus + .floating-label-log-pass,
+        .input-field:not(:placeholder-shown) + .floating-label-log-pass {
+            top: 30%;
+            left: 15px;
+            font-size: 12px;
+            color: white;
+        }
+
+        /* FOR MOBILE LABEL INPUT */
+        .floating-label-mobile {
+            position: absolute;
+            top: 49%;
+            left: 1rem;
+            transform: translateY(-50%);
+            color: #999;
+            transition: all 0.2s ease-out;
+            pointer-events: none;
+            font-size: 16px;
+        }
+        .input-field:focus + .floating-label-mobile,
+        .input-field:not(:placeholder-shown) + .floating-label-mobile {
+            top: 0;
+            left: 15px;
+            font-size: 12px;
+            color: white;
+        }
         .verify-button {
             padding: 0 15px;
             background-color: #fbbf24;
@@ -103,6 +181,7 @@
             cursor: pointer;
             width: 40%;
             font-size: 12px;
+            transition: 0.3s ease;
         }
     
         .SignUp, .Login-btn{
@@ -116,6 +195,15 @@
             color: #1c1e26;
             cursor: pointer;
             margin-top: 10px;
+            transition: 0.3s ease;
+        }
+        .Login-btn:hover{
+            background-color: #D36C24;
+            color: white;
+        }
+        .SignUp-form-desktop button:hover{
+            background-color: #D36C24;
+            color: white;
         }
     
         /* Forgot Password Link */

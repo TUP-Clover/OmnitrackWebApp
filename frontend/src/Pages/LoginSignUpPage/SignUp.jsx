@@ -145,40 +145,46 @@ const SignUp = () => {
                             </div>
                         </div>
                         <form class="SignUp-form-desktop">
-                            <input
-                                type="text"
-                                placeholder="Name"
-                                className="input-field"
-                                value={username}
-                                onChange={(e) => setUserName(e.target.value)}
-                            />
+                            <div class="input-group">
+                                <input
+                                    type="text"
+                                    placeholder=" "
+                                    className="input-field"
+                                    value={username}
+                                    onChange={(e) => setUserName(e.target.value)}
+                                />
+                                <label htmlFor="name" className="floating-label">Name</label>
+                            </div>
                             <div class ="input-group">
                                 <input
                                     type="password"
-                                    placeholder="Password"
+                                    placeholder=""
                                     className="input-field"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                 />
+                                <label htmlFor="password" className="floating-label">Password</label>
                             </div>
                             <div class="input-group">
                                 <input
                                     type="text"
-                                    placeholder="Email"
+                                    placeholder=" "
                                     className="input-field"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                 />
+                                <label htmlFor="email" className="floating-label">Email</label>
                                 <button class="verify-button" onClick={handleSendVerificationCode}>Send Verification Code</button>
                             </div>
                             <div className="input-group">
                                 <input
                                     type="tel"
-                                    placeholder="Verification Code"
+                                    placeholder=" "
                                     className="input-field"
                                     value={verificationCode}
                                     onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, ""))}
                                 />
+                                <label htmlFor="code" className="floating-label">Verification Code</label>
                                 <button className="verify-button" onClick={handleVerifyOTP}>Verify</button>
                             </div>
                             <button class="SignUp" onClick={handleSignUp}>Sign Up</button>
@@ -197,40 +203,46 @@ const SignUp = () => {
                 
                 <div class="SignUp-container">
                     <form class="signup-form">
-                    <input
-                            type="text"
-                            placeholder="Name"
-                            className="input-field"
-                            value={username}
-                            onChange={(e) => setUserName(e.target.value)}
-                        />
+                        <div class ="input-group">
+                            <input
+                                type="text"
+                                placeholder=" "
+                                className="input-field"
+                                value={username}
+                                onChange={(e) => setUserName(e.target.value)}
+                            />
+                            <label htmlFor="name" className="floating-label-mobile">Name</label>
+                        </div>
                         <div class ="input-group">
                             <input
                                 type="password"
-                                placeholder="Password"
+                                placeholder=" "
                                 className="input-field"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                             />
+                            <label htmlFor="pass" className="floating-label-mobile">Password</label>
                         </div>
                         <div class="input-group">
                             <input
                                 type="text"
-                                placeholder="Email"
+                                placeholder=" "
                                 className="input-field"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                             />
+                            <label htmlFor="email" className="floating-label-mobile">Email</label>
                             <button class="verify-button" onClick={handleSendVerificationCode}>Send Verification Code</button>
                         </div>
                         <div class="input-group">
                             <input
                                 type="tel"
-                                placeholder="Verification Code"
+                                placeholder=" "
                                 className="input-field"
                                 value={verificationCode}
                                 onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, ""))}
                             />
+                            <label htmlFor="code" className="floating-label-mobile">Verfication Code</label>
                             <button className="verify-button" onClick={handleVerifyOTP}>Verify</button>
                         </div>
                         <button class="SignUp" onClick={handleLoginClick}>Sign Up</button>
