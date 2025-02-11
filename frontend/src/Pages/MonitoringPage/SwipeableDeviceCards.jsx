@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useSwipeable } from 'react-swipeable';
 import { useDevices } from '../../Components/DeviceContext';
 import Loader from '../../Loader/Loader';
+import * as turf from "@turf/turf"; 
 
-const SwipeableDeviceCards = ({ dataloading, setActiveDevice,  userLocation  }) => {
+const SwipeableDeviceCards = ({ dataloading, setActiveDevice, geofenceStatus, toggleGeofence, isTracking, userLocation  }) => {
   const { devices, locations } = useDevices();
   const [devicesWithDistance, setDevicesWithDistance] = useState([]);
-
 
   const handlers = useSwipeable({
     onSwipedLeft: () => scrollCards('right'),
@@ -24,43 +24,55 @@ const SwipeableDeviceCards = ({ dataloading, setActiveDevice,  userLocation  }) 
     }
   };
 
- 
   const calculateDistance = (lat1, lon1, lat2, lon2) => {
     if (!lat1 || !lon1 || !lat2 || !lon2) return null;
-    const toRad = (value) => value * (Math.PI / 180);
 
-    const R = 6371; // Earth's radius in kilometers
-    const dLat = toRad(lat2 - lat1);
-    const dLon = toRad(lon2 - lon1);
-    const a = Math.sin(dLat / 2) ** 2 +
-              Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
-              Math.sin(dLon / 2) ** 2;
+    const from = turf.point([lon1, lat1]); // User location
+    const to = turf.point([lon2, lat2]); // Device latest coordinate
+    const options = { units: "kilometers" };
 
-  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return (R * c).toFixed(2);
+    return turf.distance(from, to, options).toFixed(2); // Return distance in km
   };
 
+
   useEffect(() => {
-    if (!userLocation || !devices || !locations) return;
-    
+    if (!devices || !locations) return;
+  
+    // Find the latest timestamp for each module
+    const latestTimestamps = Object.fromEntries(
+      Object.entries(locations).map(([module, loc]) => {
+        if (loc.coordinates?.Timestamp) {
+          return [module, new Date(loc.coordinates.Timestamp).getTime()];
+        }
+        return [module, 0]; // Default to 0 if no timestamp exists
+      })
+    );
+  
     const updatedDevices = devices.map((device) => {
-      const deviceLocation = locations[device.Module]?.coordinates;
-     //console.log(deviceLocation);
-      const distance = calculateDistance(
-          Number(userLocation.lat),
-          Number(userLocation.lon),
-          //Number(deviceLocation?.Latitude), // Ensure these are numbers
-          //Number(deviceLocation?.Longitude)
-        )
-      //console.log(distance);
-      //console.log(device);
-      //console.log(`Device: ${device.Module}, Distance: ${distance}`);
-      return { ...device, distance: distance || 'No distance' }; // Add default value for missing distance
+      const latestLocation = locations[device.Module]?.coordinates; // Get latest coordinate
+      let distance = "Turn on location"; // Default message
+  
+      if (latestLocation && userLocation && latestLocation.Timestamp) {
+        const moduleTimestamp = new Date(latestLocation.Timestamp).getTime();
+        const latestTimestamp = latestTimestamps[device.Module];
+  
+        // Only calculate distance if the module's timestamp is the latest
+        if (moduleTimestamp === latestTimestamp) {
+          distance = calculateDistance(
+            Number(userLocation.lat),
+            Number(userLocation.lon),
+            Number(latestLocation.Latitude),
+            Number(latestLocation.Longitude)
+          );
+        }
+      }
+  
+      return { ...device, distance }; // Assign the distance to each device
     });
-   
-    //console.log('Updated devices:', updatedDevices);
+  
     setDevicesWithDistance(updatedDevices);
   }, [userLocation, devices, locations]);
+  
 
   if (dataloading) return <Loader />;
 
@@ -78,6 +90,9 @@ const SwipeableDeviceCards = ({ dataloading, setActiveDevice,  userLocation  }) 
             location={locations[device.Module] ? locations[device.Module].name : "Loading..."} // Display the latest location name
             distance={ device.distance || "Calculating..."}
             onTrack={() => setActiveDevice(device.Module)} // Track button log
+            isTracking={isTracking}
+            geofenceEnabled={geofenceStatus[device.Module] || false}
+            onToggleGeofence={() => toggleGeofence(device.Module)}
           />
         ))
       ) : (
@@ -87,22 +102,28 @@ const SwipeableDeviceCards = ({ dataloading, setActiveDevice,  userLocation  }) 
   );
 };
 
-const DeviceCard = ({module, name, color, location,distance, onTrack }) => {
+const DeviceCard = ({module, name, color, location, distance, onTrack, isTracking, geofenceEnabled, onToggleGeofence }) => {
   return (
     <div className="device-card">
       <div className="left_side">
         <h4>{name}</h4>
   
         <p>Module: {module}</p>
-        <p className="status">{location || "Loading location..."}</p>
-        <p className="distance">Distance: {distance ? `${distance} km` : "Calculating..."}</p>
+        <p className="status">{location}</p>
+        <p className="distance">
+          Distance: {isTracking ? `${distance} km` : "Turn on location"}
+        </p>
         <div className="device-card-func">
           <button onClick={onTrack}>Track</button>
         <div className='geofence'>
           <p>Geofence</p>
-          <label class="switch">
-          <input type="checkbox"></input>
-          <span class="slider round"></span>
+          <label className="switch">
+          <input 
+                type="checkbox" 
+                checked={geofenceEnabled} 
+                onChange={onToggleGeofence} 
+          />
+          <span className="slider round"></span>
         </label>
         </div>
         </div>
@@ -113,7 +134,6 @@ const DeviceCard = ({module, name, color, location,distance, onTrack }) => {
             style={{ backgroundColor: color }} // Dynamic color
           ></div>
         <span className="material-symbols-outlined">share_location</span>
-        
       </div>
     </div>
   );
