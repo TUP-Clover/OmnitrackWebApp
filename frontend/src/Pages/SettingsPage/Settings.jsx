@@ -119,24 +119,26 @@ export const Settings = () => {
             </div>
           </div>
           <div className="options-container">
-            <div className="option-div" onClick={handleManageDevicesClick}>
-              <span className="material-symbols-outlined">devices</span>
-              <p>Manage Devices</p>
-              <span className="material-symbols-outlined">chevron_right</span>
-            </div>
-            <div className="option-div" onClick={toggleModal} >
-              <span className="material-symbols-outlined">phone_iphone</span>
-              <p>Change Password</p>
-              <span className="material-symbols-outlined">chevron_right</span>
-            </div>
-            <div className="option-div" onClick={handleGuideClick}>
-              <span className="material-symbols-outlined">developer_guide</span>
-              <p>Guides</p>
-              <span className="material-symbols-outlined">chevron_right</span>
-            </div>
-            <div className="option-div">
-              <span className="material-symbols-outlined" onClick={handleLogOutClick}>logout</span>
-                <p onClick={handleLogOutClick}>Logout</p>
+            <div className="options-content">
+              <div className="option-div" onClick={handleManageDevicesClick}>
+                <span className="material-symbols-outlined icon-span">devices</span>
+                <p>Manage Devices</p>
+                <span className="material-symbols-outlined arrow-right">chevron_right</span>
+              </div>
+              <div className="option-div" onClick={toggleModal} >
+                <span className="material-symbols-outlined">phone_iphone</span>
+                <p>Change Password</p>
+                <span className="material-symbols-outlined arrow-right">chevron_right</span>
+              </div>
+              <div className="option-div" onClick={handleGuideClick}>
+                <span className="material-symbols-outlined">developer_guide</span>
+                <p>Guides</p>
+                <span className="material-symbols-outlined arrow-right">chevron_right</span>
+              </div>
+              <div className="option-div">
+                <span className="material-symbols-outlined" onClick={handleLogOutClick}>logout</span>
+                  <p onClick={handleLogOutClick}>Logout</p>
+              </div>
             </div>
 
               {/* Modal Component */}
@@ -145,12 +147,12 @@ export const Settings = () => {
                 <div className="modal-content-mobile-num" onClick={(e) => e.stopPropagation()}>
                   <h2>Change Password</h2>
                   <p>Please input your registered email</p>
-                <input
-                  type="text"
-                  placeholder="Enter your email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
+                  <input
+                    type="text"
+                    placeholder="Enter your email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
                   <div className="modal-verify-mobile-num">
                   <input
                     type="text"
@@ -158,7 +160,7 @@ export const Settings = () => {
                     value={verificationCode}
                     onChange={(e) => setVerificationCode(e.target.value)}
                   />
-                  <button onClick={handleConfirmCode}>Confirm</button>
+                  <button onClick={handleConfirmCode} className='pass-confirm-btn'>Confirm</button>
                   </div>
                 </div>
               </div>
