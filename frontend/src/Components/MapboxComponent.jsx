@@ -2,17 +2,20 @@ import React, { useRef, useEffect, useCallback} from "react";
 import { useDevices } from "./DeviceContext";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css"; // Import the required CSS
+import * as turf from "@turf/turf";
 
-mapboxgl.accessToken = "pk.eyJ1IjoiYWxnYXJzb24xMjMiLCJhIjoiY20xZzF2eGF0MXI2ZzJxc2JtdndtMnNxYyJ9.MNUnBpkh2xyALMzDRP3EGQ";
-const MapboxComponent = ({ activeDevice }) => {
+mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN;
+
+const MapboxComponent = ({ activeDevice, geofenceStatus, selectedFilter, selectedDate }) => {
     const mapContainerRef = useRef(null);
     const mapRef = useRef(null);
     const markersRef = useRef({});
     const lineLayersRef = useRef({});
-    const { coordinates, setLocations } = useDevices();
+    const { coordinates, locations, setLocations } = useDevices();
 
     const reverseGeocode = async (longitude, latitude) => {
-        const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${longitude},${latitude}.json?access_token=${mapboxgl.accessToken}`;
+        //const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${longitude},${latitude}.json?access_token=${mapboxgl.accessToken}`;
+        const url = `test`;
         try {
             const response = await fetch(url);
             const data = await response.json();
@@ -21,27 +24,28 @@ const MapboxComponent = ({ activeDevice }) => {
             }
             return "Unknown Location"; // Default if no result found
         } catch (error) {
-            console.error("Error fetching location:", error);
+            console.error("Error fetching location:", error)
             return "Error fetching location";
         }
     };
 
     // Function to fetch a road-following route using Mapbox Directions API
     const fetchRoute = useCallback(async (start, end) => {
-        const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${start[0]},${start[1]};${end[0]},${end[1]}?geometries=geojson&access_token=${mapboxgl.accessToken}`;
+        //const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${start[0]},${start[1]};${end[0]},${end[1]}?geometries=geojson&access_token=${mapboxgl.accessToken}`;
+        const url = `test`;
         try {
         const response = await fetch(url);
         const data = await response.json();
         return data.routes[0]?.geometry; // Return the route geometry if available
         } catch (error) {
-        console.error("Error fetching route:", error);
-        return null;
+            console.error("Error fetching route:", error);
+            return null;
         }
     }, []);
     
     // Function to add markers and road-following routes
     const addMarkersAndRoutes = useCallback(
-        async (map, groupedCoordinates) => {
+        async (map, groupedCoordinates, selectedFilter, selectedDate) => {
             // Clear previous markers and routes
             Object.keys(markersRef.current).forEach((module) => {
                 markersRef.current[module]?.forEach((marker) => marker.remove());
@@ -59,6 +63,13 @@ const MapboxComponent = ({ activeDevice }) => {
                 markersRef.current[module] = [];
 
                 for (const [date, coords] of Object.entries(dates)) {
+                    if (
+                        (selectedFilter === "today" && date !== new Date().toISOString().split("T")[0]) ||
+                        (selectedFilter === "custom" && date !== selectedDate)
+                    ) {
+                        continue; // Skip markers that don't match the filter
+                    }
+                    
                     const sortedCoords = coords.sort(
                         (a, b) => new Date(a.Timestamp) - new Date(b.Timestamp)
                     );
@@ -133,7 +144,7 @@ const MapboxComponent = ({ activeDevice }) => {
                             reverseGeocode(Longitude, Latitude).then((location) => {
                                 setLocations((prev) => ({
                                     ...prev,
-                                    [module]: { name: location, Longitude, Latitude, Timestamp,  coordinates: { Longitude, Latitude }  }
+                                    [module]: { name: location, Longitude, Latitude,  coordinates: { Longitude, Timestamp, Latitude }  }
                                 }));
                             });
                         }
@@ -172,36 +183,103 @@ const MapboxComponent = ({ activeDevice }) => {
     
         map.on("load", () => {
             if (map.isStyleLoaded()) {
-            const groupedCoordinates = coordinates.reduce((acc, coord) => {
-                const { Module, Timestamp } = coord;
-                const date = new Date(Timestamp).toISOString().split("T")[0];
-                if (!acc[Module]) acc[Module] = {};
-                if (!acc[Module][date]) acc[Module][date] = [];
-                acc[Module][date].push(coord);
-                return acc;
-            }, {});
+                const groupedCoordinates = coordinates.reduce((acc, coord) => {
+                    const { Module, Timestamp } = coord;
+                    const date = new Date(Timestamp).toISOString().split("T")[0];
+                    if (!acc[Module]) acc[Module] = {};
+                    if (!acc[Module][date]) acc[Module][date] = [];
+                    acc[Module][date].push(coord);
+                    return acc;
+                }, {});
     
-            addMarkersAndRoutes(map, groupedCoordinates);
-            }
-        });
+                addMarkersAndRoutes(map, groupedCoordinates);
+                }
+            });
         };
     
         if (!mapRef.current) {
             initializeMap();
         } else if (mapRef.current.isStyleLoaded()) {
-        const groupedCoordinates = coordinates.reduce((acc, coord) => {
+            const groupedCoordinates = coordinates.reduce((acc, coord) => {
             const { Module, Timestamp } = coord;
             const date = new Date(Timestamp).toISOString().split("T")[0];
+            
             if (!acc[Module]) acc[Module] = {};
             if (!acc[Module][date]) acc[Module][date] = [];
             acc[Module][date].push(coord);
             return acc;
-        }, {});
+            }, {});
     
-        addMarkersAndRoutes(mapRef.current, groupedCoordinates);
+            addMarkersAndRoutes(mapRef.current, groupedCoordinates, selectedFilter, selectedDate);
         }
-    }, [coordinates, addMarkersAndRoutes]);
+    }, [coordinates, addMarkersAndRoutes, selectedFilter, selectedDate]);
     
+    useEffect(() => {
+        if (!mapRef.current) return; // Ensure map is initialized before modifying it
+        
+        // Find the latest timestamp for each module
+        const latestTimestamps = Object.fromEntries(
+            Object.entries(locations).map(([module, loc]) => {
+                if (loc.coordinates?.Timestamp) {
+                    return [module, new Date(loc.coordinates.Timestamp).getTime()];
+                }
+                return [module, 0]; // Default to 0 if no timestamp exists
+            })
+        );
+        
+        Object.entries(geofenceStatus || {}).forEach(([module, isEnabled]) => {
+        if (isEnabled && locations[module]) {
+            const { coordinates } = locations[module];
+
+            if (coordinates && coordinates.Timestamp) {
+                const moduleTimestamp = new Date(coordinates.Timestamp).getTime();
+                const latestTimestamp = latestTimestamps[module];
+
+                // Only proceed if this is the latest timestamp
+                if (moduleTimestamp === latestTimestamp) {
+                    const [lon, lat] = [Number(coordinates.Longitude), Number(coordinates.Latitude)];
+                    const circle = turf.circle([lon, lat], 0.05, { units: "kilometers" });
+    
+                        const geojson = {
+                            type: "FeatureCollection",
+                            features: [circle],
+                        };
+    
+                        const existingSource = mapRef.current.getSource(module + "_geofence");
+    
+                        if (existingSource) {
+                            existingSource.setData(geojson);
+                        } else {
+                            mapRef.current.addSource(module + "_geofence", {
+                                type: "geojson",
+                                data: geojson,
+                            });
+    
+                            mapRef.current.addLayer({
+                                id: module + "_geofence",
+                                type: "fill",
+                                source: module + "_geofence",
+                                layout: {},
+                                paint: {
+                                    "fill-color": "#FF0000",
+                                    "fill-opacity": 0.3,
+                                },
+                            });
+                        }
+                    }
+                }
+            } else {
+                // Remove geofence when toggled off
+                if (mapRef.current.getLayer(module + "_geofence")) {
+                    mapRef.current.removeLayer(module + "_geofence");
+                }
+                if (mapRef.current.getSource(module + "_geofence")) {
+                    mapRef.current.removeSource(module + "_geofence");
+                }
+            }
+        });
+    }, [geofenceStatus, locations]);
+
     // Fly to the latest coordinate for the active device
     useEffect(() => {
         if (activeDevice && mapRef.current && coordinates) {

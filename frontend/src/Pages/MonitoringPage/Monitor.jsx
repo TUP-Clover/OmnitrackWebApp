@@ -35,6 +35,28 @@ const Monitor = () => {
   const { user, loginUser } = useContext(UserContext);
   const [dataloading, setDataLoading] = useState(true);
   
+  const [geofenceStatus, setGeofenceStatus] = useState({}); // Track geofence per module
+  const [isTracking, setIsTracking] = useState(false);
+  const [toggleDisabled, setToggleDisabled] = useState(false);
+
+  
+  const toggleGeofence = (module) => {
+    setGeofenceStatus((prev) => ({
+      ...prev,
+      [module]: !prev[module], // Toggle geofence for this module
+    }));
+  };
+
+  const handleToggleGeofence = (module) => {
+    if (toggleDisabled) return; // Prevent spam clicks
+  
+    setToggleDisabled(true);
+    toggleGeofence(module);
+  
+    // Re-enable button after 500ms
+    setTimeout(() => setToggleDisabled(false), 1000);
+  };
+
   const isLargeScreen = useMediaQuery("(min-width: 768px)"); // Check if screen is >= 768px
 
   const toggleModal = () => {
@@ -82,7 +104,6 @@ const Monitor = () => {
     }
   };
   
-
   const handleFilterChange = (event) => {
     setSelectedFilter(event.target.value);
     if (event.target.value !== "custom") {
@@ -93,6 +114,7 @@ const Monitor = () => {
   const handleDateChange = (event) => {
     setSelectedDate(event.target.value);
   };
+
   const handleAddDevice = async () => {
     if (!user.userId) return;
     
@@ -134,25 +156,37 @@ const Monitor = () => {
   // Fetch the user's current location
   const getCurrentLocation = useCallback(() => {
     if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
+      const watchId = navigator.geolocation.watchPosition(
         (position) => {
           setUserLocation({
             lat: position.coords.latitude,
             lon: position.coords.longitude,
           });
-          console.log(`User Location: Latitude: ${position.coords.latitude}, Longitude: ${position.coords.longitude}`);
-          toast.success("User location accessed successfully.");
         },
         (error) => {
-          toast.error("Failed to get location. Please enable location services.");
-          console.error("Geolocation Error:", error);
-        }
+          console.error("Geolocation error:", error);
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
       );
+  
+      return () => navigator.geolocation.clearWatch(watchId);
     } else {
       toast.error("Geolocation is not supported by this browser.");
     }
   }, []);
-
+  
+  // Effect to handle toggling
+  useEffect(() => {
+    if (isTracking) {
+      getCurrentLocation();
+    }
+  }, [isTracking, getCurrentLocation]); // Runs when `isTracking` changes
+  
+  // Toggle function
+  const toggleTracking = () => {
+    setIsTracking((prev) => !prev);
+  };
+  
   useEffect(() => {
     const fetchData = async () => {
         if (!user || user.isNewUser) {
@@ -210,11 +244,6 @@ const Monitor = () => {
     };
   }, [user, setCoordinates]);
 
-   // Fetch user location on mount
-   useEffect(() => {
-    getCurrentLocation();
-  }, [getCurrentLocation]);
-
 
   if (dataloading ) {
     return <Loader/>
@@ -237,6 +266,12 @@ const Monitor = () => {
               <option value="custom">Custom</option>
               <option value="all">Show All</option>
             </select>
+
+            <label className="switch">
+              <input type="checkbox" checked={isTracking} onChange={toggleTracking} />
+              <span className="slider round"></span>
+            </label>
+
             {selectedFilter === "custom" && (
               <input
                 type="date"
@@ -268,16 +303,27 @@ const Monitor = () => {
                 />
               )}
             </nav>
-          )}
+            )}
             </div>
             <div className="mapbox-container">
-              <MapboxComponent activeDevice={activeDevice}/>
+              <MapboxComponent 
+                activeDevice={activeDevice}
+                geofenceStatus={geofenceStatus}  
+                selectedFilter={selectedFilter} 
+                selectedDate={selectedDate}
+                />
             </div>
             <div className="device-container">
               {dataloading ? (
                 <Loader/> // Display a loading message or spinner
               ) : (
-                <SwipeableDeviceCards setActiveDevice={setActiveDevice} dataloading={dataloading}  userLocation={userLocation} />
+                <SwipeableDeviceCards 
+                  setActiveDevice={setActiveDevice} 
+                  isTracking={isTracking}
+                  dataloading={dataloading}
+                  geofenceStatus={geofenceStatus} 
+                  toggleGeofence={handleToggleGeofence}  
+                  userLocation={userLocation} />
               )}
             </div>
             <div
