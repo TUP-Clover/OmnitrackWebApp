@@ -7,7 +7,8 @@ export const UserContext = createContext();
 export const UserProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
-    
+    const [userLocation, setUserLocation] = useState(null);
+
     const fetchSessionUser = async () => {
         try {
             const response = await fetch("http://localhost:8800/get-session-user", {
@@ -80,7 +81,7 @@ export const UserProvider = ({ children }) => {
     };
 
     return (
-        <UserContext.Provider value={{ user, setUser, loading, loginUser, logoutUser, fetchSessionUser }}>
+        <UserContext.Provider value={{ user, setUser, loading, loginUser, logoutUser, fetchSessionUser, userLocation, setUserLocation }}>
             {children}
         </UserContext.Provider>
     );

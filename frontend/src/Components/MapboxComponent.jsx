@@ -1,5 +1,7 @@
-import React, { useRef, useEffect, useCallback} from "react";
+import React, { useRef, useEffect, useCallback, useContext, useMemo} from "react";
 import { useDevices } from "./DeviceContext";
+import { UserContext } from "./UserContext";
+
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css"; // Import the required CSS
 import * as turf from "@turf/turf";
@@ -11,11 +13,12 @@ const MapboxComponent = ({ activeDevice, geofenceStatus, selectedFilter, selecte
     const mapRef = useRef(null);
     const markersRef = useRef({});
     const lineLayersRef = useRef({});
-    const { coordinates, locations, setLocations } = useDevices();
+    const { devices, coordinates, locations, setLocations, updateDeviceDistances} = useDevices();
+    const { userLocation } = useContext(UserContext);
 
     const reverseGeocode = async (longitude, latitude) => {
-        //const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${longitude},${latitude}.json?access_token=${mapboxgl.accessToken}`;
-        const url = `test`;
+        const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${longitude},${latitude}.json?access_token=${mapboxgl.accessToken}`;
+        //const url = `test`;
         try {
             const response = await fetch(url);
             const data = await response.json();
@@ -31,21 +34,64 @@ const MapboxComponent = ({ activeDevice, geofenceStatus, selectedFilter, selecte
 
     // Function to fetch a road-following route using Mapbox Directions API
     const fetchRoute = useCallback(async (start, end) => {
-        //const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${start[0]},${start[1]};${end[0]},${end[1]}?geometries=geojson&access_token=${mapboxgl.accessToken}`;
-        const url = `test`;
+        const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${start[0]},${start[1]};${end[0]},${end[1]}?geometries=geojson&access_token=${mapboxgl.accessToken}`;
+
         try {
         const response = await fetch(url);
         const data = await response.json();
         return data.routes[0]?.geometry; // Return the route geometry if available
         } catch (error) {
             console.error("Error fetching route:", error);
-            return null;
+            return { geometry: null, distance: 0 };
         }
     }, []);
     
+    // Function to calculate distance
+    const calculateDistance = (lat1, lon1, lat2, lon2) => {
+        if (!lat1 && !lon1 && !lat2 && !lon2) return "Turn on device and location";
+        if (!lat1 && !lon1 ) return "Turn on Location";
+        if (!lat2 && !lon2 ) return "Turn on Device";
+        
+        const from = turf.point([lon1, lat1]);
+        const to = turf.point([lon2, lat2]);
+        const options = { units: "kilometers" };
+        
+        return turf.distance(from, to, options).toFixed(2); // Distance in km
+    };
+
+    // Memoized distance calculation to avoid unnecessary recalculations
+    const deviceDistances = useMemo(() => {
+        if (!devices || !locations || !userLocation) return [];
+
+        return devices.map((device) => {
+        const latestLocation = locations[device.Module]?.coordinates;
+        if (!latestLocation || !latestLocation.Timestamp) {
+            return { ...device, distance: "Turn on location" };
+        }
+        console.log("User Location: ", userLocation);
+        console.log("LatestLocation:", latestLocation);
+        return {
+            ...device,
+            distance: calculateDistance(
+            userLocation.lat,
+            userLocation.lon,
+            latestLocation.Latitude,
+            latestLocation.Longitude
+            ),
+        };
+        });
+    }, [devices, locations, userLocation]);
+
+    // Update DeviceContext with new distances (only when changed)
+    useEffect(() => {
+        updateDeviceDistances(deviceDistances);
+    }, [deviceDistances, updateDeviceDistances]);
+    console.log("Device Distance: ", deviceDistances);
+
     // Function to add markers and road-following routes
     const addMarkersAndRoutes = useCallback(
         async (map, groupedCoordinates, selectedFilter, selectedDate) => {
+            if (!selectedFilter) return;
             // Clear previous markers and routes
             Object.keys(markersRef.current).forEach((module) => {
                 markersRef.current[module]?.forEach((marker) => marker.remove());
@@ -195,6 +241,20 @@ const MapboxComponent = ({ activeDevice, geofenceStatus, selectedFilter, selecte
                 addMarkersAndRoutes(map, groupedCoordinates);
                 }
             });
+
+            if (userLocation) {
+                const userMarkerElement = document.createElement("div");
+                userMarkerElement.style.backgroundColor = "#0000FF"; // Blue for user location
+                userMarkerElement.style.width = "15px";
+                userMarkerElement.style.height = "15px";
+                userMarkerElement.style.borderRadius = "50%";
+                userMarkerElement.style.border = "2px solid white";
+            
+                new mapboxgl.Marker({ element: userMarkerElement })
+                    .setLngLat([userLocation.lon, userLocation.lat])
+                    .setPopup(new mapboxgl.Popup().setText("You are here"))
+                    .addTo(mapRef.current);
+            }
         };
     
         if (!mapRef.current) {
@@ -212,7 +272,7 @@ const MapboxComponent = ({ activeDevice, geofenceStatus, selectedFilter, selecte
     
             addMarkersAndRoutes(mapRef.current, groupedCoordinates, selectedFilter, selectedDate);
         }
-    }, [coordinates, addMarkersAndRoutes, selectedFilter, selectedDate]);
+    }, [coordinates, userLocation, addMarkersAndRoutes, selectedFilter, selectedDate]);
     
     useEffect(() => {
         if (!mapRef.current) return; // Ensure map is initialized before modifying it

@@ -1,22 +1,24 @@
 import React, { useContext, useState, useEffect, useCallback } from 'react';
 import { useNavigate } from "react-router-dom";
 import motoricon from '../images/motoricon.png';
-import axios from "axios";
-
-import { UserContext } from "../../Components/UserContext";
-import { useDevices } from "../../Components/DeviceContext";
-import MapboxComponent from '../../Components/MapboxComponent';
-import Loader from '../../Loader/Loader';
-
-import SwipeableDeviceCards from './SwipeableDeviceCards';
 import { toast, ToastContainer } from 'react-toastify'
 import { io } from "socket.io-client";
-
-import './Monitor.css'; // Include your other styles
+import axios from "axios";
+import * as turf from "@turf/turf";
 
 // Calling other component
 import useMediaQuery from './useMediaQuery'; // Import the custom hook
 import SettingsComponent from '../SettingsPage/Settings'
+import { UserContext } from "../../Components/UserContext";
+import { useDevices } from "../../Components/DeviceContext";
+import MapsComponent from '../../Components/MapsComponent';
+import Loader from '../../Loader/Loader';
+import useGoogleMaps from '../../Components/useGoogleMaps';
+import SwipeableDeviceCards from './SwipeableDeviceCards';
+
+
+import './Monitor.css'; // Include your other styles
+
 
 const Monitor = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -27,19 +29,19 @@ const Monitor = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false); // State for menu bar
   const [selectedFilter, setSelectedFilter] = useState("today"); // State for dropdown selection
   const [selectedDate, setSelectedDate] = useState(""); // State for custom date selection
-  const [userLocation, setUserLocation] = useState(null); // User's current location
 
   const navigate = useNavigate();
 
   const { setDevices, setCoordinates } = useDevices();
-  const { user, loginUser } = useContext(UserContext);
+  const { user, loginUser, setUserLocation } = useContext(UserContext);
   const [dataloading, setDataLoading] = useState(true);
   
   const [geofenceStatus, setGeofenceStatus] = useState({}); // Track geofence per module
   const [isTracking, setIsTracking] = useState(false);
   const [toggleDisabled, setToggleDisabled] = useState(false);
 
-  
+  const isLoaded = useGoogleMaps(process.env.REACT_APP_MAPS_API_KEY);
+
   const toggleGeofence = (module) => {
     setGeofenceStatus((prev) => ({
       ...prev,
@@ -53,7 +55,7 @@ const Monitor = () => {
     setToggleDisabled(true);
     toggleGeofence(module);
   
-    // Re-enable button after 500ms
+    // Re-enable button after 1000ms
     setTimeout(() => setToggleDisabled(false), 1000);
   };
 
@@ -105,9 +107,12 @@ const Monitor = () => {
   };
   
   const handleFilterChange = (event) => {
-    setSelectedFilter(event.target.value);
-    if (event.target.value !== "custom") {
-      setSelectedDate(""); // Clear custom date when not selecting "Custom"
+    const newFilter = event.target.value;
+    setSelectedFilter(newFilter);
+    
+    // Clear the selected date when switching to another filter
+    if (newFilter !== "custom") {
+        setSelectedDate(""); // Reset the date selection
     }
   };
 
@@ -156,11 +161,29 @@ const Monitor = () => {
   // Fetch the user's current location
   const getCurrentLocation = useCallback(() => {
     if (navigator.geolocation) {
+      let lastPosition = null; // Store last known position
+  
       const watchId = navigator.geolocation.watchPosition(
         (position) => {
+          const newLat = position.coords.latitude;
+          const newLon = position.coords.longitude;
+  
+          // Calculate the difference from the last position
+          if (lastPosition) {
+            const distanceMoved = turf.distance(
+              turf.point([lastPosition.lon, lastPosition.lat]),
+              turf.point([newLon, newLat]),
+              { units: "meters" }
+            );
+  
+            if (distanceMoved < 5) return; // Ignore small movements (less than 5 meters)
+          }
+  
+          lastPosition = { lat: newLat, lon: newLon }; // Update last position
+  
           setUserLocation({
-            lat: position.coords.latitude,
-            lon: position.coords.longitude,
+            lat: newLat,
+            lon: newLon,
           });
         },
         (error) => {
@@ -173,7 +196,7 @@ const Monitor = () => {
     } else {
       toast.error("Geolocation is not supported by this browser.");
     }
-  }, []);
+  }, [setUserLocation]);
   
   // Effect to handle toggling
   useEffect(() => {
@@ -225,8 +248,9 @@ const Monitor = () => {
       
   
     fetchData();
-  }, [user, setDevices, setCoordinates]);
 
+  }, [user, setDevices, setCoordinates]);
+  
   useEffect(() => {
     if (!user || user.isNewUser) return;
 
@@ -244,8 +268,7 @@ const Monitor = () => {
     };
   }, [user, setCoordinates]);
 
-
-  if (dataloading ) {
+  if (dataloading || !isLoaded) {
     return <Loader/>
   }
 
@@ -306,11 +329,12 @@ const Monitor = () => {
             )}
             </div>
             <div className="mapbox-container">
-              <MapboxComponent 
+              <MapsComponent 
                 activeDevice={activeDevice}
                 geofenceStatus={geofenceStatus}  
                 selectedFilter={selectedFilter} 
                 selectedDate={selectedDate}
+                isTracking={isTracking}
                 />
             </div>
             <div className="device-container">
@@ -322,8 +346,7 @@ const Monitor = () => {
                   isTracking={isTracking}
                   dataloading={dataloading}
                   geofenceStatus={geofenceStatus} 
-                  toggleGeofence={handleToggleGeofence}  
-                  userLocation={userLocation} />
+                  toggleGeofence={handleToggleGeofence} />
               )}
             </div>
             <div

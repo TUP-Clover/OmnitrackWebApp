@@ -105,6 +105,47 @@ app.use(
     })
 );
 
+app.get("/api/distance", async (req, res) => {
+  try {
+    const { origin, destination } = req.query;
+    const apiKey = process.env.MAPS_API_KEY; // Store API Key in .env file
+
+    const url = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${origin}&destinations=${destination}&key=${apiKey}`;
+
+    const response = await fetch(url);
+    const data = await response.json();
+
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch distance" });
+  }
+});
+
+app.get("/api/routes", async (req, res) => {
+  try {
+      const { origin, destination } = req.query;
+      const apiKey = process.env.MAPS_API_KEY; // Store API Key in .env file
+
+      if (!origin || !destination) {
+          return res.status(400).json({ error: "Origin and destination are required" });
+      }
+
+      const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${origin}&destination=${destination}&mode=driving&key=${apiKey}`;
+
+      const response = await fetch(url);
+      const data = await response.json();
+
+      if (data.status !== "OK") {
+          return res.status(400).json({ error: "Failed to fetch route", details: data });
+      }
+
+      res.json({ polyline: data.routes[0].overview_polyline.points });
+  } catch (error) {
+      console.error("Error fetching Google route:", error);
+      res.status(500).json({ error: "Failed to fetch route" });
+  }
+});
+
 // Get session user endpoint
 app.get("/get-session-user", (req, res) => {
   if (req.session.user) {

@@ -6,9 +6,15 @@ export const DeviceProvider = ({ children }) => {
   const [devices, setDevices] = useState([]);
   const [coordinates, setCoordinates] = useState([]);
   const [locations, setLocations] = useState({}); 
+  const [deviceDistances, setDeviceDistances] = useState([]); // Stores distance data
+
+  // Function to update distances only when needed
+  const updateDeviceDistances = (newDistances) => {
+    setDeviceDistances(newDistances);
+  };
 
   return (
-    <DeviceContext.Provider value={{ devices, setDevices, coordinates, setCoordinates, locations, setLocations }}>
+    <DeviceContext.Provider value={{ devices, setDevices, coordinates, setCoordinates, locations, setLocations, deviceDistances, updateDeviceDistances }}>
       {children}
     </DeviceContext.Provider>
   );

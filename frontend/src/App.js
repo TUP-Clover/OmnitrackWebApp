@@ -4,7 +4,7 @@ import WelcomePage2 from "./Pages//WelcomePage/WelcomePage2";
 
 import { UserProvider } from "./Components/UserContext";
 import { DeviceProvider } from "./Components/DeviceContext";
-import MapboxComponent from "./Components/MapboxComponent";
+import MapsComponent from "./Components/MapsComponent";
 import ProtectedRoute from "./Components/ProtectedRoute";
 import PublicRoute from "./Components/PublicRoute";
 
@@ -33,7 +33,7 @@ function App() {
 						<Route path="/Login" element={<PublicRoute><Login/></PublicRoute>}></Route>
 						
 						{/* Protected routes */}
-						<Route path="/Monitor" element={<ProtectedRoute><><MapboxComponent/><Monitor/></></ProtectedRoute>}></Route>
+						<Route path="/Monitor" element={<ProtectedRoute><><MapsComponent/><Monitor/></></ProtectedRoute>}></Route>
 						<Route path="/Settings" element={<ProtectedRoute><Settings/></ProtectedRoute>}></Route>
 						<Route path="/ManageDevices" element={<ProtectedRoute><ManageDevices/></ProtectedRoute>}></Route>
 						<Route path="/Profile" element={<ProtectedRoute><Profile/></ProtectedRoute>}></Route>
