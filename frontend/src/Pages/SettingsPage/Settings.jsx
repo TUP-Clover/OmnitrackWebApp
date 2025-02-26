@@ -126,17 +126,17 @@ export const Settings = () => {
                 <span className="material-symbols-outlined arrow-right">chevron_right</span>
               </div>
               <div className="option-div" onClick={toggleModal} >
-                <span className="material-symbols-outlined">phone_iphone</span>
+                <span className="material-symbols-outlined icon-span">phone_iphone</span>
                 <p>Change Password</p>
                 <span className="material-symbols-outlined arrow-right">chevron_right</span>
               </div>
               <div className="option-div" onClick={handleGuideClick}>
-                <span className="material-symbols-outlined">developer_guide</span>
+                <span className="material-symbols-outlined icon-span">developer_guide</span>
                 <p>Guides</p>
                 <span className="material-symbols-outlined arrow-right">chevron_right</span>
               </div>
               <div className="option-div">
-                <span className="material-symbols-outlined" onClick={handleLogOutClick}>logout</span>
+                <span className="material-symbols-outlined icon-span" onClick={handleLogOutClick}>logout</span>
                   <p onClick={handleLogOutClick}>Logout</p>
               </div>
             </div>

@@ -100,11 +100,26 @@
 .options-container{
     margin-top: 1em;
     width: 85%;
+    height: 40%;
     display: flex;
     flex-direction: column;
     gap: 1.5em;
     /* border: 2px solid rebeccapurple; */
     
+}
+.options-content p{
+    width: 100%;
+    /* border: 2px solid green; */
+}
+.icon-span{
+    /* border: 1px solid skyblue; */
+    width: 20%;
+    padding-left: 10px;
+}
+.arrow-right{
+    flex: auto;
+    /* border: 2px solid goldenrod; */
+    width: 10%;
 }
 .options-container span{
     color: #5F6368;
@@ -123,10 +138,8 @@
     display: flex;
     align-items: center;
     cursor: pointer;
-    /* border: 2px solid green; */
-}
-.option-div p{
-    margin-left: 1em;
+    /* border: 1px solid salmon; */
+    margin-top: 10px;
 }
 
 
