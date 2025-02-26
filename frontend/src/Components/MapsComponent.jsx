@@ -12,7 +12,7 @@ const MapsComponent = ({ activeDevice, selectedFilter, selectedDate, geofenceSta
     const geofencesRef = useRef({});
     const routePolylinesRef = useRef({}); // Store only route polylines
 
-    //const [routes, setRoutes] = useState({});
+    const [routes, setRoutes] = useState({});
 
     const { devices, locations, setLocations, coordinates, updateDeviceDistances } = useDevices();
     const { userLocation } = useContext(UserContext);
@@ -146,7 +146,6 @@ const MapsComponent = ({ activeDevice, selectedFilter, selectedDate, geofenceSta
         }
     };
     
-    /*
     const fetchGoogleRoute = async (userLocation, moduleLocation) => {
         if (!userLocation || !moduleLocation) return null;
     
@@ -166,7 +165,7 @@ const MapsComponent = ({ activeDevice, selectedFilter, selectedDate, geofenceSta
         }
     
         return null;
-    };*/
+    };
 
     const fetchGoogleDistance = async (userLocation, moduleLocation) => {
         if (!userLocation || !moduleLocation) return "Unknown";
@@ -231,108 +230,39 @@ const MapsComponent = ({ activeDevice, selectedFilter, selectedDate, geofenceSta
         }
     }, [isTracking, deviceDistances, userLocation, locations, updateDeviceDistances]);
     
-    useEffect(() => { 
-        if (!isTracking || !userLocation || !mapRef.current || !coordinates.length) return;
+    useEffect(() => {
+        if (!isTracking || !userLocation) return;
     
-        const today = new Date().toISOString().split("T")[0];
-    
-        // Step 1: Group coordinates by module → date
-        const groupedCoordinates = coordinates.reduce((acc, curr) => {
-            const coordDate = curr.Timestamp.split(" ")[0]; // Extract YYYY-MM-DD
-            if (!acc[curr.Module]) acc[curr.Module] = {};
-            if (!acc[curr.Module][coordDate]) acc[curr.Module][coordDate] = [];
-            acc[curr.Module][coordDate].push(curr);
-            return acc;
-        }, {});
-    
-        // Step 2: Remove all existing route polylines
-        Object.values(routePolylinesRef.current).forEach(polyArray => 
-            polyArray.forEach(poly => poly.setMap(null))
-        );
-        routePolylinesRef.current = {}; // Reset route polylines
-    
-        let hasValidData = false; // Track if we have valid data
-    
-        // Step 3: Process each module and date
-        const fetchRoutes = async () => {
-            for (const [module, dates] of Object.entries(groupedCoordinates)) {
-                routePolylinesRef.current[module] = [];
-    
-                const latestCoordsAcrossDates = [];
-    
-                for (const [date, coords] of Object.entries(dates)) {
-                    if (
-                        (selectedFilter === "today" && date !== today) ||
-                        (selectedFilter === "custom" && date !== selectedDate)
-                    ) {
-                        continue;
-                    }
-    
-                    hasValidData = true;
-    
-                    // Step 4: Sort coordinates to get the latest per module-date
-                    const sortedCoords = coords.sort((a, b) => new Date(a.Timestamp) - new Date(b.Timestamp));
-                    const latestCoord = sortedCoords[sortedCoords.length - 1]; // Latest per date
-                    latestCoordsAcrossDates.push(latestCoord);
-    
-                    // Step 5: Fetch route from Directions API
-                    const directionsService = new window.google.maps.DirectionsService();
-                    const request = {
-                        origin: { lat: parseFloat(userLocation.lat), lng: parseFloat(userLocation.lon) },
-                        destination: { lat: parseFloat(latestCoord.Latitude), lng: parseFloat(latestCoord.Longitude) },
-                        travelMode: window.google.maps.TravelMode.DRIVING,
-                    };
-    
-                    directionsService.route(request, (result, status) => {
-                        if (status === "OK" && result.routes.length > 0) {
-                            const routePolyline = new window.google.maps.Polyline({
-                                path: result.routes[0].overview_path,
-                                geodesic: true,
-                                strokeColor: "#0000FF", // Blue color for route
-                                strokeOpacity: 0.6,
-                                strokeWeight: 4,
-                                map: mapRef.current,
-                            });
-    
-                            routePolylinesRef.current[module].push(routePolyline);
-                        } else {
-                            console.error("Directions API failed:", status);
-                        }
-                    });
-                }
-    
-                // Step 6: Store the latest coordinate per module-date in state
-                if (latestCoordsAcrossDates.length > 0) {
-                    const latestCoordForSelectedFilter = latestCoordsAcrossDates.reduce((latest, coord) => 
-                        new Date(coord.Timestamp) > new Date(latest.Timestamp) ? coord : latest, 
-                        latestCoordsAcrossDates[0]
+        const updateRoutes = async () => {
+            const newRoutes = {};
+        
+            await Promise.all(
+                devices.map(async (device) => {
+                    const latestLocation = locations[device.Module]?.coordinates;
+                    if (!latestLocation) return;
+        
+                    // Apply filter logic
+                    const deviceDate = new Date(latestLocation.Timestamp).toDateString();
+                    const selectedDateFormatted = new Date(selectedDate).toDateString(); // Fix here
+
+                    if (selectedFilter === "custom" && deviceDate !== selectedDateFormatted) return;
+                                        
+                    const route = await fetchGoogleRoute(
+                        { lat: userLocation.lat, lon: userLocation.lon },
+                        { lat: latestLocation.Latitude, lng: latestLocation.Longitude }
                     );
-    
-                    if (latestCoordForSelectedFilter) {
-                        const { Longitude, Latitude, Timestamp } = latestCoordForSelectedFilter;
-    
-                        setLocations(prev => ({
-                            ...prev,
-                            [module]: { Longitude, Latitude, Timestamp }
-                        }));
+        
+                    if (route) {
+                        newRoutes[device.Module] = route;
                     }
-                }
-            }
+                })
+            );
+        
+            setRoutes(newRoutes);
         };
     
-        fetchRoutes();
-    
-        // Step 7: If "today" is selected but no data exists, reset location
-        if (selectedFilter === "today" && !hasValidData) {
-            setLocations(prev => {
-                const updatedLocations = { ...prev };
-                Object.keys(prev).forEach(module => {
-                    updatedLocations[module] = { name: "No Location", Longitude: null, Latitude: null };
-                });
-                return updatedLocations;
-            });
-        }
-    }, [isTracking, selectedFilter, userLocation, selectedDate, setLocations, coordinates]);
+        updateRoutes();
+    }, [isTracking, userLocation, devices, locations]);
     
     useEffect(() => {
         if (!mapContainerRef.current || !window.google?.maps) return;
