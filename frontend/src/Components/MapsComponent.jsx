@@ -1,18 +1,24 @@
 import React, { useRef, useEffect, useState, useContext, useMemo } from "react";
+import Loader from "../Loader/Loader";
 import { useDevices } from "./DeviceContext";
 import { UserContext } from "./UserContext";
+import motorIcon from "../Pages/images/motor2.png";
+
 //import * as turf from "@turf/turf";
 
-const MapsComponent = ({ activeDevice, selectedFilter, selectedDate, geofenceStatus, isTracking}) => {
+const MapsComponent = ({ activeDevice, selectedFilter, selectedDate, geofenceStatus, isTracking, isLoaded}) => {
     const mapContainerRef = useRef(null);
     const mapRef = useRef(null);
     const markersRef = useRef({});
     const circlesRef = useRef({});
     const polylinesRef = useRef({});
     const geofencesRef = useRef({});
-    const routePolylinesRef = useRef({}); // Store only route polylines
+    
+    const userMarkerRef = useRef(null);
+    const userCircleRef = useRef(null);
 
     const [routes, setRoutes] = useState({});
+    const routePolylinesRef = useRef({}); // Store only route polylines
 
     const { devices, locations, setLocations, coordinates, updateDeviceDistances } = useDevices();
     const { userLocation } = useContext(UserContext);
@@ -137,7 +143,7 @@ const MapsComponent = ({ activeDevice, selectedFilter, selectedDate, geofenceSta
                 path: snappedFullPath,
                 geodesic: true,
                 strokeColor: color,
-                strokeOpacity: 0.8,
+                strokeOpacity: 0.4,
                 strokeWeight: 4,
                 map: mapRef.current,
             });
@@ -167,6 +173,8 @@ const MapsComponent = ({ activeDevice, selectedFilter, selectedDate, geofenceSta
         return null;
     };
 
+    /*
+    // MARKER DISTANCE
     const fetchGoogleDistance = async (userLocation, moduleLocation) => {
         if (!userLocation || !moduleLocation) return "Unknown";
         
@@ -229,7 +237,10 @@ const MapsComponent = ({ activeDevice, selectedFilter, selectedDate, geofenceSta
             updateDistances();
         }
     }, [isTracking, deviceDistances, userLocation, locations, updateDeviceDistances]);
-    
+    // END OF MARKER DISTANCE
+    */
+
+    // MARKER ROUTE
     useEffect(() => {
         if (!isTracking || !userLocation) return;
     
@@ -262,26 +273,153 @@ const MapsComponent = ({ activeDevice, selectedFilter, selectedDate, geofenceSta
         };
     
         updateRoutes();
-    }, [isTracking, userLocation, devices, locations]);
-    
+    }, [isTracking, selectedFilter, userLocation, devices, locations]);
+    // END OF MARKER ROUTE
+
+    // MAP INITIALIZE
     useEffect(() => {
-        if (!mapContainerRef.current || !window.google?.maps) return;
-
+        if (!mapContainerRef.current || !isLoaded) return;
+        
         const initMap = async () => {
-            await window.google.maps.importLibrary("maps");
-
-            const { Map } = window.google.maps;
-            mapRef.current = new Map(mapContainerRef.current, {
-                center: {lat: 14.587075, lng: 120.984372},
-                zoom: 16,
-                mapId: mapId,
-                mapTypeId: "roadmap",
-            });
+            try {
+                if (!window.google.maps.importLibrary) {
+                    console.error("importLibrary is not available");
+                    initMap();
+                    return;
+                }
+        
+                const mapsLibrary = await window.google.maps.importLibrary("maps");
+                const { Map } = mapsLibrary;
+        
+                mapRef.current = new Map(mapContainerRef.current, {
+                    center: { lat: 14.587075, lng: 120.984372 },
+                    zoom: 16,
+                    mapId: mapId,
+                    mapTypeId: "roadmap",
+                });
+            } catch (error) {
+                console.error("Error initializing Google Maps:", error);
+            }
         };
 
         initMap();
-    }, [mapId]); // Initialize map once
+    }, [mapId, isLoaded]); // Initialize map once
+    // END OF MAP INITIALIZATION
 
+    //USER LOCATION
+    // Effect to handle user location marker
+    useEffect(() => {
+        if (!mapRef.current || !isLoaded) return;
+    
+        if (!window.google || !window.google.maps) {
+            console.error("Google Maps API is not available.");
+            return;
+        }
+    
+        if (!mapRef.current) {
+            console.error("Map reference is not initialized.");
+            return;
+        }
+    
+        // If userLocation is null, remove marker and circle
+        if (!isTracking) {
+            if (userMarkerRef.current) {
+                userMarkerRef.current.setMap(null); // Remove marker
+                userMarkerRef.current = null;
+            }
+            if (userCircleRef.current) {
+                userCircleRef.current.setMap(null); // Remove circle
+                userCircleRef.current = null;
+            }
+            return;
+        }
+    
+        const createUserCircle = (map, userLocation) => {
+            if (!isLoaded) return;
+    
+            const { Circle } = window.google.maps;
+    
+            const pulseCircle = new Circle({
+                strokeColor: "#4285F4",
+                strokeOpacity: 0.6,
+                strokeWeight: 2,
+                fillColor: "#4285F4",
+                fillOpacity: 0.5,
+                map: map,
+                center: userLocation,
+                radius: 0,
+            });
+    
+            const stopAnimation = animatePulsingCircle(pulseCircle);
+    
+            return { pulseCircle, stopAnimation };
+        };
+    
+        const { Marker } = window.google.maps;
+    
+        const lat = parseFloat(userLocation.lat);
+        const lon = parseFloat(userLocation.lon);
+    
+        if (isNaN(lat) || isNaN(lon)) return;
+    
+        // Create or update marker
+        if (!userMarkerRef.current) {
+            userMarkerRef.current = new Marker({
+                position: { lat, lng: lon },
+                map: mapRef.current,
+                title: "You",
+                icon: {
+                    path: window.google.maps.SymbolPath.CIRCLE,
+                    scale: 10,
+                    fillColor: "#4285F4",
+                    fillOpacity: 1,
+                    strokeWeight: 2,
+                    strokeColor: "white",
+                }
+            });
+        } else {
+            userMarkerRef.current.setPosition({ lat, lng: lon });
+        }
+    
+        // Create or update circle
+        if (!userCircleRef.current) {
+            const { pulseCircle, stopAnimation } = createUserCircle(mapRef.current, { lat, lng: lon });
+            userCircleRef.current = pulseCircle;
+    
+            return () => stopAnimation(); // Stop animation when unmounting
+        } else {
+            userCircleRef.current.setCenter({ lat, lng: lon });
+        }
+    }, [userLocation, isLoaded, isTracking]);    
+    
+    const animatePulsingCircle = (circle) => {
+        let radius = 0;
+        const maxRadius = 3;
+        let isAnimating = true; // Add a flag to stop animation if needed
+    
+        const pulse = () => {
+            if (!circle.getMap() || !isAnimating) return; // Stop if removed
+    
+            radius += 0.03;
+            if (radius >= maxRadius) radius = 0;
+    
+            const opacity = 1 - radius / maxRadius;
+            const stroke = 1 - radius / maxRadius;
+    
+            circle.setRadius(radius);
+            circle.setOptions({ fillOpacity: opacity, strokeOpacity: stroke });
+    
+            requestAnimationFrame(pulse);
+        };
+    
+        pulse();
+    
+        return () => { isAnimating = false; }; // Stop animation if unmounted
+    };
+    
+    // END OF USER LOCATION
+
+    // MAP MARKERS
     useEffect(() => { 
         if (!mapRef.current || !coordinates.length) return;
     
@@ -350,7 +488,7 @@ const MapsComponent = ({ activeDevice, selectedFilter, selectedDate, geofenceSta
                 fetchSnappedPath(path, module, latestCoord.Color);
 
                 // Step 6: Add marker for the latest coordinate
-                const marker = new window.google.maps.Marker({
+             /* const marker = new window.google.maps.Marker({
                     position: { lat: parseFloat(latestCoord.Latitude), lng: parseFloat(latestCoord.Longitude) },
                     map: mapRef.current,
                     title: latestCoord.Name,
@@ -362,8 +500,32 @@ const MapsComponent = ({ activeDevice, selectedFilter, selectedDate, geofenceSta
                         strokeWeight: 4,
                         strokeColor: "white"
                     }
+                }); */
+
+                const iconColor = latestCoord.Color || "#FF0000"; // Default color
+                const motorSize = 18; // Size of motorcycle icon
+                const circleSize = 20; // Circle size
+
+                // Create an SVG with a circle + motorcycle icon inside
+                const markerSVG = `
+                    <svg xmlns="http://www.w3.org/2000/svg" width="${circleSize}" height="${circleSize}" viewBox="0 0 ${circleSize} ${circleSize}">
+                        <!-- Background Circle -->
+                        <circle cx="${circleSize / 2}" cy="${circleSize / 2}" r="${circleSize / 2}" fill="${iconColor}" stroke="white" stroke-width="2"/>
+                        <!-- Motorcycle Image -->
+                        <image href="${motorIcon}" x="${(circleSize - motorSize) / 2}" y="${(circleSize - motorSize) / 2}" width="${motorSize}" height="${motorSize}"/>
+                    </svg>
+                `;
+
+                const marker = new window.google.maps.Marker({
+                    position: { lat: parseFloat(latestCoord.Latitude), lng: parseFloat(latestCoord.Longitude) },
+                    map: mapRef.current,
+                    title: latestCoord.Name,
+                    icon: {
+                        url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(markerSVG)}`,
+                        scaledSize: new window.google.maps.Size(40, 40) // Adjust for better visibility
+                    }
                 });
-                
+                                
                 markersRef.current[module].push(marker);
             }
     
@@ -416,8 +578,9 @@ const MapsComponent = ({ activeDevice, selectedFilter, selectedDate, geofenceSta
             });
         }
     }, [selectedFilter, userLocation, selectedDate, setLocations, coordinates]);
+    // END OF MAP MARKERS
     
-    
+    // MARKER GEOFENCES
     useEffect(() => {
         if (!mapRef.current || !locations) return;
     
@@ -465,7 +628,9 @@ const MapsComponent = ({ activeDevice, selectedFilter, selectedDate, geofenceSta
             }
         });
     }, [geofenceStatus, locations]);
+    // END OF MARKER GEOFENCE
 
+    // MARKER TRACK
     useEffect(() => {
         if (!mapRef.current || !activeDevice) return;
     

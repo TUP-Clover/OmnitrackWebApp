@@ -4,23 +4,26 @@ const useGoogleMaps = (apiKey) => {
     const [isLoaded, setIsLoaded] = useState(false);
 
     useEffect(() => {
-        const existingScript = document.querySelector("script[src*='maps.googleapis.com']");
-
-        if (existingScript) {
-            // If script is already loaded, just wait for it to be ready
+        const checkGoogleMapsLoaded = () => {
             if (window.google?.maps) {
                 setIsLoaded(true);
             } else {
-                existingScript.addEventListener("load", () => setIsLoaded(true));
+                setTimeout(checkGoogleMapsLoaded, 100); // Check again in 100ms
             }
+        };
+
+        const existingScript = document.querySelector("script[src*='maps.googleapis.com']");
+
+        if (existingScript) {
+            checkGoogleMapsLoaded(); // Ensure window.google.maps is available
             return;
         }
 
         const script = document.createElement("script");
-        script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&loading=async`;
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&v=weekly&libraries=places&loading=async`;
         script.async = true;
         script.defer = true;
-        script.onload = () => setIsLoaded(true);
+        script.onload = checkGoogleMapsLoaded;
 
         document.head.appendChild(script);
     }, [apiKey]);

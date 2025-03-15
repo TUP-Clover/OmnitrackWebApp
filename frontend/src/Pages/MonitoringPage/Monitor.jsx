@@ -268,7 +268,11 @@ const Monitor = () => {
     };
   }, [user, setCoordinates]);
 
-  if (dataloading || !isLoaded) {
+  if (!isLoaded) {
+    return <Loader />; 
+  }
+
+  if (dataloading) {
     return <Loader/>
   }
 
@@ -335,6 +339,7 @@ const Monitor = () => {
                 selectedFilter={selectedFilter} 
                 selectedDate={selectedDate}
                 isTracking={isTracking}
+                isLoaded={isLoaded}
                 />
             </div>
             <div className="device-container">
