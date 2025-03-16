@@ -178,7 +178,7 @@
 .modal-content-mobile-num h2 {
     font-size: 18px;
     margin-bottom: 10px;
-    border: 2px solid rebeccapurple;
+    /* border: 2px solid rebeccapurple; */
     width: 100%;
 }
         
@@ -189,7 +189,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    border: 2px solid green;
+    /* border: 2px solid green; */
     width: 100%;
 }
         
@@ -204,15 +204,27 @@
 }
         
 .modal-content-mobile-num button {
-    width: 15em;
+    width: 20%;
     max-width: 240px;
     padding: 10px;
-    background-color: #EEB700;
+    background-color:#EEB700;
     color: #333741; /* Match the modal's background */
     border: none;
     border-radius: 15px;
     font-size: 14px;
     cursor: pointer;
+}
+.modal-verify-mobile-num{
+    /* border: 2px solid green; */
+    width: 100%;
+}
+.modal-verify-mobile-num input{
+    background-color: #333741;
+    border: none;
+    width: 70%;
+}
+.modal-verify-mobile-num button{
+    width: 30%;
 }
         
 .modal-content-mobile-num button:hover {
@@ -289,11 +301,10 @@
         cursor: pointer;
         transition: background-color 0.3s ease; /* Smooth hover effect */
     }
-    
-    .pass-confirm-btn{
+    .pass-verify-btn, .pass-confirm-btn{
         font-weight: bold;
-        /* font-size: 12px; */
     }
+
     
     /* Hover effect for button */
     .modal-content-new-password button:hover {

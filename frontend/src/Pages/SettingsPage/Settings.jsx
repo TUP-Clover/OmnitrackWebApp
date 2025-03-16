@@ -2,6 +2,8 @@ import React, { useContext, useState } from 'react';
 import './Settings.css';
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../Components/UserContext";
+import axios from "axios"; 
+
 
 // Calling other component
 import useMediaQuery from '../MonitoringPage/useMediaQuery'; // Import the custom hook
@@ -19,7 +21,9 @@ export const Settings = () => {
   const [retypePassword, setRetypePassword] = useState("");
   const [verificationCode, setVerificationCode] = useState("");
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false); // New password modal state
+  const [showVerificationInput, setShowVerificationInput] = useState(false);
   const [email, setEmail] = useState("");
+  
 
   const { user, logoutUser } = useContext(UserContext);
 
@@ -77,26 +81,111 @@ export const Settings = () => {
   const closeGuide = () => {
     setIsGuideOpen(false);
   };
-  const handleConfirmCode = () => {
-    // Validate the code (you can add API call logic here)
-    if (verificationCode === "123456") { // Replace with actual validation logic
-      setIsPasswordModalOpen(true);
-      setIsModalOpen(false);
-    } else {
-      alert("Invalid verification code. Please try again.");
-    }
+
+  const maskEmail = (email) => {
+    if (!email) return "";
+  
+    const [name, domain] = email.split("@");
+    if (!domain) return email;
+  
+    const maskedName =
+      name.length > 2 ? name.slice(0, 2) + "*".repeat(name.length - 2) : "*".repeat(name.length);
+  
+    return `${maskedName}@${domain}`;
   };
-  const handleChangePassword = () => {
-    if (newPassword !== retypePassword) {
-      alert("Passwords do not match. Please try again.");
+  
+  const verifyOTP = async () => {
+    if (!user || !user.email) {
+      console.error("User email not found!");
       return;
     }
 
-    // Add API call logic to update the password here
-    console.log("Password changed successfully!");
-    alert("Password changed successfully!");
-    setIsPasswordModalOpen(false);
+    try {
+      const response = await fetch("http://localhost:8800/send-otp-cp", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: user.email }), // Use email from context
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to send OTP.");
+      }
+
+      setShowVerificationInput(true);
+      return data.message; // "OTP sent successfully to your email."
+    } catch (error) {
+      console.error(error.message);
+    }
   };
+
+  const verifyUserOTP = async (otpInput) => {
+    if (!user || !user.email) {
+      console.error("User email not found!");
+      return;
+    }
+  
+    try {
+      const response = await fetch("http://localhost:8800/verify-otp-cp", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: user.email, otp: otpInput }),
+      });
+  
+      const data = await response.json();
+  
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to verify OTP.");
+      }
+  
+      alert("OTP verified successfully! Proceed to change password.");
+      setIsPasswordModalOpen(true); // Show password input after OTP verification
+    } catch (error) {
+      console.error(error.message);
+      alert(error.message);
+    }
+  };
+  
+  
+  const handleChangePassword = async () => {
+    if (!newPassword || !retypePassword) {
+      alert("Please enter and confirm your new password.");
+      return;
+    }
+  
+    if (newPassword !== retypePassword) {
+      alert("Passwords do not match.");
+      return;
+    }
+  
+    try {
+      const response = await fetch("http://localhost:8800/update-password", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: user.email, newPassword }),
+      });
+  
+      const data = await response.json();
+  
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to update password.");
+      }
+  
+      alert("Password updated successfully!");
+      setIsPasswordModalOpen(false);
+    } catch (error) {
+      console.error(error.message);
+      alert(error.message);
+    }
+  };
+  
 
   return (
     <div className="settings-body">
@@ -146,13 +235,18 @@ export const Settings = () => {
               <div className="modal-overlay-mobile-num" onClick={toggleModal}>
                 <div className="modal-content-mobile-num" onClick={(e) => e.stopPropagation()}>
                   <h2>Change Password</h2>
-                  <p>Please input your registered email</p>
-                  <input
-                    type="text"
-                    placeholder="Enter your email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
+                  <p>Hello {user.username}! To change your password you must input the OTP code that will be send to your registered email </p>
+                  <div className="modal-verify-mobile-num">
+                    <input
+                      className='email-input'
+                      type="text"
+                      placeholder={maskEmail(user.email)}
+                      readOnly
+                      disabled
+                    />
+                    <button onClick={verifyOTP} className='pass-verify-btn'>Send OTP</button>
+                  </div>
+                  {showVerificationInput && (
                   <div className="modal-verify-mobile-num">
                   <input
                     type="text"
@@ -160,8 +254,9 @@ export const Settings = () => {
                     value={verificationCode}
                     onChange={(e) => setVerificationCode(e.target.value)}
                   />
-                  <button onClick={handleConfirmCode} className='pass-confirm-btn'>Confirm</button>
+                  <button onClick={() => verifyUserOTP(verificationCode)} className='pass-confirm-btn'>Confirm</button>
                   </div>
+                  )}
                 </div>
               </div>
             )}
