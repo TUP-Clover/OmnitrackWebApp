@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useState, useContext, useMemo } from "react";
 import Loader from "../Loader/Loader";
 import { useDevices } from "./DeviceContext";
 import { UserContext } from "./UserContext";
+import { toast } from "react-toastify";
 import motorIcon from "../Pages/images/motor2.png";
 
 //import * as turf from "@turf/turf";
@@ -309,7 +310,7 @@ const MapsComponent = ({ activeDevice, selectedFilter, selectedDate, geofenceSta
     //USER LOCATION
     // Effect to handle user location marker
     useEffect(() => {
-        if (!mapRef.current || !isLoaded) return;
+        if (!mapRef.current || !isLoaded || !userLocation) return;
     
         if (!window.google || !window.google.maps) {
             console.error("Google Maps API is not available.");
@@ -416,7 +417,6 @@ const MapsComponent = ({ activeDevice, selectedFilter, selectedDate, geofenceSta
     
         return () => { isAnimating = false; }; // Stop animation if unmounted
     };
-    
     // END OF USER LOCATION
 
     // MAP MARKERS
@@ -488,7 +488,8 @@ const MapsComponent = ({ activeDevice, selectedFilter, selectedDate, geofenceSta
                 fetchSnappedPath(path, module, latestCoord.Color);
 
                 // Step 6: Add marker for the latest coordinate
-             /* const marker = new window.google.maps.Marker({
+                /*
+                const marker = new window.google.maps.Marker({
                     position: { lat: parseFloat(latestCoord.Latitude), lng: parseFloat(latestCoord.Longitude) },
                     map: mapRef.current,
                     title: latestCoord.Name,
@@ -501,31 +502,32 @@ const MapsComponent = ({ activeDevice, selectedFilter, selectedDate, geofenceSta
                         strokeColor: "white"
                     }
                 }); */
-
                 const iconColor = latestCoord.Color || "#FF0000"; // Default color
-                const motorSize = 18; // Size of motorcycle icon
-                const circleSize = 20; // Circle size
-
-                // Create an SVG with a circle + motorcycle icon inside
+                const circleSize = 40; // Outer circle diameter
+                const motorSize = 24; // Motorcycle icon size
+                
+                // Create an SVG with a centered circle + motorcycle icon
                 const markerSVG = `
                     <svg xmlns="http://www.w3.org/2000/svg" width="${circleSize}" height="${circleSize}" viewBox="0 0 ${circleSize} ${circleSize}">
                         <!-- Background Circle -->
-                        <circle cx="${circleSize / 2}" cy="${circleSize / 2}" r="${circleSize / 2}" fill="${iconColor}" stroke="white" stroke-width="2"/>
-                        <!-- Motorcycle Image -->
-                        <image href="${motorIcon}" x="${(circleSize - motorSize) / 2}" y="${(circleSize - motorSize) / 2}" width="${motorSize}" height="${motorSize}"/>
+                        <circle cx="${circleSize / 2}" cy="${circleSize / 2}" r="${(circleSize / 2) - 2}" fill="${iconColor}" stroke="white" stroke-width="3"/>
+                        <!-- Motorcycle Image (centered) -->
+                        <image href="${motorIcon}" x="${(circleSize - motorSize) / 2}" y="${(circleSize - motorSize) / 2}" width="${motorSize}" height="${motorSize}" preserveAspectRatio="xMidYMid meet"/>
                     </svg>
                 `;
-
+                
                 const marker = new window.google.maps.Marker({
                     position: { lat: parseFloat(latestCoord.Latitude), lng: parseFloat(latestCoord.Longitude) },
                     map: mapRef.current,
                     title: latestCoord.Name,
                     icon: {
                         url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(markerSVG)}`,
-                        scaledSize: new window.google.maps.Size(40, 40) // Adjust for better visibility
+                        scaledSize: new window.google.maps.Size(circleSize, circleSize), // Keep size consistent
+                        anchor: new window.google.maps.Point(circleSize / 2, circleSize / 2) // Center the marker
                     }
                 });
-                                
+                
+
                 markersRef.current[module].push(marker);
             }
     
@@ -577,48 +579,41 @@ const MapsComponent = ({ activeDevice, selectedFilter, selectedDate, geofenceSta
                 return updatedLocations;
             });
         }
-    }, [selectedFilter, userLocation, selectedDate, setLocations, coordinates]);
+    }, [selectedFilter, selectedDate, setLocations, coordinates]);
     // END OF MAP MARKERS
     
     // MARKER GEOFENCES
     useEffect(() => {
         if (!mapRef.current || !locations) return;
-    
-        // Track geofences per module
+
+        // Ensure geofences are tracked
         if (!geofencesRef.current) {
             geofencesRef.current = {};
         }
-    
+
         Object.entries(geofenceStatus || {}).forEach(([module, isEnabled]) => {
-            if (isEnabled && locations[module]) {
-                const { Longitude, Latitude, Timestamp } = locations[module].coordinates || {};
-    
-                if (Longitude && Latitude) {
-                    // Ensure we use the latest coordinate for the geofence
-                    const latestTimestamp = new Date(Timestamp).getTime();
-                    if (geofencesRef.current[module]?.timestamp === latestTimestamp) return;
-    
-                    // Remove old geofence if it exists
-                    if (geofencesRef.current[module]) {
-                        geofencesRef.current[module].setMap(null);
-                    }
-    
-                    // Create new geofence circle
-                    const geofenceCircle = new window.google.maps.Circle({
-                        center: { lat: parseFloat(Latitude), lng: parseFloat(Longitude) },
-                        radius: 50, // 50 meters
-                        strokeColor: "#FF0000",
-                        strokeOpacity: 0.8,
-                        strokeWeight: 2,
-                        fillColor: "#FF0000",
-                        fillOpacity: 0.35,
-                        map: mapRef.current,
-                    });
-    
-                    // Store reference to geofence
-                    geofencesRef.current[module] = geofenceCircle;
-                    geofencesRef.current[module].timestamp = latestTimestamp;
-                }
+            if (isEnabled) {
+                // If geofence exists, don't create a new one
+                if (geofencesRef.current[module]) return;
+
+                // Get the latest location when geofence is enabled
+                const { Longitude, Latitude } = locations[module]?.coordinates || {};
+                if (!Longitude || !Latitude) return;
+
+                // Create geofence circle (only when enabled)
+                const geofenceCircle = new window.google.maps.Circle({
+                    center: { lat: parseFloat(Latitude), lng: parseFloat(Longitude) },
+                    radius: 20, // 50 meters
+                    strokeColor: "#FF0000",
+                    strokeOpacity: 0.8,
+                    strokeWeight: 2,
+                    fillColor: "#FF0000",
+                    fillOpacity: 0.35,
+                    map: mapRef.current,
+                });
+
+                // Store only the circle (fixes getCenter() issues)
+                geofencesRef.current[module] = geofenceCircle;
             } else {
                 // Remove geofence if toggled off
                 if (geofencesRef.current[module]) {
@@ -627,8 +622,63 @@ const MapsComponent = ({ activeDevice, selectedFilter, selectedDate, geofenceSta
                 }
             }
         });
-    }, [geofenceStatus, locations]);
+    }, [geofenceStatus, locations]); 
     // END OF MARKER GEOFENCE
+
+    useEffect(() => {
+        if (!mapRef.current || !locations) return;
+    
+        const checkGeofence = () => {
+            Object.entries(geofenceStatus || {}).forEach(([module, isEnabled]) => {
+                if (!isEnabled || !locations[module]) return;
+    
+                const { Longitude, Latitude } = locations[module].coordinates || {};
+                const geofence = geofencesRef.current[module];
+    
+                // Ensure geofence exists and location data is valid
+                if (!geofence || !Longitude || !Latitude) return;
+    
+                const newLocation = new window.google.maps.LatLng(parseFloat(Latitude), parseFloat(Longitude));
+                const geofenceCenter = geofence.getCenter();
+    
+                if (!geofenceCenter) return;
+    
+                const distance = window.google.maps.geometry.spherical.computeDistanceBetween(geofenceCenter, newLocation);
+    
+                if (distance > 50) { // 50m geofence breach
+                    // Check if a warning has already been sent recently
+                    const lastAlert = geofencesRef.current[module]?.lastAlert || 0;
+                    const now = Date.now();
+    
+                    if (now - lastAlert >= 5000) { // 10 seconds interval
+                        geofencesRef.current[module].lastAlert = now;
+    
+                        // Play alert sound
+                        const audio = new Audio("/alert.mp3");
+                        audio.play().catch((err) => console.log("Audio playback failed:", err));
+    
+                        toast.warning(`${module} has moved outside the geofence!`, {
+                            position: "top-right",
+                            autoClose: 3000,
+                            hideProgressBar: true,
+                            closeOnClick: true,
+                            pauseOnHover: true,
+                            draggable: true,
+                        });
+                    }
+                }
+            });
+        };
+    
+        // Run the function immediately when geofence toggles on
+        checkGeofence();
+    
+        // Set interval for repeated checks
+        const interval = setInterval(checkGeofence, 10000); // Every 10 seconds
+    
+        return () => clearInterval(interval); // Cleanup on unmount or toggle change
+    }, [locations, geofenceStatus]);    
+    
 
     // MARKER TRACK
     useEffect(() => {

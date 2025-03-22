@@ -263,7 +263,7 @@ app.post('/get-coordinates', async (req, res) => {
     }, {});
 
     // Fetch coordinates from Firebase
-    const coordinatesRef = db.ref('/coordinates'); // Reference to the 'coordinates' node
+    const coordinatesRef = db.ref('/coordinates2'); // Reference to the 'coordinates' node
     const coordinatesSnapshot = await coordinatesRef.once('value'); // Get all data from 'coordinates'
     const coordinatesData = coordinatesSnapshot.val();
 
@@ -354,7 +354,7 @@ app.patch("/claim-device", async (req, res) => {
     });
 
     // Fetch coordinates for the claimed device and include the device's color
-    const coordinatesRef = db.ref("/coordinates");
+    const coordinatesRef = db.ref("/coordinates2");
     const coordSnapshot = await coordinatesRef.orderByChild("Module").equalTo(deviceData.Module).once("value");
 
     const coordinates = [];
@@ -701,7 +701,7 @@ app.post("/insert_gps", async (req, res) => {
     };
 
     // Save baseEntry to Firebase under the /coordinates path
-    const ref = db.ref("coordinates");
+    const ref = db.ref("coordinates2");
     await ref.push(baseEntry); // Push base entry to Firebase
 
     // Add color for emitting via Socket.IO
