@@ -39,8 +39,11 @@ const Monitor = () => {
   const [geofenceStatus, setGeofenceStatus] = useState({}); // Track geofence per module
   const [isTracking, setIsTracking] = useState(false);
   const [toggleDisabled, setToggleDisabled] = useState(false);
+  
+  const [mapApi, setMapApi] = useState({});
+  const isLoaded = useGoogleMaps(mapApi);
 
-  const isLoaded = useGoogleMaps(process.env.REACT_APP_MAPS_API_KEY);
+  
 
   const toggleGeofence = (module) => {
     setGeofenceStatus((prev) => ({
@@ -250,6 +253,17 @@ const Monitor = () => {
     fetchData();
 
   }, [user, setDevices, setCoordinates]);
+
+  useEffect(() => {
+    fetch("https://omnitrackwebapp.onrender.com/maps-api-key", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+    })
+      .then((res) => res.json())
+      .then((data) => setMapApi(data.apiKey)) // Store the API key in state
+      .catch((error) => console.error("Error fetching API key:", error));
+  }, []);
+
   
   useEffect(() => {
     if (!user || user.isNewUser) return;

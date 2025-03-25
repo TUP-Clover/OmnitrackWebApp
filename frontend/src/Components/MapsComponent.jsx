@@ -14,6 +14,9 @@ const MapsComponent = ({ activeDevice, selectedFilter, selectedDate, geofenceSta
     const circlesRef = useRef({});
     const polylinesRef = useRef({});
     const geofencesRef = useRef({});
+
+    const [mapId, setMapId] = useState({});
+    
     
     const userMarkerRef = useRef(null);
     const userCircleRef = useRef(null);
@@ -23,7 +26,21 @@ const MapsComponent = ({ activeDevice, selectedFilter, selectedDate, geofenceSta
 
     const { devices, locations, setLocations, coordinates, updateDeviceDistances } = useDevices();
     const { userLocation } = useContext(UserContext);
-    const mapId = process.env.REACT_APP_GOOGLE_MAP_ID;
+
+
+
+    useEffect(() => {
+        fetch("https://omnitrackwebapp.onrender.com/maps-google-id", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+        })
+          .then((res) => res.json())
+          .then((data) => setMapId(data.mapsId)) // Store the API key in state
+          .catch((error) => console.error("Error fetching API key:", error));
+      }, []);
+
+    
+    //const mapId = process.env.REACT_APP_GOOGLE_MAP_ID;
     /*
     const calculateDistance = (userLocation, moduleLocation) => {
         if (!userLocation || !moduleLocation) return "N/A";
