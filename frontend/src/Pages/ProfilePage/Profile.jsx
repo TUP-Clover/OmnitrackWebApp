@@ -163,7 +163,7 @@ const Profile = ({ onBack }) => {
         <div className="profile-body">
             <div className="profile-header">
                 <div className="profile-back" onClick={handleBackClick}>
-                    <span className="material-symbols-outlined">arrow_back</span>
+                    <span className="material-symbols-outlined profile-back-btn">arrow_back</span>
                 </div>
                 <div className="profile-title">
                     <p>Profile</p>
@@ -187,11 +187,11 @@ const Profile = ({ onBack }) => {
                 {isModalOpen && (
                     <div className="Chp-modal">
                         <div className="Chp-modal-content">
-                            <h2>Edit Profile Image</h2>
+                            <h3>Edit Profile Image</h3>
                             <input type="file" onChange={handleFileChange} accept="image/*" />
                             <div className="Chp-modal-buttons">
-                                <button onClick={handleAddImageClick}>Confirm</button>
-                                <button onClick={CloseModal}>Cancel</button>
+                                <button onClick={CloseModal} className='change-pic-cancel-btn'>Cancel</button>
+                                <button onClick={handleAddImageClick} className='change-pic-confirm-btn'>Confirm</button>
                             </div>
                         </div>
                     </div>
@@ -215,7 +215,7 @@ const Profile = ({ onBack }) => {
                     </div>
                     <div className="edit-profile-div">
                         <span
-                        className="material-symbols-outlined"
+                        className="material-symbols-outlined edit-profile-icon"
                         onClick={() =>
                             editingField === "name" ? handleSaveClick() : handleEditClick("name")
                         }
@@ -252,7 +252,7 @@ const Profile = ({ onBack }) => {
                     </div>
                     <div className="edit-profile-div">
                         <span
-                        className="material-symbols-outlined"
+                        className="material-symbols-outlined edit-profile-icon"
                         onClick={() =>
                             editingField === "mobile" ? handleSaveClick() : handleEditClick("mobile")
                         }
@@ -278,7 +278,7 @@ const Profile = ({ onBack }) => {
                     </div>
                     <div className="edit-profile-div">
                         <span
-                        className="material-symbols-outlined"
+                        className="material-symbols-outlined edit-profile-icon"
                         onClick={() =>
                             editingField === "email" ? handleSaveClick() : handleEditClick("email")
                         }
