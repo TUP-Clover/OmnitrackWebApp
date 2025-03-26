@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 
 const useGoogleMaps = (apiKey) => {
     const [isLoaded, setIsLoaded] = useState(false);
-
     useEffect(() => {
         const checkGoogleMapsLoaded = () => {
             if (window.google?.maps) {

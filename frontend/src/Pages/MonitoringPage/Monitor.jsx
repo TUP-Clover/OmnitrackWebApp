@@ -39,10 +39,8 @@ const Monitor = () => {
   const [geofenceStatus, setGeofenceStatus] = useState({}); // Track geofence per module
   const [isTracking, setIsTracking] = useState(false);
   const [toggleDisabled, setToggleDisabled] = useState(false);
+  const [mapApi, setMapApi] = useState("");
   
-  const [mapApi, setMapApi] = useState({});
-  const isLoaded = useGoogleMaps(mapApi);
-
   
 
   const toggleGeofence = (module) => {
@@ -260,11 +258,12 @@ const Monitor = () => {
       headers: { "Content-Type": "application/json" },
     })
       .then((res) => res.json())
-      .then((data) => setMapApi(data.apiKey)) // Store the API key in state
+      .then((data) => setMapApi(data.apiKey))
       .catch((error) => console.error("Error fetching API key:", error));
   }, []);
-
   
+  const isLoaded = useGoogleMaps(mapApi);
+
   useEffect(() => {
     if (!user || user.isNewUser) return;
 

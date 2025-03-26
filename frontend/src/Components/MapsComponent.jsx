@@ -15,7 +15,7 @@ const MapsComponent = ({ activeDevice, selectedFilter, selectedDate, geofenceSta
     const polylinesRef = useRef({});
     const geofencesRef = useRef({});
 
-    const [mapId, setMapId] = useState({});
+    const [mapId, setMapId] = useState("");
     
     
     const userMarkerRef = useRef(null);
@@ -26,8 +26,6 @@ const MapsComponent = ({ activeDevice, selectedFilter, selectedDate, geofenceSta
 
     const { devices, locations, setLocations, coordinates, updateDeviceDistances } = useDevices();
     const { userLocation } = useContext(UserContext);
-
-
 
     useEffect(() => {
         fetch("https://omnitrackwebapp.onrender.com/maps-google-id", {
@@ -293,7 +291,6 @@ const MapsComponent = ({ activeDevice, selectedFilter, selectedDate, geofenceSta
         updateRoutes();
     }, [isTracking, selectedFilter, userLocation, devices, locations]);
     // END OF MARKER ROUTE
-
     // MAP INITIALIZE
     useEffect(() => {
         if (!mapContainerRef.current || !isLoaded) return;
