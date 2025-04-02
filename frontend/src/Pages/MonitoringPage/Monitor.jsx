@@ -321,6 +321,13 @@ const Monitor = () => {
                 <li onClick={() => setSelectedFilter("today")}>Today</li>
                 <li onClick={() => setSelectedFilter("custom")}>Custom</li>
                 <li onClick={() => setSelectedFilter("all")}>Show All</li>
+                <li className='my-location-switch'>
+                  <p>My Location</p>
+                  <label className="switch">
+                    <input type="checkbox" checked={isTracking} onChange={toggleTracking} />
+                    <span className="slider round"></span>
+                  </label>
+                </li>
               </ul>
               {selectedFilter === "custom" && (
                 <input

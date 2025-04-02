@@ -62,8 +62,14 @@ const DeviceCard = ({module, name, color, location, distance, onTrack, isTrackin
   return (
     <div className="device-card">
       <div className="left_side">
-        <h4>{name}</h4>
-  
+        <div className='card-header'>
+          <h4>{name}</h4>
+          <div
+              className="status-bar"
+              style={{ backgroundColor: color }} // Dynamic color
+          >
+          </div>
+        </div>
         <p>Module: {module}</p>
         <p className="status">{location}</p>
         <p className="distance">
@@ -85,10 +91,6 @@ const DeviceCard = ({module, name, color, location, distance, onTrack, isTrackin
         </div>
       </div>
       <div className="right_side">
-          <div
-            className="status-bar"
-            style={{ backgroundColor: color }} // Dynamic color
-          ></div>
         <span className="material-symbols-outlined">share_location</span>
       </div>
     </div>
