@@ -7,8 +7,6 @@ import { UserContext } from '../../Components/UserContext';
 import useMediaQuery from '../MonitoringPage/useMediaQuery'; // Assuming you already have this custom hook
 import { toast, ToastContainer } from 'react-toastify'
 
-
-
 const Profile = ({ onBack }) => {
     const navigate = useNavigate();
     const { user, setUser } = useContext(UserContext);
@@ -62,6 +60,7 @@ const Profile = ({ onBack }) => {
     
             if (response.data.success) {
                 // Update the UserContext
+                toast.success("Changes saved successfully!");
                 setUser((prevUser) => ({
                     ...prevUser,
                     username: updatedName || prevUser.username,

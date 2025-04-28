@@ -15,6 +15,7 @@ const SignUp = () => {
     const [email, setEmail] = useState("");
     const [verificationCode, setVerificationCode] = useState("");
     const [password, setPassword] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
   
     const [isVerified, setIsVerified] = useState(false);
 
@@ -157,13 +158,20 @@ const SignUp = () => {
                             </div>
                             <div class ="input-group">
                                 <input
-                                    type="password"
+                                    type={showPassword ? "text" : "password"}
                                     placeholder=""
                                     className="input-field"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                 />
                                 <label htmlFor="password" className="floating-label">Password</label>
+                                <span
+                                    className="material-symbols-outlined eye-pass"
+                                    onClick={() => setShowPassword((prev) => !prev)}
+                                    style={{ cursor: "pointer", marginLeft: "-50px", marginTop: "15px", color: "grey"}} // Adjust icon positioning
+                                >
+                                    {showPassword ? "visibility_off" : "visibility"}
+                                </span>
                             </div>
                             <div class="input-group">
                                 <input
@@ -215,13 +223,20 @@ const SignUp = () => {
                         </div>
                         <div class ="input-group">
                             <input
-                                type="password"
+                                type={showPassword ? "text" : "password"}
                                 placeholder=" "
                                 className="input-field"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                             />
                             <label htmlFor="pass" className="floating-label-mobile">Password</label>
+                            <span
+                                    className="material-symbols-outlined eye-pass"
+                                    onClick={() => setShowPassword((prev) => !prev)}
+                                    style={{ cursor: "pointer", marginLeft: "-50px", marginTop: "6px", color: "grey"}} // Adjust icon positioning
+                                >
+                                    {showPassword ? "visibility_off" : "visibility"}
+                            </span>
                         </div>
                         <div class="input-group">
                             <input

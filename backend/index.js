@@ -441,6 +441,7 @@ app.patch('/update-user-profile', async (req, res) => {
 
     try {
         const userRef = db.ref(`/users/${userId}`);
+        const userControlsRef = db.ref(`/user_controls`);
         const snapshot = await userRef.once("value");
 
         if (!snapshot.exists()) {
@@ -458,6 +459,26 @@ app.patch('/update-user-profile', async (req, res) => {
         // Update user profile
         await userRef.update(updatedData);
 
+        // Update the user's controls mobile number(s)
+        if (mobile) {
+          // Fetch user_controls data
+          const controlsSnapshot = await userControlsRef.once("value");
+          const controlsData = controlsSnapshot.val();
+
+          if (controlsData) {
+              const updates = {};
+
+              Object.keys(controlsData).forEach((deviceKey) => {
+                  const deviceData = controlsData[deviceKey];
+                  if (deviceData && deviceData.mobile_number) {
+                      updates[`/${deviceKey}/mobile_number`] = mobile;
+                  }
+              });
+
+              // Perform batch update
+              await userControlsRef.update(updates);
+          }
+      }
         // Update session with the new values
         if (req.session.user) {
             if (username) req.session.user.username = username;
