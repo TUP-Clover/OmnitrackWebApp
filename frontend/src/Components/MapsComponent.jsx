@@ -7,7 +7,7 @@ import motorIcon from "../Pages/images/motor2.png";
 
 //import * as turf from "@turf/turf";
 
-const MapsComponent = ({ activeDevice, selectedFilter, selectedDate, geofenceStatus, isTracking, isLoaded}) => {
+const MapsComponent = ({ activeDevice, selectedFilter = "today", selectedDate, geofenceStatus, isTracking, isLoaded}) => {
     const mapContainerRef = useRef(null);
     const mapRef = useRef(null);
     const markersRef = useRef({});
@@ -23,7 +23,16 @@ const MapsComponent = ({ activeDevice, selectedFilter, selectedDate, geofenceSta
 
     const { devices, locations, setLocations, coordinates, updateDeviceDistances } = useDevices();
     const { userLocation } = useContext(UserContext);
-    const mapId = process.env.REACT_APP_GOOGLE_MAP_ID;
+    const mapId = "9b8de3b2ac66ed81";
+    
+    const [coordinatesReady, setCoordinatesReady] = useState(false);
+
+    useEffect(() => {
+        if (coordinates.length > 0) {
+            setCoordinatesReady(true);
+        }
+    }, [coordinates]);
+
     /*
     const calculateDistance = (userLocation, moduleLocation) => {
         if (!userLocation || !moduleLocation) return "N/A";
@@ -421,7 +430,7 @@ const MapsComponent = ({ activeDevice, selectedFilter, selectedDate, geofenceSta
 
     // MAP MARKERS
     useEffect(() => { 
-        if (!mapRef.current || !coordinates.length) return;
+        if (!mapRef.current || !coordinates || !coordinates.length) return;
     
         const today = new Date().toISOString().split("T")[0];
     
@@ -579,8 +588,8 @@ const MapsComponent = ({ activeDevice, selectedFilter, selectedDate, geofenceSta
                 return updatedLocations;
             });
         }
-    }, [selectedFilter, selectedDate, setLocations, coordinates]);
-    // END OF MAP MARKERS
+    }, [coordinatesReady,selectedFilter, selectedDate, setLocations, coordinates]);
+    // END OF MAP MARKERS   
     
     // MARKER GEOFENCES
     useEffect(() => {

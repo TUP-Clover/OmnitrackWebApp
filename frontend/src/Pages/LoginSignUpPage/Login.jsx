@@ -308,11 +308,6 @@ const Login = () => {
       )}
    
     <div className="super-main-container">
-       <div className="login-welcome-page">
-            <h1>Welcome to TrackMoto</h1>
-            <p>Track Your Treasures with Ease</p>
-            <p>Locate What Matters Most.</p>
-        </div>
      </div>
     <div className="main-container">
     <div class="login-desktop-container">
@@ -329,6 +324,8 @@ const Login = () => {
         <span className="material-symbols-outlined">arrow_back</span>
         <div className="Login-txt">
           <h1>Login</h1>
+          <p>Input your credentials to login</p>
+
         </div>
         </div>
         <form className="Login-form-desktop">

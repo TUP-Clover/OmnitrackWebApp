@@ -105,14 +105,19 @@
     color: white;
 }
 .editable-device-form input{
-    background-color:white;
+    background-color: #333741;
 }
 .editable-input{
-    border: none;
+    border: white;
     /* border: 2px solid green; */
     border-radius: 2px;
     padding-left: 8px;
     margin-bottom: 3px;
+    color: white;
+    background-color: #333741;
+}
+.editable-input:focus{
+    background-color: #333741;
 }
 .color-manage-dev-icon{
     transition: 0.3s;

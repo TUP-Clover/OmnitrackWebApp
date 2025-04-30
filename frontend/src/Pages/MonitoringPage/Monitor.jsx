@@ -1,6 +1,7 @@
 import React, { useContext, useState, useEffect, useCallback } from 'react';
 import { useNavigate } from "react-router-dom";
 import motoricon from '../images/motoricon.png';
+import TMLogo from '../images/TMLogoW.png';
 import { toast, ToastContainer } from 'react-toastify'
 import { io } from "socket.io-client";
 import axios from "axios";
@@ -40,7 +41,7 @@ const Monitor = () => {
   const [isTracking, setIsTracking] = useState(false);
   const [toggleDisabled, setToggleDisabled] = useState(false);
 
-  const isLoaded = useGoogleMaps(process.env.REACT_APP_MAPS_API_KEY);
+  const isLoaded = useGoogleMaps();
 
   const toggleGeofence = (module) => {
     setGeofenceStatus((prev) => ({
@@ -107,7 +108,7 @@ const Monitor = () => {
   };
   
   const handleFilterChange = (event) => {
-    const newFilter = event.target.value;
+    const newFilter = event.target.value || "today";;
     setSelectedFilter(newFilter);
     
     // Clear the selected date when switching to another filter
@@ -216,7 +217,7 @@ const Monitor = () => {
           setDataLoading(false);
           return; // Skip if user is new
         }
-
+        
         try {
           const [devicesResponse, coordinatesResponse] = await Promise.all([
             axios.post('http://localhost:8800/get-devices', { userId: user.userId }),
@@ -281,11 +282,13 @@ const Monitor = () => {
         <div className="parent-container">
           <div className="monitor-title">
               <div className="title-text">
-                <h5>Location Monitoring</h5>
+                <div>
+                  <h5>Location Monitoring</h5>
+                </div>
+                <div className="motor-icon">
+                  <img src={motoricon} alt="Icon-Bike" />
+                </div>
               </div>
-              <div className="motor-icon">
-            <img src={motoricon} alt="Icon-Bike" />
-          </div>
           <div className='History-container'>
             <h4>Travel History</h4>
             <select value={selectedFilter} onChange={handleFilterChange}>
@@ -293,19 +296,21 @@ const Monitor = () => {
               <option value="custom">Custom</option>
               <option value="all">Show All</option>
             </select>
-
-            <label className="switch">
-              <input type="checkbox" checked={isTracking} onChange={toggleTracking} />
-              <span className="slider round"></span>
-            </label>
-
             {selectedFilter === "custom" && (
               <input
                 type="date"
                 value={selectedDate}
                 onChange={handleDateChange}
+                className='custom-input-date'
               />
             )}
+            <label className="switch">
+              <input type="checkbox" checked={isTracking} onChange={toggleTracking} />
+              <span className="slider round"></span>
+            </label>
+          </div>
+          <div className='TMLogo-container'>
+            <img src={TMLogo} alt="" />
           </div>
         </div>
         {/* Hamburger Menu for Mobile */}

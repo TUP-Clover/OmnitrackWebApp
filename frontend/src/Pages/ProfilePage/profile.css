@@ -99,11 +99,17 @@
 
 .editable-input{
     /* border: 2px solid green; */
+    margin-top: 5px;
     width: 80%;
+    height: 2em;
     border-radius: 4px;
+    background-color: #1B1F2D;
+    color: white;
+    border: 1px solid white;
 }
 .editable-input:focus{
-    background-color: white;
+    color: white;
+    background-color: #1B1F2D;
 }
 .edit-profile-div{
     display: flex;

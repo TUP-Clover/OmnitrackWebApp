@@ -461,24 +461,38 @@ app.patch('/update-user-profile', async (req, res) => {
 
         // Update the user's controls mobile number(s)
         if (mobile) {
-          // Fetch user_controls data
-          const controlsSnapshot = await userControlsRef.once("value");
-          const controlsData = controlsSnapshot.val();
-
-          if (controlsData) {
-              const updates = {};
-
-              Object.keys(controlsData).forEach((deviceKey) => {
-                  const deviceData = controlsData[deviceKey];
-                  if (deviceData && deviceData.mobile_number) {
-                      updates[`/${deviceKey}/mobile_number`] = mobile;
-                  }
-              });
-
-              // Perform batch update
-              await userControlsRef.update(updates);
+          const devicesSnapshot = await db.ref("/devices").orderByChild("Owner").equalTo(userId).once("value");
+          const ownedModules = [];
+        
+          if (devicesSnapshot.exists()) {
+            devicesSnapshot.forEach((child) => {
+              const device = child.val();
+              if (device.Module) {
+                ownedModules.push(device.Module);
+              }
+            });
           }
-      }
+        
+          const userControlsRef = db.ref("/user_controls");
+          const userControlsSnapshot = await userControlsRef.once("value");
+          const controlsData = userControlsSnapshot.val() || {};
+        
+          const updates = {};
+        
+          ownedModules.forEach((moduleKey) => {
+            if (controlsData[moduleKey]) {
+              updates[`/${moduleKey}/mobile_number`] = mobile;
+            }
+          });
+        
+          if (Object.keys(updates).length > 0) {
+            await userControlsRef.update(updates);
+            console.log("Updated mobile_number for modules:", updates);
+          } else {
+            console.log("No user_controls entries to update.");
+          }
+        }
+        
         // Update session with the new values
         if (req.session.user) {
             if (username) req.session.user.username = username;
