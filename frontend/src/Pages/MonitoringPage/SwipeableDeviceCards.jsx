@@ -3,7 +3,7 @@ import { useSwipeable } from 'react-swipeable';
 import { useDevices } from '../../Components/DeviceContext';
 import Loader from '../../Loader/Loader';
 
-const SwipeableDeviceCards = ({ dataloading, setActiveDevice, geofenceStatus, toggleGeofence, isTracking}) => {
+const SwipeableDeviceCards = ({ dataloading, activeDevice, setActiveDevice, geofenceStatus, toggleGeofence, isTracking}) => {
   const { devices, deviceDistances, locations } = useDevices();
 
   const handlers = useSwipeable({
@@ -42,9 +42,13 @@ const SwipeableDeviceCards = ({ dataloading, setActiveDevice, geofenceStatus, to
               location={locations[device.Module] ? locations[device.Module].name : "No Location"} // Display the latest location name
               distance={ deviceWithDistance ? deviceWithDistance.distance : "Calculating..." } 
               onTrack={() => {
-                setActiveDevice(device.Module); 
-                setTimeout(() => setActiveDevice(null), 100); 
-              }} 
+                if (activeDevice === device.Module) {
+                  setActiveDevice(null); // toggle OFF
+                } else {
+                  setActiveDevice(device.Module); // toggle ON
+                }
+              }}
+              onTracking={activeDevice === device.Module} // Check if this device is currently being tracked
               isTracking={isTracking}
               geofenceEnabled={geofenceStatus[device.Module] || false}
               onToggleGeofence={() => toggleGeofence(device.Module)}
@@ -58,7 +62,7 @@ const SwipeableDeviceCards = ({ dataloading, setActiveDevice, geofenceStatus, to
   );
 };
 
-const DeviceCard = ({module, name, color, location, distance, onTrack, isTracking, geofenceEnabled, onToggleGeofence }) => {
+const DeviceCard = ({module, name, color, location, distance, onTrack, onTracking, isTracking, geofenceEnabled, onToggleGeofence }) => {
   return (
     <div className="device-card">
       <div className="left_side">
@@ -76,7 +80,15 @@ const DeviceCard = ({module, name, color, location, distance, onTrack, isTrackin
           Distance: {isTracking ? `${distance}` : "Turn on Location"}
         </p>
         <div className="device-card-func">
-          <button onClick={onTrack}>Track</button>
+        <button
+          onClick={onTrack}
+          style={{
+            backgroundColor: onTracking ? "#FF5E5E" : "#EEB700", 
+            cursor: "pointer"
+          }}
+        >
+          {onTracking ? "Untrack" : "Track"}
+        </button>
         <div className='geofence'>
           <p>Geofence</p>
           <label className="switch">
