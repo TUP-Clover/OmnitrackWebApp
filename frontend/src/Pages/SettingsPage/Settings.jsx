@@ -3,6 +3,7 @@ import './Settings.css';
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../Components/UserContext";
 import axios from "axios"; 
+import { toast, ToastContainer } from 'react-toastify'
 
 
 // Calling other component
@@ -143,24 +144,24 @@ export const Settings = () => {
         throw new Error(data.error || "Failed to verify OTP.");
       }
   
-      alert("OTP verified successfully! Proceed to change password.");
+      toast.success("OTP verified successfully! Proceed to change password.");
       setIsPasswordModalOpen(true); // Show password input after OTP verification
     } catch (error) {
       console.error(error.message);
       setVerificationCode("");
-      alert(error.message);
+      toast.error(error.message);
     }
   };
   
   
   const handleChangePassword = async () => {
     if (!newPassword || !retypePassword) {
-      alert("Please enter and confirm your new password.");
+      toast.error("Please enter and confirm your new password.");
       return;
     }
   
     if (newPassword !== retypePassword) {
-      alert("Passwords do not match.");
+      toast.error("Passwords do not match.");
       return;
     }
   
@@ -179,11 +180,11 @@ export const Settings = () => {
         throw new Error(data.error || "Failed to update password.");
       }
   
-      alert("Password updated successfully!");
+      toast.success("Password updated successfully!");
       setIsPasswordModalOpen(false);
     } catch (error) {
       console.error(error.message);
-      alert(error.message);
+      toast.error(error.message);
     }
   };
   

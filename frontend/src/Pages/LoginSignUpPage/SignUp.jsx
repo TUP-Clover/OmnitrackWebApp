@@ -95,7 +95,7 @@ const SignUp = () => {
             password,
           });
       
-          alert(response.data.message);
+          toast.success(response.data.message);
           localStorage.removeItem("signupId"); // Cleanup after successful signup
           navigate("/login");
         } catch (error) {

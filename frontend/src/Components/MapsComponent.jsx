@@ -32,7 +32,7 @@ const MapsComponent = ({ activeDevice, selectedFilter = "today", selectedDate, g
             setCoordinatesReady(true);
         }
     }, [coordinates]);
-
+    
     /*
     const calculateDistance = (userLocation, moduleLocation) => {
         if (!userLocation || !moduleLocation) return "N/A";
@@ -427,7 +427,7 @@ const MapsComponent = ({ activeDevice, selectedFilter = "today", selectedDate, g
         return () => { isAnimating = false; }; // Stop animation if unmounted
     };
     // END OF USER LOCATION
-
+    
     // MAP MARKERS
     useEffect(() => { 
         if (!mapRef.current || !coordinates || !coordinates.length) return;
@@ -654,7 +654,7 @@ const MapsComponent = ({ activeDevice, selectedFilter = "today", selectedDate, g
     
                 const distance = window.google.maps.geometry.spherical.computeDistanceBetween(geofenceCenter, newLocation);
     
-                if (distance > 50) { // 50m geofence breach
+                if (distance > 20) { // 50m geofence breach
                     // Check if a warning has already been sent recently
                     const lastAlert = geofencesRef.current[module]?.lastAlert || 0;
                     const now = Date.now();

@@ -1,4 +1,5 @@
 import React, { useContext, useState } from "react";
+import { toast } from 'react-toastify'
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../Components/UserContext"; 
 import './LoginSignup.css'; // Make sure this points to your CSS file
@@ -120,7 +121,7 @@ const Login = () => {
       console.log("Stored email for OTP verification:", email);
       setResetEmail(email); // ✅ Store email in local state (not UserContext)
   
-      alert("OTP sent successfully!");
+      toast.success("OTP sent successfully!");
       setIsModalOpen(false);
       setIsVerificationModalOpen(true);
     } catch (error) {
@@ -155,7 +156,7 @@ const Login = () => {
       const data = await response.json();
   
       if (response.ok) {
-        alert("Code verified successfully! Please reset your password.");
+        toast.success("Code verified successfully! Please reset your password.");
         setIsVerificationModalOpen(false);
         setIsNewPasswordModalOpen(true);
         setVerificationCode("");
@@ -198,7 +199,7 @@ const Login = () => {
       const data = await response.json();
   
       if (response.ok) {
-        alert("Password reset successfully!");
+        toast.success("Password reset successfully!");
         setIsNewPasswordModalOpen(false);
         setNewPassword("");
         setConfirmPassword("");

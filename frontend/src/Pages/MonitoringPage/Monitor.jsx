@@ -55,11 +55,11 @@ const Monitor = () => {
         Module: "SIM868",
         Latitude: 14.679873,  // Example coordinate (change if needed)
         Longitude: 121.007433, // Example coordinate (change if needed)
-        Timestamp: "2024-09-22 20:33:34", // Format matches your database
+        Timestamp: "2025-05-01 20:33:34", // Format matches your database
         Name: "Test SIM868 Location",
         Color: "#1DC9C3", // Red color for visibility
     };
-
+  
     // Simulate receiving new coordinate
     setCoordinates((prevCoords) => [...prevCoords, testCoordinate]);
 };*/
@@ -169,7 +169,7 @@ const Monitor = () => {
       }
     } catch (error) {
       console.error("Error adding device:", error);
-      toast.error("An error occurred. Please try again.");
+      toast.error("The device is already used by other user.");
     }
   }
 
@@ -269,7 +269,7 @@ const Monitor = () => {
   useEffect(() => {
     if (!user || user.isNewUser) return;
 
-    const socket = io("http://localhost:8800"); 
+    const socket = io("https://omnitrackwebapp.onrender.com"); 
 
     // Listen for new coordinates
     socket.on("new_coordinates", (newCoordinate) => {
